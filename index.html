@@ -94,7 +94,6 @@ html, body {
   letter-spacing: 0.05em;
 }
 
-/* ── TOPBAR USER ── */
 .topbar-user {
   display: flex;
   align-items: center;
@@ -484,6 +483,21 @@ select option { background: var(--bg-2); }
   font-weight: 600;
 }
 
+/* Google 登录按钮专属样式 */
+.btn-google {
+  background: #ffffff;
+  color: #333333;
+  width: 100%;
+  justify-content: center;
+  padding: 11px;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 10px;
+}
+.btn-google:hover {
+  background: #f1f1f1;
+}
+
 .auth-note {
   margin-top: 20px;
   padding-top: 16px;
@@ -495,19 +509,6 @@ select option { background: var(--bg-2); }
   line-height: 1.7;
 }
 .auth-note strong { color: var(--text-2); font-weight: 500; }
-
-.auth-admin-hint {
-  margin-top: 10px;
-  padding: 8px 10px;
-  background: rgba(245,158,11,.06);
-  border: 1px solid rgba(245,158,11,.18);
-  border-radius: 5px;
-  font-size: 10.5px;
-  font-family: var(--mono);
-  color: #fbbf24;
-  text-align: center;
-  line-height: 1.6;
-}
 
 /* ── RESPONSIVE ── */
 @media (max-width: 700px) {
@@ -557,30 +558,29 @@ select option { background: var(--bg-2); }
       <button type="submit" class="btn btn-primary auth-submit">Sign In</button>
     </form>
 
-    <!-- REGISTER FORM -->
-    <form id="register-form" class="auth-form" style="display:none;" onsubmit="handleRegister(event)">
-      <div class="form-group">
-        <label for="reg-user">Username</label>
-        <input type="text" id="reg-user" placeholder="At least 3 characters" autocomplete="username" required>
+    <!-- REGISTER FORM (GOOGLE OAUTH SIMULATION) -->
+    <div id="register-form" class="auth-form" style="display:none;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div style="font-size: 14px; font-weight: 600; color: var(--text-0); margin-bottom: 8px;">Create your account</div>
+        <div style="font-size: 12px; color: var(--text-2);">To continue to Arch Hub, please authorize with your Google account.</div>
       </div>
-      <div class="form-group">
-        <label for="reg-pass">Password</label>
-        <input type="password" id="reg-pass" placeholder="At least 6 characters" autocomplete="new-password" required>
-      </div>
-      <div class="form-group">
-        <label for="reg-pass2">Confirm Password</label>
-        <input type="password" id="reg-pass2" placeholder="Re-enter password" autocomplete="new-password" required>
-      </div>
-      <div class="auth-error" id="reg-error"></div>
-      <button type="submit" class="btn btn-primary auth-submit">Create Account</button>
-    </form>
+      
+      <button type="button" class="btn btn-google" onclick="handleGoogleLogin()">
+        <!-- Google G Icon SVG -->
+        <svg width="18" height="18" viewBox="0 0 48 48">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        Continue with Google
+      </button>
+      <div class="auth-error" id="reg-error" style="margin-top: 14px; text-align: center;"></div>
+    </div>
 
     <div class="auth-note">
       <strong>Client-side authentication</strong><br>
       Credentials are stored locally in this browser.
-    </div>
-    <div class="auth-admin-hint">
-      Admin access: <strong>kevinjia</strong>
     </div>
   </div>
 </div>
@@ -850,7 +850,7 @@ select option { background: var(--bg-2); }
     </div>
     <div>
       <div class="panel-title">Lua Obfuscator</div>
-      <div class="panel-desc">Local rename · comment strip · decimal byte-encode · hex literals · minify · loadstring wrapper</div>
+      <div class="panel-desc">Local rename · comment strip · decimal byte-encode (UTF-8) · hex literals · minify · loadstring wrapper</div>
     </div>
   </div>
   <div class="card">
@@ -1424,12 +1424,9 @@ select option { background: var(--bg-2); }
 const AUTH_USERS_KEY = 'archhub_users_v1';
 const AUTH_SESSION_KEY = 'archhub_session_v1';
 
-// Admin account credentials (hard-coded as requested)
 const ADMIN_USER = 'kevinjia';
 const ADMIN_PASS = 'smw-170121';
 
-/* cyrb53-style hash — used to keep plaintext out of localStorage.
-   Note: this is a local-only tool; real security relies on the OS. */
 function simpleHash(str) {
   let h1 = 0xdeadbeef;
   let h2 = 0x41c6ce57;
@@ -1478,7 +1475,7 @@ function switchAuthTab(tab) {
   document.getElementById('login-form').style.display = tab === 'login' ? '' : 'none';
   document.getElementById('register-form').style.display = tab === 'register' ? '' : 'none';
   document.getElementById('login-error').textContent = '';
-  document.getElementById('register-error').textContent = '';
+  document.getElementById('reg-error').textContent = '';
 }
 
 function handleLogin(e) {
@@ -1510,49 +1507,35 @@ function handleLogin(e) {
   enterApp(session);
 }
 
-function handleRegister(e) {
-  e.preventDefault();
-  const user = document.getElementById('reg-user').value.trim();
-  const pass = document.getElementById('reg-pass').value;
-  const pass2 = document.getElementById('reg-pass2').value;
-  const errEl = document.getElementById('register-error');
+// 模拟 Google 登录注册
+function handleGoogleLogin() {
+  const errEl = document.getElementById('reg-error');
   errEl.className = 'auth-error';
-  errEl.textContent = '';
-
-  if (user.length < 3) {
-    errEl.textContent = 'Username must be at least 3 characters.';
-    return;
-  }
-  if (!/^[a-zA-Z0-9_.-]+$/.test(user)) {
-    errEl.textContent = 'Username may only contain letters, numbers, _ . -';
-    return;
-  }
-  if (pass.length < 6) {
-    errEl.textContent = 'Password must be at least 6 characters.';
-    return;
-  }
-  if (pass !== pass2) {
-    errEl.textContent = 'Passwords do not match.';
-    return;
-  }
-
-  const users = getUsers();
-  if (users[user]) {
-    errEl.textContent = 'Username already exists.';
-    return;
-  }
-
-  users[user] = { password: simpleHash(pass), role: 'user', created: Date.now() };
-  setUsers(users);
-
-  errEl.className = 'auth-error ok';
-  errEl.textContent = 'Account created — signing you in…';
-
+  errEl.textContent = 'Authenticating with Google...';
+  
+  // 模拟网络延迟
   setTimeout(() => {
-    const session = { username: user, role: 'user', loginAt: Date.now() };
-    setSession(session);
-    enterApp(session);
-  }, 600);
+    // 随机生成一个 Google 风格的邮箱名
+    const randId = Math.random().toString(36).substring(2, 8);
+    const mockEmail = `user_${randId}@gmail.com`;
+    const username = mockEmail.split('@')[0];
+    
+    const users = getUsers();
+    // 如果用户不存在则创建
+    if (!users[username]) {
+        users[username] = { password: 'google_oauth_bypass', role: 'user', created: Date.now() };
+        setUsers(users);
+    }
+
+    errEl.className = 'auth-error ok';
+    errEl.textContent = 'Success! Signing you in...';
+
+    setTimeout(() => {
+        const session = { username: username, role: 'user', loginAt: Date.now() };
+        setSession(session);
+        enterApp(session);
+    }, 800);
+  }, 1200);
 }
 
 function enterApp(session) {
@@ -1568,11 +1551,9 @@ function enterApp(session) {
     : 'var(--accent-lo)';
   roleEl.style.color = session.role === 'admin' ? '#fbbf24' : 'var(--accent-hi)';
 
-  // Reset forms
   document.getElementById('login-form').reset();
-  document.getElementById('register-form').reset();
   document.getElementById('login-error').textContent = '';
-  document.getElementById('register-error').textContent = '';
+  document.getElementById('reg-error').textContent = '';
   switchAuthTab('login');
 
   navigate('home');
@@ -1638,7 +1619,6 @@ function buildDash() {
 }
 
 function navigate(id) {
-  // Guard: only allow if authenticated
   if (!getSession()) { logout(); return; }
 
   document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
@@ -1888,7 +1868,7 @@ function obfuscateBash() {
 }
 
 // ═══════════════════════════════════════════════
-// LUA OBFUSCATOR  (improved)
+// LUA OBFUSCATOR (FIXED UTF-8 & MULTIBYTE)
 // ═══════════════════════════════════════════════
 function obfuscateLua() {
   const src = document.getElementById('lua-in').value.trim();
@@ -1896,38 +1876,28 @@ function obfuscateLua() {
   const opts = getOpts('lua-opts');
   let out = src;
 
-  // ── 1. Strip comments (protects long-bracket strings first) ──
+  // 1. Strip comments (protects long-bracket strings first)
   if (opts.stripComments) {
-    // Protect long-bracket strings [[...]] / [=[...]=]
     const longStrings = [];
     out = out.replace(/\[(=*)\[([\s\S]*?)\]\1\]/g, (m) => {
       longStrings.push(m);
       return '\u0000L' + (longStrings.length - 1) + '\u0000';
     });
-    // Block comments --[[ ... ]] / --[=[ ... ]=]
     out = out.replace(/--\[(=*)\[[\s\S]*?\]\1\]/g, '');
-    // Line comments
     out = out.replace(/--[^\n]*/g, '');
-    // Restore long strings
     out = out.replace(/\u0000L(\d+)\u0000/g, (m, i) => longStrings[parseInt(i)]);
   }
 
-  // ── 2. Rename local declarations and their references ──
+  // 2. Rename locals
   if (opts.renameLocals) {
     const localNames = new Map();
     let ctr = 0;
-    const gen = () => {
-      ctr++;
-      return '_0x' + Math.random().toString(16).slice(2, 8) + ctr.toString(36);
-    };
+    const gen = () => { ctr++; return '_0x' + Math.random().toString(16).slice(2, 8); };
 
-    // 2a. `local function name(...)`
     out = out.replace(/\blocal\s+function\s+([a-zA-Z_]\w*)/g, (m, name) => {
       if (!localNames.has(name)) localNames.set(name, gen());
       return 'local function ' + localNames.get(name);
     });
-
-    // 2b. `local name[, name2, ...] = ...` (negative lookahead avoids `local function`)
     out = out.replace(/\blocal\s+(?!function\b)([a-zA-Z_]\w*(?:\s*,\s*[a-zA-Z_]\w*)*)/g, (m, names) => {
       const renamed = names.split(',').map(n => {
         const t = n.trim();
@@ -1936,8 +1906,6 @@ function obfuscateLua() {
       }).join(', ');
       return 'local ' + renamed;
     });
-
-    // 2c. Function parameters
     out = out.replace(/(\bfunction\s+[a-zA-Z_]\w*\s*\()([^)]*)(\))/g, (m, pre, params, post) => {
       const renamed = params.split(',').map(p => {
         const t = p.trim();
@@ -1948,27 +1916,30 @@ function obfuscateLua() {
       return pre + renamed + post;
     });
 
-    // 2d. Replace all references
     localNames.forEach((newName, oldName) => {
       out = out.replace(new RegExp('\\b' + oldName + '\\b', 'g'), newName);
     });
   }
 
-  // ── 3. Encode strings as \ddd (3-digit decimal, zero-padded) ──
+  // 3. Encode strings (FIXED: TextEncoder for UTF-8 support)
   if (opts.encodeStrings) {
-    out = out.replace(/"((?:[^"\\]|\\.)*)"/g, (m, inner) => {
-      if (inner.length === 0) return m;
-      const bytes = Array.from(inner).map(c => '\\' + c.charCodeAt(0).toString().padStart(3, '0')).join('');
-      return '"' + bytes + '"';
-    });
+    const encodeString = (str) => {
+      if (str.length === 0) return '""';
+      // Use TextEncoder to get proper UTF-8 bytes (fixes Chinese characters)
+      const bytes = Array.from(new TextEncoder().encode(str));
+      // Convert each byte to \ddd format
+      return '"' + bytes.map(b => '\\' + b.toString().padStart(3, '0')).join('') + '"';
+    };
+
+    out = out.replace(/"((?:[^"\\]|\\.)*)"/g, (m, inner) => encodeString(inner));
     out = out.replace(/'((?:[^'\\]|\\.)*)'/g, (m, inner) => {
-      if (inner.length === 0) return m;
-      const bytes = Array.from(inner).map(c => '\\' + c.charCodeAt(0).toString().padStart(3, '0')).join('');
-      return "'" + bytes + "'";
+      if (inner.length === 0) return "''";
+      const bytes = Array.from(new TextEncoder().encode(inner));
+      return "'" + bytes.map(b => '\\' + b.toString().padStart(3, '0')).join('') + "'";
     });
   }
 
-  // ── 4. Hex number literals (0x...) ──
+  // 4. Hex number literals
   if (opts.hexNumbers) {
     out = out.replace(/\b(\d+)\b/g, (m, n) => {
       const num = parseInt(n);
@@ -1976,7 +1947,7 @@ function obfuscateLua() {
     });
   }
 
-  // ── 5. Minify whitespace (protects string literals) ──
+  // 5. Minify whitespace
   if (opts.minify) {
     const saved = [];
     out = out.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, m => {
@@ -1990,9 +1961,10 @@ function obfuscateLua() {
     out = out.replace(/\u0000S(\d+)\u0000/g, (m, i) => saved[parseInt(i)]);
   }
 
-  // ── 6. loadstring wrapper (byte table) ──
+  // 6. loadstring wrapper (using bytes is safe as long as it's valid UTF8, but string.char helps)
   if (opts.loadstring) {
-    const bytes = Array.from(out).map(c => c.charCodeAt(0));
+    const bytes = Array.from(new TextEncoder().encode(out));
+    // For very large scripts, a single table may hit character limits. Delta usually handles it fine though.
     const tableStr = '{' + bytes.join(',') + '}';
     out = `local _t=${tableStr}\nlocal _s=''\nfor _,v in ipairs(_t) do _s=_s..string.char(v) end\nloadstring(_s)()`;
   }
@@ -2335,7 +2307,6 @@ function regexTest() {
   ensureAdmin();
   buildDash();
 
-  // Auto-restore session if one exists in this tab
   const session = getSession();
   if (session) {
     enterApp(session);
@@ -2346,4 +2317,4 @@ function regexTest() {
 })();
 </script>
 </body>
-  </html>
+                             </html>

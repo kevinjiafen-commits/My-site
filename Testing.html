@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ARCH — Rivals Script AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0b0c0e;
+    --bg-panel: #0f1012;
+    --bg-card:  #141518;
+    --bg-hover: #191b1f;
+    --bd:       #1e2026;
+    --bd-mid:   #262930;
+    --tx-pri:   #dde1ec;
+    --tx-sec:   #7a7f94;
+    --tx-dim:   #3e4254;
+    --ac:       #5b8def;
+    --ac-dim:   #2a4a8a;
+    --ac-glow:  rgba(91,141,239,0.12);
+    --green:    #3dba7a;
+    --red:      #e05c5c;
+    --yellow:   #d4a847;
+    --mono:     'JetBrains Mono', monospace;
+    --sans:     'Inter', sans-serif;
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--tx-pri);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow: hidden;
+  }
+
+  /* ── layout ── */
+  #shell {
+    display: flex;
+    height: 100%;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* ── sidebar ── */
+  #sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--bg-panel);
+    border-right: 1px solid var(--bd);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sidebar-logo {
+    padding: 18px 16px 14px;
+    border-bottom: 1px solid var(--bd);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-mark {
+    width: 28px; height: 28px;
+    background: var(--ac);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .logo-text {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--tx-pri);
+  }
+  .logo-sub {
+    font-size: 10px;
+    color: var(--tx-sec);
+    letter-spacing: 0.04em;
+  }
+
+  .sidebar-section {
+    padding: 12px 10px 6px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--tx-dim);
+    text-transform: uppercase;
+    font-family: var(--mono);
+  }
+
+  .chip-list {
+    padding: 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .chip {
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--tx-sec);
+    cursor: pointer;
+    transition: background 0.1s, color 0.1s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: none;
+    background: none;
+    text-align: left;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .chip:hover { background: var(--bg-hover); color: var(--tx-pri); }
+  .chip .chip-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--ac-dim);
+    flex-shrink: 0;
+  }
+  .chip:hover .chip-dot { background: var(--ac); }
+
+  .sidebar-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 12px;
+  }
+  .sidebar-scroll::-webkit-scrollbar { width: 3px; }
+  .sidebar-scroll::-webkit-scrollbar-thumb { background: var(--bd-mid); border-radius: 2px; }
+
+  .model-badge {
+    margin: 10px;
+    padding: 8px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--bd);
+    border-radius: 8px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--tx-sec);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .model-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+  }
+
+  /* ── main ── */
+  #main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  /* topbar */
+  #topbar {
+    height: 46px;
+    border-bottom: 1px solid var(--bd);
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .topbar-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--tx-sec);
+    flex: 1;
+  }
+  .topbar-title span { color: var(--tx-pri); }
+
+  #btn-clear {
+    padding: 5px 12px;
+    background: none;
+    border: 1px solid var(--bd-mid);
+    border-radius: 5px;
+    color: var(--tx-sec);
+    font-family: var(--mono);
+    font-size: 11px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  #btn-clear:hover { border-color: var(--ac); color: var(--ac); }
+
+  /* chat area */
+  #chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  #chat::-webkit-scrollbar { width: 4px; }
+  #chat::-webkit-scrollbar-thumb { background: var(--bd-mid); border-radius: 2px; }
+
+  .msg {
+    display: flex;
+    gap: 12px;
+    max-width: 860px;
+  }
+  .msg.user { flex-direction: row-reverse; align-self: flex-end; }
+  .msg.assistant { align-self: flex-start; }
+
+  .msg-avatar {
+    width: 28px; height: 28px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .msg.user .msg-avatar { background: var(--ac-dim); color: var(--ac); }
+  .msg.assistant .msg-avatar { background: #1a2a1a; color: var(--green); }
+
+  .msg-bubble {
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    max-width: 720px;
+  }
+  .msg.user .msg-bubble {
+    background: var(--ac-dim);
+    color: #c8d8ff;
+    border: 1px solid rgba(91,141,239,0.3);
+  }
+  .msg.assistant .msg-bubble {
+    background: var(--bg-card);
+    color: var(--tx-pri);
+    border: 1px solid var(--bd);
+  }
+
+  /* code blocks */
+  .msg-bubble pre {
+    background: var(--bg);
+    border: 1px solid var(--bd-mid);
+    border-radius: 7px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    margin: 10px 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.6;
+    color: #b8c8f0;
+  }
+  .msg-bubble pre::-webkit-scrollbar { height: 3px; }
+  .msg-bubble pre::-webkit-scrollbar-thumb { background: var(--bd-mid); }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0d0e10;
+    border: 1px solid var(--bd-mid);
+    border-bottom: none;
+    border-radius: 7px 7px 0 0;
+    padding: 6px 12px;
+    margin: 10px 0 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--tx-sec);
+  }
+  .code-header + pre {
+    margin-top: 0;
+    border-top: none;
+    border-radius: 0 0 7px 7px;
+  }
+  .copy-btn {
+    background: none;
+    border: 1px solid var(--bd-mid);
+    border-radius: 4px;
+    color: var(--tx-sec);
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 7px;
+    cursor: pointer;
+    transition: border-color 0.1s, color 0.1s;
+  }
+  .copy-btn:hover { border-color: var(--ac); color: var(--ac); }
+  .copy-btn.copied { border-color: var(--green); color: var(--green); }
+
+  .msg-bubble p { margin-bottom: 8px; }
+  .msg-bubble p:last-child { margin-bottom: 0; }
+  .msg-bubble code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: rgba(91,141,239,0.1);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #8ab4ff;
+  }
+  .msg-bubble pre code { background: none; padding: 0; color: inherit; }
+
+  /* thinking indicator */
+  .thinking {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    padding: 4px 0;
+  }
+  .thinking span {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--ac);
+    animation: pulse 1.2s infinite;
+  }
+  .thinking span:nth-child(2) { animation-delay: 0.2s; }
+  .thinking span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse {
+    0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1.1); }
+  }
+
+  /* empty state */
+  #empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--tx-dim);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding-bottom: 60px;
+  }
+  #empty .e-mark {
+    font-size: 32px;
+    margin-bottom: 6px;
+    opacity: 0.3;
+  }
+
+  /* input area */
+  #input-area {
+    border-top: 1px solid var(--bd);
+    padding: 14px 18px;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    background: var(--bg-panel);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #input-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  #input {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--bd-mid);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--tx-pri);
+    font-family: var(--mono);
+    font-size: 13px;
+    resize: none;
+    min-height: 44px;
+    max-height: 160px;
+    line-height: 1.5;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  #input::placeholder { color: var(--tx-dim); }
+  #input:focus { border-color: var(--ac-dim); }
+
+  #send-btn {
+    width: 44px; height: 44px;
+    background: var(--ac);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s, transform 0.1s;
+  }
+  #send-btn:hover { background: #4a7de0; }
+  #send-btn:active { transform: scale(0.95); }
+  #send-btn:disabled { background: var(--ac-dim); cursor: not-allowed; }
+
+  .quick-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .qtag {
+    padding: 3px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--bd-mid);
+    border-radius: 20px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--tx-sec);
+    cursor: pointer;
+    transition: border-color 0.1s, color 0.1s, background 0.1s;
+  }
+  .qtag:hover { border-color: var(--ac-dim); color: var(--ac); background: var(--ac-glow); }
+
+  /* mobile sidebar toggle */
+  #menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--tx-sec);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  /* ── syntax highlight (Lua) ── */
+  .kw  { color: #7ec8e3; }
+  .fn  { color: #a0c4ff; }
+  .str { color: #98c97f; }
+  .num { color: #f4c87a; }
+  .cmt { color: #4a5068; font-style: italic; }
+  .local-kw { color: #c792ea; }
+
+  @media (max-width: 680px) {
+    #sidebar { display: none; position: fixed; z-index: 100; height: 100%; }
+    #sidebar.open { display: flex; }
+    #menu-toggle { display: block; }
+    #chat { padding: 16px 14px; }
+    .msg-bubble { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- sidebar -->
+  <nav id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">A</div>
+      <div>
+        <div class="logo-text">ARCH</div>
+        <div class="logo-sub">Rivals Script AI</div>
+      </div>
+    </div>
+
+    <div class="sidebar-scroll">
+      <div class="sidebar-section">快捷指令</div>
+      <div class="chip-list" id="chips">
+        <button class="chip" data-prompt="写一个基础ESP模块，显示玩家方框、名字、血量，支持队友过滤。"><span class="chip-dot"></span>ESP 方框+血量</button>
+        <button class="chip" data-prompt="写一个aimbot函数，自动锁定最近的敌人HumanoidRootPart，可调FOV和平滑度。"><span class="chip-dot"></span>Aimbot 锁头</button>
+        <button class="chip" data-prompt="写一个速度修改脚本，可以设置WalkSpeed和JumpPower，带UI滑块。"><span class="chip-dot"></span>速度/跳跃修改</button>
+        <button class="chip" data-prompt="写一个无限弹药脚本，钩住武器的Reload函数，永远不需要换弹。"><span class="chip-dot"></span>无限弹药钩子</button>
+        <button class="chip" data-prompt="写一个传送函数，可以传送到指定玩家身后，带冷却时间。"><span class="chip-dot"></span>玩家传送</button>
+        <button class="chip" data-prompt="写一个hitmarker系统，命中敌人时显示十字准星特效和命中音效。"><span class="chip-dot"></span>命中特效</button>
+        <button class="chip" data-prompt="写一个反检测包装器，对getgenv、hookfunction等关键函数做混淆。"><span class="chip-dot"></span>反检测包装</button>
+        <button class="chip" data-prompt="写一个silent aim脚本，在子弹飞行途中修正轨迹朝向最近敌人。"><span class="chip-dot"></span>Silent Aim</button>
+        <button class="chip" data-prompt="写一个FakePos（位置欺骗）模块，让服务端看到的位置和客户端不同。"><span class="chip-dot"></span>FakePos 位置欺骗</button>
+        <button class="chip" data-prompt="写一个Roblox脚本UI框架，风格参考Arch Script，暗色主题带Tab切换。"><span class="chip-dot"></span>UI 框架模板</button>
+      </div>
+
+      <div class="sidebar-section" style="margin-top:14px;">调试工具</div>
+      <div class="chip-list">
+        <button class="chip" data-prompt="解释这段Lua代码的原理，找出可能的问题："><span class="chip-dot"></span>代码分析</button>
+        <button class="chip" data-prompt="这段外挂代码有什么反检测问题？如何改进？"><span class="chip-dot"></span>检测风险排查</button>
+        <button class="chip" data-prompt="把这段代码重构，提高性能，减少每帧的计算量："><span class="chip-dot"></span>性能优化</button>
+      </div>
+    </div>
+
+    <div class="model-badge">
+      <div class="model-dot"></div>
+      claude-sonnet-4-6
+    </div>
+  </nav>
+
+  <!-- main -->
+  <div id="main">
+    <div id="topbar">
+      <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title"><span>Rivals</span> Script AI — Roblox Exploit 助手</div>
+      <button id="btn-clear" onclick="clearChat()">清空对话</button>
+    </div>
+
+    <div id="chat">
+      <div id="empty">
+        <div class="e-mark">⌘</div>
+        <div>选择左侧快捷指令，或直接输入需求</div>
+        <div style="color:var(--tx-dim);font-size:10px;margin-top:4px;">专门针对 Roblox Rivals / Fallen 的 Lua 外挂脚本</div>
+      </div>
+    </div>
+
+    <div id="input-area">
+      <div class="quick-tags" id="quick-tags">
+        <span class="qtag" onclick="appendTag('ESP')">ESP</span>
+        <span class="qtag" onclick="appendTag('aimbot')">Aimbot</span>
+        <span class="qtag" onclick="appendTag('钩住函数')">Hook</span>
+        <span class="qtag" onclick="appendTag('反检测')">反检测</span>
+        <span class="qtag" onclick="appendTag('完整可运行')">完整代码</span>
+        <span class="qtag" onclick="appendTag('加注释')">加注释</span>
+        <span class="qtag" onclick="appendTag('加UI控件')">加UI</span>
+        <span class="qtag" onclick="appendTag('优化性能')">优化</span>
+      </div>
+      <div id="input-row">
+        <textarea id="input" placeholder="描述你需要的外挂功能..." rows="1" oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+        <button id="send-btn" onclick="sendMessage()">↑</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SYSTEM = `你是一个专业的 Roblox Lua 外挂脚本开发者，专门为 Rivals 和 Fallen 游戏编写高质量的外挂代码。
+
+规则：
+- 只用 Lua（Roblox executor 环境），使用真实的 Roblox API
+- 代码完整可运行，不写伪代码或占位符
+- 使用 getgenv / hookfunction / firetouchinterest 等 executor API
+- ESP 使用 DrawingLib 或 BillboardGui，根据场景选择
+- 钩子函数使用 hookfunction 或 newcclosure 包装
+- 反检测：混淆字符串、使用 pcall 包裹、避免直接修改 __index
+- 代码加简洁中文注释
+- 如果问题不涉及 Roblox 外挂，说"这个超出我的专业范围"
+- 回答用中文，代码里注释中文
+
+你熟悉的技术：
+- Drawing Library ESP（方框、骨骼、tracers、血条）
+- Aimbot / silent aim / prediction
+- Hookfunction / newcclosure
+- RemoteEvent 钩子
+- FakePosition / 位置同步欺骗  
+- WalkSpeed / JumpPower / NoClip
+- 反检测包装（字符串加密、函数混淆）
+- Roblox 服务：Players, RunService, UserInputService, Workspace
+
+代码风格参考 Arch Script：模块化、懒加载、config 表统一管理配置。`;
+
+let history = [];
+let isLoading = false;
+let sample = null;
+
+async function initSample() {
+  try {
+    sample = await claude.use("sample");
+  } catch(e) {}
+}
+initSample();
+
+// chips
+document.getElementById('chips').addEventListener('click', e => {
+  const chip = e.target.closest('.chip');
+  if (!chip) return;
+  const prompt = chip.dataset.prompt;
+  if (prompt) {
+    document.getElementById('input').value = prompt;
+    autoResize(document.getElementById('input'));
+    document.getElementById('input').focus();
+  }
+});
+
+function appendTag(tag) {
+  const inp = document.getElementById('input');
+  inp.value = (inp.value ? inp.value + ' ' : '') + tag;
+  autoResize(inp);
+  inp.focus();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function clearChat() {
+  history = [];
+  const chat = document.getElementById('chat');
+  chat.innerHTML = `<div id="empty">
+    <div class="e-mark">⌘</div>
+    <div>选择左侧快捷指令，或直接输入需求</div>
+    <div style="color:var(--tx-dim);font-size:10px;margin-top:4px;">专门针对 Roblox Rivals / Fallen 的 Lua 外挂脚本</div>
+  </div>`;
+}
+
+function removeEmpty() {
+  const e = document.getElementById('empty');
+  if (e) e.remove();
+}
+
+function appendMsg(role, content) {
+  removeEmpty();
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `
+    <div class="msg-avatar">${role === 'user' ? 'U' : 'AI'}</div>
+    <div class="msg-bubble">${content}</div>
+  `;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div.querySelector('.msg-bubble');
+}
+
+function appendThinking() {
+  removeEmpty();
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = 'msg assistant';
+  div.id = 'thinking-msg';
+  div.innerHTML = `
+    <div class="msg-avatar">AI</div>
+    <div class="msg-bubble"><div class="thinking"><span></span><span></span><span></span></div></div>
+  `;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
+
+function formatResponse(text) {
+  // escape html
+  let out = text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  // code blocks with language
+  out = out.replace(/```(\w+)?\n([\s\S]*?)```/g, (_, lang, code) => {
+    const l = (lang || 'lua').toLowerCase();
+    const highlighted = l === 'lua' ? luaHL(code) : escHTML(code);
+    return `<div class="code-header">
+      <span>${lang || 'lua'}</span>
+      <button class="copy-btn" onclick="copyCode(this, ${JSON.stringify(code)})">复制</button>
+    </div><pre><code>${highlighted}</code></pre>`;
+  });
+
+  // inline code
+  out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  // bold
+  out = out.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+  // paragraphs
+  out = out.split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g,'<br>')}</p>` : '').join('');
+
+  return out;
+}
+
+function escHTML(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function luaHL(code) {
+  // very lightweight Lua highlighter
+  const keywords = /\b(local|function|end|if|then|else|elseif|for|while|do|repeat|until|return|break|not|and|or|in|nil|true|false)\b/g;
+  let s = escHTML(code);
+  // comments first
+  s = s.replace(/--(.*?)(?=\n|$)/g, '<span class="cmt">--$1</span>');
+  // strings
+  s = s.replace(/"([^"\\]|\\.)*"/g, m => `<span class="str">${m}</span>`);
+  s = s.replace(/'([^'\\]|\\.)*'/g, m => `<span class="str">${m}</span>`);
+  // numbers
+  s = s.replace(/\b(\d+\.?\d*)\b/g, '<span class="num">$1</span>');
+  // keywords (skip inside spans)
+  s = s.replace(keywords, m => `<span class="kw">${m}</span>`);
+  return s;
+}
+
+async function copyCode(btn, code) {
+  try {
+    await navigator.clipboard.writeText(code);
+    btn.textContent = '已复制 ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('copied'); }, 2000);
+  } catch(e) {}
+}
+
+async function sendMessage() {
+  if (isLoading) return;
+  const inp = document.getElementById('input');
+  const text = inp.value.trim();
+  if (!text) return;
+
+  inp.value = '';
+  autoResize(inp);
+  document.getElementById('send-btn').disabled = true;
+  isLoading = true;
+
+  appendMsg('user', escHTML(text));
+  history.push({ role: 'user', content: text });
+
+  const thinking = appendThinking();
+
+  try {
+    if (!sample) sample = await claude.use("sample");
+    if (!sample) throw new Error('sample unavailable');
+
+    let fullText = '';
+    let bubble = null;
+
+    await sample(
+      history,
+      {
+        onText({ text }) {
+          fullText = text;
+          if (!bubble) {
+            thinking.remove();
+            bubble = appendMsg('assistant', '');
+          }
+          bubble.innerHTML = formatResponse(fullText);
+          document.getElementById('chat').scrollTop = 999999;
+        }
+      }
+    );
+
+    // finalize
+    if (fullText) {
+      history.push({ role: 'assistant', content: fullText });
+    }
+
+  } catch(err) {
+    thinking.remove();
+    appendMsg('assistant', `<span style="color:var(--red)">错误：${escHTML(err.message || String(err))}</span>`);
+  }
+
+  document.getElementById('send-btn').disabled = false;
+  isLoading = false;
+}
+</script>
+</body>
+</html>

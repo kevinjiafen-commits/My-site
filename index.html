@@ -15,10 +15,14 @@
   --text-0:#f0f4ff;--text-1:#b8c4e0;--text-2:#7a8aaa;--text-3:#4a5878;
   --border:rgba(110,86,207,.18);--border-hi:rgba(110,86,207,.4);
   --mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bot: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
 }
+
+/* ── RESET ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:var(--bg-0);color:var(--text-0);font-family:var(--sans);font-size:14px;line-height:1.6;overflow:hidden}
-html,body,.shell{height:100dvh}
 ::selection{background:rgba(110,86,207,.45);color:#fff}
 :focus-visible{outline:2px solid var(--accent-hi);outline-offset:2px}
 textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none}
@@ -27,23 +31,59 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   -webkit-box-shadow:0 0 0 1000px var(--bg-0) inset;
   caret-color:var(--text-0);transition:background-color 9999s}
 
-/* ── SHELL ── */
-.shell{display:grid;grid-template-rows:auto 1fr;height:100dvh;max-height:100dvh;overflow:hidden}
+/* ── ROOT / BODY ── */
+html {
+  height: 100%;
+  /* Android Chrome: prevent body scroll while keeping inner scroll working */
+  overflow: hidden;
+  background: var(--bg-0);
+}
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-0);
+  color: var(--text-0);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  /* Prevent text size adjustment on orientation change */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* ── SHELL ──
+   grid: topbar (auto) + scrollable main (1fr)
+   overflow:hidden on shell keeps topbar sticky */
+.shell {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  height: 100dvh; /* modern browsers */
+  overflow: hidden;
+}
 
 /* ── TOPBAR ── */
-.topbar{
-  display:flex;align-items:center;gap:12px;padding:0 20px;
-  background:var(--bg-1);border-bottom:1px solid var(--border);
-  position:relative;z-index:10;
-  padding-top:env(safe-area-inset-top,0px);
-  height:calc(48px + env(safe-area-inset-top,0px));
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-1);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+  /* safe area for notch / status bar */
+  padding: var(--safe-top) 20px 0;
+  height: calc(48px + var(--safe-top));
+  min-height: calc(48px + var(--safe-top));
 }
-.topbar::after{
+.topbar::after {
   content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent 0%,var(--accent) 30%,var(--teal) 60%,transparent 100%);
   background-size:200% 100%;animation:shimBar 4s linear infinite;opacity:.6;
 }
 @keyframes shimBar{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
 .logo{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:600;font-size:15px;color:var(--text-0);user-select:none}
 .logo svg{width:24px;height:24px;flex-shrink:0}
 .logo-sep{width:1px;height:20px;background:var(--border-hi);margin:0 4px}
@@ -55,12 +95,31 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .user-name{font-family:var(--mono);font-size:12px;color:var(--text-1)}
 .user-role{font-size:9px;padding:1px 6px;border-radius:3px;background:var(--accent-lo);color:var(--accent-hi);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
 
-/* ── MAIN ── */
-.main{
-  overflow-y:auto;background:var(--bg-0);
-  padding:28px 32px calc(28px + env(safe-area-inset-bottom,0px));
-  display:flex;flex-direction:column;gap:20px;
-  scrollbar-width:thin;scrollbar-color:var(--bg-3) transparent;
+/* ── MAIN SCROLL CONTAINER ──
+   THE KEY FIX:
+   • min-height:0 → allows grid child to shrink and scroll (without this, grid
+     child expands to content height and overflow:auto has nothing to scroll)
+   • -webkit-overflow-scrolling:touch → iOS momentum scroll
+   • overscroll-behavior:contain → prevents parent chain scroll on Android/iOS
+   • touch-action:pan-y → hint to browser for Android touch handling */
+.main {
+  min-height: 0;                        /* ← critical for CSS grid scroll */
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;    /* ← iOS momentum */
+  overscroll-behavior: contain;         /* ← Android: prevent scroll chaining */
+  touch-action: pan-y;                  /* ← Android touch hint */
+  background: var(--bg-0);
+  padding: 24px 28px;
+  padding-bottom: calc(32px + var(--safe-bot));
+  padding-left: calc(28px + var(--safe-left));
+  padding-right: calc(28px + var(--safe-right));
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  /* custom scrollbar for desktop */
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-3) transparent;
 }
 .main::-webkit-scrollbar{width:6px}
 .main::-webkit-scrollbar-thumb{background:var(--bg-3);border-radius:3px}
@@ -76,7 +135,11 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .auth-screen{
   position:fixed;inset:0;background:var(--bg-0);
   display:flex;align-items:center;justify-content:center;
-  z-index:1000;padding:20px;overflow-y:auto;
+  z-index:1000;padding:20px;
+  /* auth screen itself scrolls if card is taller than screen */
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
   background-image:
     radial-gradient(circle at 15% 20%,rgba(110,86,207,.12),transparent 45%),
     radial-gradient(circle at 85% 80%,rgba(45,212,191,.07),transparent 45%);
@@ -84,35 +147,37 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 .auth-screen.hidden{display:none}
 .auth-card{
   width:100%;max-width:400px;
-  background:rgba(13,18,32,.75);border:1px solid var(--border);border-radius:12px;
+  background:rgba(13,18,32,.85);border:1px solid var(--border);border-radius:12px;
   padding:32px 28px 24px;
   box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 0 1px rgba(110,86,207,.08);
   backdrop-filter:blur(20px) saturate(1.6);
   -webkit-backdrop-filter:blur(20px) saturate(1.6);
   animation:authIn .25s ease;
+  /* prevent card from being too tall on small phones */
+  margin: auto;
 }
 @keyframes authIn{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
 .auth-logo{display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--mono);font-size:20px;font-weight:600;color:var(--text-0);margin-bottom:6px}
 .auth-logo svg{width:28px;height:28px;flex-shrink:0}
 .auth-tagline{text-align:center;font-size:10px;color:var(--text-3);letter-spacing:.14em;text-transform:uppercase;font-family:var(--mono);margin-bottom:26px}
 .auth-tabs{display:flex;gap:4px;background:var(--bg-2);padding:4px;border-radius:8px;margin-bottom:22px;border:1px solid var(--border)}
-.auth-tab{flex:1;padding:8px;background:transparent;border:none;color:var(--text-2);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;border-radius:5px;transition:all .15s}
+.auth-tab{flex:1;padding:10px;background:transparent;border:none;color:var(--text-2);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;border-radius:5px;transition:all .15s;min-height:44px}
 .auth-tab:hover{color:var(--text-1)}
 .auth-tab.active{background:var(--bg-4);color:var(--text-0)}
 .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
 .form-group label{font-size:10px;font-weight:600;color:var(--text-2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase}
-.form-group input{width:100%;padding:10px 12px;background:var(--bg-0);border:1px solid var(--border);border-radius:6px;color:var(--text-0);font-family:var(--sans);font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s}
+.form-group input{width:100%;padding:12px;background:var(--bg-0);border:1px solid var(--border);border-radius:6px;color:var(--text-0);font-family:var(--sans);font-size:16px;outline:none;transition:border-color .15s,box-shadow .15s;min-height:48px}
 .form-group input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
 .form-group input::placeholder{color:var(--text-3)}
 .auth-error{min-height:16px;font-size:11.5px;color:#f87171;font-family:var(--mono);margin-bottom:10px;line-height:1.4}
 .auth-error.ok{color:#4ade80}
-.auth-submit{width:100%;justify-content:center;padding:11px;font-size:13px;font-weight:600}
-.btn-google{background:#fff;color:#333;width:100%;justify-content:center;padding:11px;font-size:13px;font-weight:600;gap:10px}
+.auth-submit{width:100%;justify-content:center;padding:13px;font-size:13px;font-weight:600;min-height:48px}
+.btn-google{background:#fff;color:#333;width:100%;justify-content:center;padding:13px;font-size:13px;font-weight:600;gap:10px;min-height:48px}
 .btn-google:hover{background:#f1f1f1}
 .auth-note{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:10px;color:var(--text-3);text-align:center;font-family:var(--mono);line-height:1.7}
 .auth-note strong{color:var(--text-2);font-weight:500}
 
-/* ── PANEL ── */
+/* ── PANEL HEADER ── */
 .panel-header{display:flex;align-items:flex-start;gap:14px;padding-bottom:16px;border-bottom:1px solid var(--border)}
 .panel-icon{width:36px;height:36px;border-radius:8px;background:var(--bg-3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent-hi)}
 .panel-icon svg{width:18px;height:18px}
@@ -122,31 +187,41 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
 /* ── CARDS ── */
 .card{background:rgba(13,18,32,.6);border:1px solid var(--border);border-radius:8px;overflow:hidden;backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);box-shadow:0 4px 24px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.04);transition:border-color .2s,box-shadow .2s}
 .card:hover{border-color:var(--border-hi);box-shadow:0 0 0 1px var(--border-hi),0 4px 32px rgba(110,86,207,.15),inset 0 1px 0 rgba(255,255,255,.05)}
-.card-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg-2)}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg-2);flex-wrap:wrap}
 .card-label{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--text-2);letter-spacing:.04em;text-transform:uppercase}
-.card-actions{display:flex;gap:6px;align-items:center}
+.card-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .card-body{padding:14px}
 
-/* ── TEXTAREA / INPUT / SELECT ── */
+/* ── INPUTS ── */
 textarea,input[type="text"],input[type="number"],select{
   width:100%;background:var(--bg-0);border:1px solid var(--border);border-radius:5px;
-  color:var(--text-0);font-family:var(--mono);font-size:12.5px;line-height:1.65;
+  color:var(--text-0);font-family:var(--mono);font-size:14px;line-height:1.65;
   padding:10px 12px;resize:vertical;outline:none;transition:border-color .12s;
   caret-color:var(--accent-hi);-webkit-font-smoothing:antialiased;
+  /* Prevent iOS zoom on focus — keep 16px equivalent or above */
+  -webkit-appearance:none;
+  appearance:none;
 }
-textarea:focus,input[type="text"]:focus,input[type="number"]:focus,select:focus{
+/* Mobile: bump to 16px to prevent iOS/Android zoom on focus */
+@media(max-width:700px){
+  textarea,input[type="text"],input[type="number"],select{font-size:16px!important}
+}
+textarea:focus,input:focus,select:focus{
   border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow),inset 0 1px 3px rgba(0,0,0,.3)
 }
-textarea{min-height:160px}
+textarea{min-height:140px}
 select{
-  -webkit-appearance:none;appearance:none;resize:none;cursor:pointer;padding-right:30px;
+  cursor:pointer;padding-right:30px;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236e56cf' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 10px center;
+  resize:none;
 }
 select option{background:var(--bg-2)}
 
 /* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:5px;border:none;cursor:pointer;font-family:var(--sans);font-size:12.5px;font-weight:500;transition:all .12s;text-decoration:none;user-select:none;white-space:nowrap;position:relative;overflow:hidden}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:5px;border:none;cursor:pointer;font-family:var(--sans);font-size:12.5px;font-weight:500;transition:all .12s;text-decoration:none;user-select:none;white-space:nowrap;position:relative;overflow:hidden;
+  /* minimum touch target 44px for mobile */
+  min-height:36px;touch-action:manipulation}
 .btn svg{width:13px;height:13px;flex-shrink:0}
 .btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.08);opacity:0;transition:opacity .15s}
 .btn:active::after{opacity:1}
@@ -160,25 +235,30 @@ select option{background:var(--bg-2)}
 .btn-nuke:hover{background:linear-gradient(135deg,rgba(239,68,68,.3),rgba(110,86,207,.3));color:#fff;border-color:rgba(239,68,68,.5);box-shadow:0 0 20px rgba(239,68,68,.2)}
 
 /* ── LAYOUT HELPERS ── */
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
-.col{display:flex;flex-direction:column;gap:6px;flex:1}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.col{display:flex;flex-direction:column;gap:6px;flex:1;min-width:120px}
 .label{font-size:11px;font-weight:500;color:var(--text-2);letter-spacing:.03em;font-family:var(--mono)}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 
-/* ── OPTIONS GRID ── */
-.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:8px}
-.opt-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg-2);border:1px solid var(--border);border-radius:5px;cursor:pointer;transition:border-color .1s,background .1s;user-select:none}
+/* ── OPTIONS GRID ──
+   Reduced minmax from 195px → 140px so 2 columns fit on small phones */
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:7px}
+.opt-item{display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg-2);border:1px solid var(--border);border-radius:5px;cursor:pointer;transition:border-color .1s,background .1s;user-select:none;
+  /* touch target */
+  min-height:44px;touch-action:manipulation}
 .opt-item:hover{background:var(--bg-3);border-color:var(--border-hi)}
+.opt-item:active{background:var(--bg-4)}
 .opt-item.checked{background:rgba(110,86,207,.08);border-color:rgba(110,86,207,.35)}
-.opt-label{font-size:12px;color:var(--text-1);flex:1}
-.opt-desc{font-size:10px;color:var(--text-3);font-family:var(--mono)}
-.opt-cb{width:14px;height:14px;border-radius:3px;border:1.5px solid var(--border-hi);background:var(--bg-0);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .1s,border-color .1s}
+.opt-label{font-size:11.5px;color:var(--text-1);flex:1;line-height:1.3}
+.opt-desc{font-size:10px;color:var(--text-3);font-family:var(--mono);margin-top:2px}
+.opt-cb{width:16px;height:16px;border-radius:3px;border:1.5px solid var(--border-hi);background:var(--bg-0);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .1s,border-color .1s}
 .opt-item.checked .opt-cb{background:var(--accent);border-color:var(--accent)}
 .opt-item.checked .opt-cb::after{content:'';display:block;width:8px;height:5px;border-left:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:rotate(-45deg) translateY(-1px)}
 
 /* ── PRESETS ── */
-.presets{display:flex;gap:8px;flex-wrap:wrap}
-.preset-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg-2);color:var(--text-2);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;user-select:none}
+.presets{display:flex;gap:7px;flex-wrap:wrap}
+.preset-btn{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg-2);color:var(--text-2);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;user-select:none;
+  min-height:36px;touch-action:manipulation}
 .preset-btn:hover{border-color:var(--accent);color:var(--accent-hi);background:var(--bg-3)}
 .preset-btn.active{border-color:var(--accent);color:var(--accent-hi);background:rgba(110,86,207,.12)}
 
@@ -186,14 +266,14 @@ select option{background:var(--bg-2)}
 .strength-meter{display:flex;align-items:center;gap:10px}
 .strength-bar{flex:1;height:4px;background:var(--bg-3);border-radius:2px;overflow:hidden}
 .strength-fill{height:100%;border-radius:2px;transition:width .3s,background .3s}
-.strength-label{font-family:var(--mono);font-size:11px;color:var(--text-2);min-width:60px;text-align:right}
+.strength-label{font-family:var(--mono);font-size:11px;color:var(--text-2);min-width:56px;text-align:right}
 
 /* ── STAT CHIPS ── */
 .stat-chip{display:flex;align-items:center;gap:6px;padding:4px 10px;background:var(--bg-2);border:1px solid var(--border);border-radius:20px;font-family:var(--mono);font-size:11px;color:var(--text-2)}
 .stat-chip span{color:var(--accent-hi);font-weight:500}
 
 /* ── NOTICE ── */
-.notice{padding:8px 12px;border-radius:5px;font-size:12px;font-family:var(--mono);display:none;align-items:flex-start;gap:8px;line-height:1.5}
+.notice{padding:10px 14px;border-radius:5px;font-size:12px;font-family:var(--mono);display:none;align-items:flex-start;gap:8px;line-height:1.5}
 .notice.show{display:flex;animation:noticeIn .2s ease}
 .notice-ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#4ade80}
 .notice-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:#fbbf24}
@@ -201,7 +281,7 @@ select option{background:var(--bg-2)}
 @keyframes noticeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── PROGRESS ── */
-.progress-wrap{display:none;align-items:center;gap:10px;padding:8px 12px;background:rgba(110,86,207,.08);border:1px solid var(--border);border-radius:5px;font-family:var(--mono);font-size:11px;color:var(--text-2)}
+.progress-wrap{display:none;align-items:center;gap:10px;padding:10px 14px;background:rgba(110,86,207,.08);border:1px solid var(--border);border-radius:5px;font-family:var(--mono);font-size:11px;color:var(--text-2)}
 .progress-wrap.show{display:flex}
 .progress-track{flex:1;height:3px;background:var(--bg-3);border-radius:2px;overflow:hidden}
 .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .2s}
@@ -211,14 +291,14 @@ select option{background:var(--bg-2)}
 /* ── SECTION LABEL ── */
 .section-label{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;font-family:var(--mono);padding-bottom:8px;border-bottom:1px solid var(--border)}
 
-/* ══ UPLOAD ZONE ══ */
+/* ── UPLOAD ZONE ── */
 .upload-zone{
   border:1.5px dashed var(--border-hi);border-radius:6px;
-  padding:14px 16px;display:flex;align-items:center;gap:14px;
+  padding:14px 16px;display:flex;align-items:center;gap:12px;
   cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s;
-  background:var(--bg-2);
+  background:var(--bg-2);touch-action:manipulation;
 }
-.upload-zone:hover{
+.upload-zone:hover,.upload-zone:active{
   border-color:var(--accent);background:rgba(110,86,207,.07);
   box-shadow:0 0 0 2px var(--accent-glow);
 }
@@ -245,7 +325,7 @@ select option{background:var(--bg-2)}
 /* File badge */
 .file-badge{
   display:none;align-items:center;gap:8px;
-  padding:6px 10px 6px 8px;
+  padding:8px 10px 8px 10px;
   background:rgba(110,86,207,.10);border:1px solid rgba(110,86,207,.28);
   border-radius:5px;font-family:var(--mono);font-size:11px;color:var(--accent-hi);
   max-width:100%;
@@ -254,12 +334,12 @@ select option{background:var(--bg-2)}
 .file-badge-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .file-badge-size{color:var(--text-3);flex-shrink:0;font-size:10px}
 .file-badge-close{
-  width:16px;height:16px;border-radius:3px;border:none;
+  width:28px;height:28px;border-radius:4px;border:none;
   background:transparent;color:var(--text-3);cursor:pointer;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  transition:background .1s,color .1s;
+  transition:background .1s,color .1s;touch-action:manipulation;
 }
-.file-badge-close:hover{background:rgba(239,68,68,.15);color:#f87171}
+.file-badge-close:hover,.file-badge-close:active{background:rgba(239,68,68,.15);color:#f87171}
 
 /* Input divider */
 .input-divider{
@@ -267,11 +347,9 @@ select option{background:var(--bg-2)}
   font-family:var(--mono);font-size:10px;color:var(--text-3);
   letter-spacing:.08em;text-transform:uppercase;
 }
-.input-divider::before,.input-divider::after{
-  content:'';flex:1;height:1px;background:var(--border)
-}
+.input-divider::before,.input-divider::after{content:'';flex:1;height:1px;background:var(--border)}
 
-/* ══ OUTPUT FLASH ══ */
+/* ── OUTPUT FLASH ── */
 @keyframes outputFlash{
   0%{border-color:var(--border);box-shadow:0 4px 24px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.04)}
   30%{border-color:var(--accent-hi);box-shadow:0 0 0 2px var(--accent-glow),0 0 48px rgba(110,86,207,.4),inset 0 1px 0 rgba(255,255,255,.08)}
@@ -279,15 +357,18 @@ select option{background:var(--bg-2)}
 }
 .output-flash{animation:outputFlash 1.6s ease}
 
-/* ══ FULL OUTPUT OVERLAY ══ */
+/* ── FULL OUTPUT OVERLAY ── */
 .out-overlay{
   position:fixed;inset:0;z-index:2000;
-  background:rgba(6,9,16,.96);
+  background:rgba(6,9,16,.97);
   backdrop-filter:blur(18px) saturate(1.4);
   -webkit-backdrop-filter:blur(18px) saturate(1.4);
-  display:flex;flex-direction:column;gap:14px;
-  padding:20px 28px calc(20px + env(safe-area-inset-bottom,0px)) 28px;
-  padding-top:calc(20px + env(safe-area-inset-top,0px));
+  display:flex;flex-direction:column;gap:12px;
+  /* safe areas */
+  padding-top: calc(16px + var(--safe-top));
+  padding-bottom: calc(16px + var(--safe-bot));
+  padding-left: calc(20px + var(--safe-left));
+  padding-right: calc(20px + var(--safe-right));
   animation:overlayIn .2s ease;
 }
 @keyframes overlayIn{from{opacity:0}to{opacity:1}}
@@ -295,25 +376,31 @@ select option{background:var(--bg-2)}
 
 .out-overlay-head{
   display:flex;align-items:center;justify-content:space-between;
-  gap:12px;flex-wrap:wrap;flex-shrink:0;
+  gap:10px;flex-wrap:wrap;flex-shrink:0;
 }
 .out-overlay-title{
   font-family:var(--mono);font-size:13px;font-weight:600;
   color:var(--accent-hi);display:flex;align-items:center;gap:8px;
 }
 .out-overlay-title svg{width:14px;height:14px}
-.out-overlay-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.out-overlay-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
 
 .out-overlay-textarea{
-  flex:1;min-height:0;resize:none;
+  flex:1;
+  min-height:0;      /* ← critical: allow textarea to shrink inside flex column */
+  resize:none;
   font-size:12.5px;line-height:1.7;
   background:var(--bg-1);border:1px solid var(--border);
   border-radius:6px;padding:14px;color:var(--text-0);
   font-family:var(--mono);outline:none;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  touch-action:pan-y;
 }
 
 .out-meta{
-  display:flex;gap:16px;flex-wrap:wrap;align-items:center;
+  display:flex;gap:12px;flex-wrap:wrap;align-items:center;
   font-family:var(--mono);font-size:11px;color:var(--text-3);
   flex-shrink:0;
 }
@@ -324,17 +411,69 @@ select option{background:var(--bg-2)}
 }
 .out-meta-chip span{color:var(--accent-hi);font-weight:500}
 
-/* ── MOBILE ── */
+/* ══════════════════════════════════════
+   MOBILE — max-width: 700px
+   Android + small iOS
+══════════════════════════════════════ */
 @media(max-width:700px){
-  .main{padding:16px 12px calc(16px + env(safe-area-inset-bottom,0px))}
-  .topbar{padding:0 12px;padding-top:env(safe-area-inset-top,0px);height:calc(48px + env(safe-area-inset-top,0px))}
+  .main{
+    padding:14px 14px calc(20px + var(--safe-bot)) 14px;
+    gap:14px;
+  }
+  .topbar{
+    padding-left:14px;padding-right:14px;
+    gap:8px;
+  }
+  /* hide verbose topbar items */
   .logo-sub,.logo-sep,.topbar-badge{display:none}
+  /* collapse username on very narrow screens */
+  .user-name{display:none}
+
+  /* two-col becomes one-col */
   .two-col{grid-template-columns:1fr}
-  textarea,input,select{font-size:16px}
-  .out-overlay{padding:12px;padding-top:calc(12px + env(safe-area-inset-top,0px))}
+
+  /* opts: 2 columns on most phones (140px each) */
+  .opts{grid-template-columns:repeat(2,1fr)}
+
+  /* card header wraps gracefully */
+  .card-head{padding:10px 12px}
+  .card-body{padding:12px}
+
+  /* buttons: bigger touch targets */
+  .btn{min-height:42px;padding:9px 14px}
+  .btn-ghost{min-height:36px}
+
+  /* run row: stack on very narrow */
+  .row{gap:8px}
+
+  /* upload zone compact */
+  .upload-zone{padding:12px}
+
+  /* panel desc smaller */
+  .panel-desc{font-size:11px}
+
+  /* preset buttons: full-row friendly */
+  .preset-btn{padding:8px 12px;font-size:11px}
+
+  /* overlay */
+  .out-overlay{
+    padding:calc(10px + var(--safe-top)) 12px calc(10px + var(--safe-bot)) 12px;
+    gap:10px;
+  }
   .out-overlay-actions{gap:6px}
+  .out-overlay-textarea{font-size:12px}
 }
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;animation-iteration-count:1 !important}}
+
+/* Very small screens < 380px */
+@media(max-width:380px){
+  .opts{grid-template-columns:1fr}
+  .presets{gap:5px}
+  .preset-btn{padding:7px 10px;font-size:10.5px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;animation-iteration-count:1!important}
+}
 @supports not (backdrop-filter:blur(1px)){.card{background:var(--bg-1)}}
 </style>
 </head>
@@ -406,7 +545,7 @@ select option{background:var(--bg-2)}
       <div class="user-avatar" id="user-avatar">?</div>
       <span class="user-name" id="user-name">—</span>
       <span class="user-role" id="user-role">USER</span>
-      <button class="btn btn-ghost" onclick="logout()">Sign out</button>
+      <button class="btn btn-ghost" onclick="logout()" style="font-size:11px;padding:5px 8px">Out</button>
     </div>
     <div class="topbar-badge">v3.1.0</div>
   </header>
@@ -427,20 +566,20 @@ select option{background:var(--bg-2)}
     </div>
 
     <!-- PRESETS + STRENGTH -->
-    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
       <div class="presets">
         <button class="preset-btn" onclick="applyPreset('off')">Off</button>
         <button class="preset-btn active" id="preset-light" onclick="applyPreset('light')">Light</button>
         <button class="preset-btn" id="preset-strong" onclick="applyPreset('strong')">Strong</button>
         <button class="preset-btn" id="preset-nuclear" onclick="applyPreset('nuclear')">☢ Nuclear</button>
       </div>
-      <div class="strength-meter" style="flex:1;min-width:160px">
+      <div class="strength-meter" style="flex:1;min-width:140px">
         <div class="strength-bar"><div class="strength-fill" id="strength-fill" style="width:30%;background:var(--ok)"></div></div>
         <div class="strength-label" id="strength-label">Light</div>
       </div>
     </div>
 
-    <!-- ══ INPUT CARD ══ -->
+    <!-- INPUT CARD -->
     <div class="card">
       <div class="card-head">
         <span class="card-label">Input — Lua source</span>
@@ -458,11 +597,8 @@ select option{background:var(--bg-2)}
         </div>
       </div>
       <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
-
-        <!-- Hidden file input -->
         <input type="file" id="file-input" accept=".lua,.txt" style="display:none" onchange="handleFileSelect(event)">
 
-        <!-- Drop zone -->
         <div class="upload-zone" id="upload-zone"
              onclick="document.getElementById('file-input').click()"
              ondragover="handleDragOver(event)"
@@ -476,12 +612,11 @@ select option{background:var(--bg-2)}
           </div>
           <div class="upload-zone-info">
             <div class="upload-zone-title">Drop a .lua file here</div>
-            <div class="upload-zone-sub">or click to browse — max 1 MB</div>
+            <div class="upload-zone-sub">or tap to browse — max 1 MB</div>
           </div>
           <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);flex-shrink:0">.lua · .txt</div>
         </div>
 
-        <!-- Loaded file badge -->
         <div class="file-badge" id="file-badge">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0">
             <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/>
@@ -496,12 +631,8 @@ select option{background:var(--bg-2)}
           </button>
         </div>
 
-        <!-- Divider -->
         <div class="input-divider">or type / paste below</div>
-
-        <!-- Source textarea — shows file content or manual input -->
         <textarea id="lua-in" placeholder="-- Paste Lua source here, or upload a file above..." spellcheck="false" oninput="onManualInput()"></textarea>
-
       </div>
     </div>
 
@@ -514,10 +645,12 @@ select option{background:var(--bg-2)}
           <div class="section-label" style="margin-bottom:10px">Syntax</div>
           <div class="opts">
             <div class="opt-item checked" data-key="stripComments" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">Strip comments</div><div class="opt-desc">Remove -- and --[[ ... ]]</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Strip comments</div><div class="opt-desc">Remove -- and --[[ ]]</div></div>
             </div>
             <div class="opt-item checked" data-key="minify" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">Minify whitespace</div><div class="opt-desc">Collapse spaces &amp; newlines</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Minify whitespace</div><div class="opt-desc">Collapse spaces &amp; newlines</div></div>
             </div>
           </div>
         </div>
@@ -526,21 +659,24 @@ select option{background:var(--bg-2)}
           <div class="section-label" style="margin-bottom:10px">Variables &amp; Identifiers</div>
           <div class="opts">
             <div class="opt-item checked" data-key="renameLocals" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">Rename locals</div><div class="opt-desc">local x → _0x0001</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Rename locals</div><div class="opt-desc">local x → _0x0001</div></div>
             </div>
             <div class="opt-item checked" data-key="renameParams" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">Rename parameters</div><div class="opt-desc">function(a,b) → function(_0x,_0x)</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Rename params</div><div class="opt-desc">function(a,b) → (_0x,_0x)</div></div>
             </div>
             <div class="opt-item" data-key="renameGlobals" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">Mangle globals</div><div class="opt-desc">Wrap _G refs via table proxy</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Mangle globals</div><div class="opt-desc">Wrap _G refs via proxy</div></div>
             </div>
           </div>
           <div style="margin-top:10px">
-            <div class="row" style="gap:10px;align-items:flex-end">
+            <div class="two-col">
               <div class="col">
                 <label class="label">Name style</label>
                 <select id="name-style">
-                  <option value="hex">Hex counter (_0x0001, _0x0002 …)</option>
+                  <option value="hex">Hex counter (_0x0001 …)</option>
                   <option value="chaos">Chaos (IlIOlI1lO …)</option>
                   <option value="rand">Random hex (_a3f2c1 …)</option>
                 </select>
@@ -561,16 +697,20 @@ select option{background:var(--bg-2)}
           <div class="section-label" style="margin-bottom:10px">Literals</div>
           <div class="opts">
             <div class="opt-item checked" data-key="encodeStrings" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">Encode strings</div><div class="opt-desc">"hi" → string.char(104,105)</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Encode strings</div><div class="opt-desc">"hi" → string.char(…)</div></div>
             </div>
             <div class="opt-item checked" data-key="splitStrings" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">Split long strings</div><div class="opt-desc">Chunk at 30-byte boundaries</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Split strings</div><div class="opt-desc">Chunk at 30-byte boundaries</div></div>
             </div>
             <div class="opt-item checked" data-key="encodeNumbers" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">Encode numbers</div><div class="opt-desc">42 → 0x2a, math expr</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Encode numbers</div><div class="opt-desc">42 → 0x2a</div></div>
             </div>
             <div class="opt-item" data-key="encodeNumbersExpr" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">Number expressions</div><div class="opt-desc">42 → (0x15*0x02+0x0c)</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Number exprs</div><div class="opt-desc">42 → (0x15*0x02+0x0c)</div></div>
             </div>
           </div>
         </div>
@@ -579,16 +719,20 @@ select option{background:var(--bg-2)}
           <div class="section-label" style="margin-bottom:10px">Injection &amp; Flow</div>
           <div class="opts">
             <div class="opt-item" data-key="junkVars" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">Junk variables</div><div class="opt-desc">Dead local assignments</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Junk variables</div><div class="opt-desc">Dead local assignments</div></div>
             </div>
             <div class="opt-item" data-key="junkBlocks" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">Junk code blocks</div><div class="opt-desc">if false then … end</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Junk blocks</div><div class="opt-desc">if false then … end</div></div>
             </div>
             <div class="opt-item" data-key="doEndWrap" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">do…end wrapping</div><div class="opt-desc">Wrap top-level in do blocks</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">do…end wrap</div><div class="opt-desc">Wrap top-level in do</div></div>
             </div>
             <div class="opt-item" data-key="tableProxy" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">String lib proxy</div><div class="opt-desc">Cache string/math into local table</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Lib proxy</div><div class="opt-desc">Cache string/math local</div></div>
             </div>
           </div>
         </div>
@@ -597,13 +741,16 @@ select option{background:var(--bg-2)}
           <div class="section-label" style="margin-bottom:10px">Packing</div>
           <div class="opts">
             <div class="opt-item checked" data-key="loadstringWrap" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">loadstring wrap</div><div class="opt-desc">Encode as byte array + load</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">loadstring wrap</div><div class="opt-desc">Encode as byte array + load</div></div>
             </div>
             <div class="opt-item" data-key="doublePack" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">Double pack</div><div class="opt-desc">Second loadstring layer</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Double pack</div><div class="opt-desc">Second loadstring layer</div></div>
             </div>
             <div class="opt-item" data-key="obfWrapper" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div><div><div class="opt-label">Obfuscate wrapper</div><div class="opt-desc">Rename vars in loadstring code</div></div>
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Obfuscate wrapper</div><div class="opt-desc">Rename vars in wrapper</div></div>
             </div>
           </div>
         </div>
@@ -612,35 +759,35 @@ select option{background:var(--bg-2)}
     </div>
 
     <!-- RUN -->
-    <div class="row" style="gap:10px">
-      <button class="btn btn-primary" onclick="runObfuscate()" id="run-btn" style="font-size:13px;padding:9px 20px">
+    <div class="row" style="gap:8px">
+      <button class="btn btn-primary" onclick="runObfuscate()" id="run-btn" style="font-size:13px;padding:10px 20px">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         Obfuscate
       </button>
-      <button class="btn btn-nuke" onclick="applyPreset('nuclear');runObfuscate()" style="font-size:13px;padding:9px 20px">
+      <button class="btn btn-nuke" onclick="applyPreset('nuclear');runObfuscate()" style="font-size:13px;padding:10px 20px">
         ☢ Nuclear Run
       </button>
-      <button class="btn btn-secondary" onclick="copyOutput()">Copy output</button>
-      <button class="btn btn-secondary" onclick="downloadOutput()">↓ Download .lua</button>
+      <button class="btn btn-secondary" onclick="copyOutput()">Copy</button>
+      <button class="btn btn-secondary" onclick="downloadOutput()">↓ .lua</button>
     </div>
 
     <!-- PROGRESS -->
     <div class="progress-wrap" id="progress-wrap">
       <div class="spinner"></div>
       <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-      <span id="progress-label" style="min-width:120px">Processing…</span>
+      <span id="progress-label" style="min-width:100px">Processing…</span>
     </div>
 
     <!-- NOTICE -->
     <div class="notice" id="lua-notice"></div>
 
-    <!-- ══ OUTPUT CARD ══ -->
+    <!-- OUTPUT CARD -->
     <div class="card" id="output-card">
       <div class="card-head">
         <span class="card-label">Output — obfuscated</span>
         <div class="card-actions">
           <div class="stat-chip" id="stats-chip" style="display:none">
-            <span id="stat-ratio">—</span>&nbsp;ratio&nbsp;·&nbsp;<span id="stat-size">—</span>&nbsp;·&nbsp;<span id="stat-lines">—</span>&nbsp;lines
+            <span id="stat-ratio">—</span>&nbsp;·&nbsp;<span id="stat-size">—</span>&nbsp;·&nbsp;<span id="stat-lines">—</span>&nbsp;ln
           </div>
           <button class="btn btn-ghost" id="view-full-btn" style="display:none" onclick="openFullView()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -652,7 +799,7 @@ select option{background:var(--bg-2)}
         </div>
       </div>
       <div class="card-body">
-        <textarea id="lua-out" placeholder="-- Obfuscated output appears here..." spellcheck="false" readonly style="min-height:200px"></textarea>
+        <textarea id="lua-out" placeholder="-- Obfuscated output appears here..." spellcheck="false" readonly style="min-height:180px"></textarea>
       </div>
     </div>
 
@@ -669,7 +816,6 @@ select option{background:var(--bg-2)}
       Obfuscated Output
     </div>
     <div class="out-overlay-actions">
-      <div class="out-meta" id="overlay-meta"></div>
       <button class="btn btn-secondary" onclick="copyOutput()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
@@ -681,9 +827,9 @@ select option{background:var(--bg-2)}
           <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
           <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
         </svg>
-        Download .lua
+        Download
       </button>
-      <button class="btn btn-ghost" onclick="closeFullView()" style="padding:7px 14px;font-size:12px">
+      <button class="btn btn-ghost" onclick="closeFullView()" style="padding:9px 14px;font-size:12px">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:12px;height:12px">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
@@ -699,8 +845,8 @@ select option{background:var(--bg-2)}
 /* ═══════════════════════════════════════════
    AUTH
 ═══════════════════════════════════════════ */
-const USERS_KEY='archhub_users_v1', SESSION_KEY='archhub_session_v1';
-const ADMIN_USER='kevinjia', ADMIN_PASS='smw-170121';
+const USERS_KEY='archhub_users_v1',SESSION_KEY='archhub_session_v1';
+const ADMIN_USER='kevinjia',ADMIN_PASS='smw-170121';
 
 function simpleHash(s){
   let h1=0xdeadbeef,h2=0x41c6ce57;
@@ -752,7 +898,8 @@ function handleGoogleLogin(){
 }
 function enterApp(s){
   document.getElementById('auth-screen').classList.add('hidden');
-  document.getElementById('app-shell').style.display='';
+  const shell=document.getElementById('app-shell');
+  shell.style.display='';
   document.getElementById('user-name').textContent=s.username;
   document.getElementById('user-avatar').textContent=s.username[0].toUpperCase();
   const r=document.getElementById('user-role');
@@ -772,15 +919,14 @@ function logout(){
 /* ═══════════════════════════════════════════
    FILE UPLOAD
 ═══════════════════════════════════════════ */
-const MAX_FILE_BYTES = 1_000_000;
-let _loadedFromFile = false;
+const MAX_FILE_BYTES=1_000_000;
+let _loadedFromFile=false;
 
 function fmtBytes(n){
   if(n<1024)return n+' B';
   if(n<1048576)return(n/1024).toFixed(1)+' KB';
   return(n/1048576).toFixed(2)+' MB';
 }
-
 function loadFileContent(file){
   if(!file)return;
   if(file.size>MAX_FILE_BYTES){notice('err','File too large — max 1 MB.');return}
@@ -791,47 +937,27 @@ function loadFileContent(file){
     const text=e.target.result;
     document.getElementById('lua-in').value=text;
     _loadedFromFile=true;
-    // show badge
     const badge=document.getElementById('file-badge');
     document.getElementById('file-badge-name').textContent=file.name;
     document.getElementById('file-badge-size').textContent=fmtBytes(file.size);
     badge.classList.add('show');
     notice('ok','Loaded: '+file.name+' ('+fmtBytes(file.size)+')');
-    // reset file input so the same file can be re-selected
     document.getElementById('file-input').value='';
   };
   reader.onerror=()=>notice('err','Could not read the file.');
   reader.readAsText(file);
 }
-
-function handleFileSelect(e){
-  const file=e.target.files[0];
-  if(file)loadFileContent(file);
-}
-
-function handleDragOver(e){
-  e.preventDefault();e.stopPropagation();
-  document.getElementById('upload-zone').classList.add('drag-over');
-}
-function handleDragLeave(e){
-  e.preventDefault();e.stopPropagation();
-  document.getElementById('upload-zone').classList.remove('drag-over');
-}
+function handleFileSelect(e){const file=e.target.files[0];if(file)loadFileContent(file)}
+function handleDragOver(e){e.preventDefault();e.stopPropagation();document.getElementById('upload-zone').classList.add('drag-over')}
+function handleDragLeave(e){e.preventDefault();e.stopPropagation();document.getElementById('upload-zone').classList.remove('drag-over')}
 function handleDrop(e){
   e.preventDefault();e.stopPropagation();
   document.getElementById('upload-zone').classList.remove('drag-over');
-  const file=e.dataTransfer.files[0];
-  if(file)loadFileContent(file);
+  const file=e.dataTransfer.files[0];if(file)loadFileContent(file);
 }
-
 function onManualInput(){
-  // If the user starts typing manually, dismiss the file badge
-  if(_loadedFromFile){
-    _loadedFromFile=false;
-    document.getElementById('file-badge').classList.remove('show');
-  }
+  if(_loadedFromFile){_loadedFromFile=false;document.getElementById('file-badge').classList.remove('show')}
 }
-
 function resetInput(){
   document.getElementById('lua-in').value='';
   document.getElementById('lua-out').value='';
@@ -849,29 +975,20 @@ function openFullView(){
   const out=document.getElementById('lua-out').value;
   if(!out)return;
   document.getElementById('lua-out-full').value=out;
-
-  // populate meta bar
   const src=document.getElementById('lua-in').value;
   const lines=out.split('\n').length;
   const ratio=(out.length/Math.max(src.length,1)).toFixed(2)+'×';
   const size=fmtBytes(out.length);
   document.getElementById('overlay-meta-bar').innerHTML=
     `<div class="out-meta-chip"><span>${ratio}</span> ratio</div>`+
-    `<div class="out-meta-chip"><span>${size}</span> size</div>`+
+    `<div class="out-meta-chip"><span>${size}</span></div>`+
     `<div class="out-meta-chip"><span>${lines}</span> lines</div>`;
-
   document.getElementById('out-overlay').classList.remove('hidden');
-  document.getElementById('lua-out-full').focus();
+  // scroll textarea to top
+  setTimeout(()=>{document.getElementById('lua-out-full').scrollTop=0},50);
 }
-
-function closeFullView(){
-  document.getElementById('out-overlay').classList.add('hidden');
-}
-
-// Close overlay on Escape
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape')closeFullView();
-});
+function closeFullView(){document.getElementById('out-overlay').classList.add('hidden')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeFullView()});
 
 /* ═══════════════════════════════════════════
    UI HELPERS
@@ -885,7 +1002,6 @@ function getOpts(){
   o.passes=parseInt(document.getElementById('rename-passes').value)||1;
   return o;
 }
-
 function setOpts(cfg){
   document.querySelectorAll('.opt-item[data-key]').forEach(el=>{
     if(cfg.hasOwnProperty(el.dataset.key)){
@@ -922,7 +1038,6 @@ function applyPreset(name){
   if(btn)btn.classList.add('active');
   if(PRESETS[name])setOpts(PRESETS[name]);
 }
-
 function updateStrength(){
   const o=getOpts();
   const pts=[o.stripComments,o.minify,o.renameLocals,o.renameParams,o.renameGlobals,
@@ -946,30 +1061,26 @@ function notice(type,msg){
   el.className='notice notice-'+type+' show';el.textContent=msg;
   clearTimeout(_noticeT);_noticeT=setTimeout(()=>el.classList.remove('show'),5000);
 }
-
 function copyOutput(){
   const v=document.getElementById('lua-out').value;if(!v)return;
   navigator.clipboard.writeText(v).catch(()=>{});
   let t=document.getElementById('_toast');
   if(!t){
     t=document.createElement('div');t.id='_toast';
-    t.style.cssText='position:fixed;top:60px;right:20px;z-index:3000;background:var(--bg-3);border:1px solid var(--border-hi);color:var(--ok);font-family:var(--mono);font-size:12px;padding:8px 14px;border-radius:6px;box-shadow:0 4px 20px rgba(0,0,0,.4);transition:opacity .25s;pointer-events:none;opacity:0';
+    t.style.cssText='position:fixed;top:60px;right:16px;z-index:3000;background:var(--bg-3);border:1px solid var(--border-hi);color:var(--ok);font-family:var(--mono);font-size:12px;padding:8px 14px;border-radius:6px;box-shadow:0 4px 20px rgba(0,0,0,.4);transition:opacity .25s;pointer-events:none;opacity:0';
     document.body.appendChild(t);
   }
   t.textContent='✓  copied';clearTimeout(t._t);t.style.opacity='1';
   t._t=setTimeout(()=>t.style.opacity='0',1800);
 }
-
 function downloadOutput(){
   const v=document.getElementById('lua-out').value;if(!v)return;
   const a=document.createElement('a');
   a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(v);
   a.download='obfuscated.lua';a.click();
 }
-
 function loadSample(){
-  _loadedFromFile=false;
-  document.getElementById('file-badge').classList.remove('show');
+  _loadedFromFile=false;document.getElementById('file-badge').classList.remove('show');
   document.getElementById('lua-in').value=`-- Player utility module
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -1006,7 +1117,6 @@ local function setJumpPower(power)
   end
 end
 
--- Initialize
 setWalkSpeed(32)
 setJumpPower(60)`;
 }
@@ -1027,7 +1137,6 @@ const LUA_STD=new Set(['print','pairs','ipairs','next','select','type','tostring
 function tokenizeLua(src){
   const tokens=[];let i=0;
   while(i<src.length){
-    // block / long comment
     if(src[i]==='-'&&src[i+1]==='-'){
       let lv=-1,j=i+2;
       if(src[j]==='['){let k=j+1,l=0;while(src[k]==='='){l++;k++}if(src[k]==='['){lv=l;j=k}}
@@ -1038,7 +1147,6 @@ function tokenizeLua(src){
       const nl=src.indexOf('\n',i);const e=nl===-1?src.length:nl;
       tokens.push({t:'LC',v:src.slice(i,e)});i=e;continue;
     }
-    // long string
     if(src[i]==='['){
       let j=i+1,lv=0;while(src[j]==='='){lv++;j++}
       if(src[j]==='['){
@@ -1046,7 +1154,6 @@ function tokenizeLua(src){
         if(ei!==-1){tokens.push({t:'LS',v:src.slice(i,ei+cl.length)});i=ei+cl.length;continue}
       }
     }
-    // double-quoted string
     if(src[i]==='"'){
       let j=i+1,s='"';
       while(j<src.length&&src[j]!=='"'){
@@ -1054,7 +1161,6 @@ function tokenizeLua(src){
       }
       s+='"';j++;tokens.push({t:'S',v:s,q:'d'});i=j;continue;
     }
-    // single-quoted string
     if(src[i]==="'"){
       let j=i+1,s="'";
       while(j<src.length&&src[j]!=="'"){
@@ -1062,19 +1168,14 @@ function tokenizeLua(src){
       }
       s+="'";j++;tokens.push({t:'S',v:s,q:'s'});i=j;continue;
     }
-    // number
     const nm=src.slice(i).match(/^0[xX][0-9a-fA-F]+(?:\.[0-9a-fA-F]*)?(?:[pP][+-]?\d+)?|^\d+(?:\.\d*)?(?:[eE][+-]?\d+)?/);
     if(nm){tokens.push({t:'N',v:nm[0]});i+=nm[0].length;continue}
-    // identifier / keyword
     const im=src.slice(i).match(/^[a-zA-Z_][a-zA-Z0-9_]*/);
     if(im){const w=im[0];tokens.push({t:LUA_KEYWORDS.has(w)?'K':'I',v:w});i+=w.length;continue}
-    // whitespace
     const wm=src.slice(i).match(/^[ \t]+/);
     if(wm){tokens.push({t:'W',v:wm[0]});i+=wm[0].length;continue}
-    // newline
     if(src[i]==='\r'&&src[i+1]==='\n'){tokens.push({t:'NL',v:'\r\n'});i+=2;continue}
     if(src[i]==='\n'||src[i]==='\r'){tokens.push({t:'NL',v:src[i]});i++;continue}
-    // multi-char operators
     const o3=src.slice(i,i+3);if(o3==='...'){tokens.push({t:'O',v:'...'});i+=3;continue}
     const o2=src.slice(i,i+2);
     if(['==','~=','<=','>=','..','::','//','>>','<<'].includes(o2)){tokens.push({t:'O',v:o2});i+=2;continue}
@@ -1142,9 +1243,7 @@ function makeNameGen(style){
 /* ═══════════════════════════════════════════
    OBFUSCATION STAGES
 ═══════════════════════════════════════════ */
-function stageStripComments(tokens){
-  return tokens.filter(t=>t.t!=='LC'&&t.t!=='BC');
-}
+function stageStripComments(tokens){return tokens.filter(t=>t.t!=='LC'&&t.t!=='BC')}
 
 function collectLocals(tokens){
   const names=new Set();
@@ -1227,8 +1326,7 @@ function stageEncodeNumbers(tokens,opts){
     if(isNaN(n)||n<0)return t;
     if(opts.encodeNumbersExpr&&n>1){
       const a=Math.max(2,Math.floor(Math.sqrt(n)));
-      const b=Math.floor(n/a);
-      const c=n-a*b;
+      const b=Math.floor(n/a);const c=n-a*b;
       const pa='0x'+a.toString(16),pb='0x'+b.toString(16);
       if(c===0)return{t:'RAW',v:`(${pa}*${pb})`};
       const pc='0x'+Math.abs(c).toString(16);
@@ -1269,8 +1367,7 @@ function stageJunkVars(tokens,genName){
   for(let i=0;i<tokens.length;i++){
     out.push(tokens[i]);
     if((tokens[i].v==='end'||tokens[i].v===';')&&Math.random()<0.25&&inserted<30){
-      out.push({t:'RAW',v:` local ${genName()}=nil `});
-      inserted++;
+      out.push({t:'RAW',v:` local ${genName()}=nil `});inserted++;
     }
   }
   return out;
@@ -1279,8 +1376,8 @@ function stageJunkVars(tokens,genName){
 function stageJunkBlocks(tokens,genName){
   const JUNK=[
     ()=>{const v=genName();return` if false then local ${v}=nil end `},
-    ()=>{const n=Math.floor(Math.random()*256);return` do local ${genName()}=0x${n.toString(16)} end `},
-    ()=>{return` do local ${genName()}=nil;local ${genName()}=nil end `},
+    ()=>`do local ${genName()}=0x${Math.floor(Math.random()*256).toString(16)} end `,
+    ()=>`do local ${genName()}=nil;local ${genName()}=nil end `,
   ];
   const out=[];let blk=0;
   for(let i=0;i<tokens.length;i++){
@@ -1370,40 +1467,24 @@ function runObfuscate(){
             setTimeout(()=>{
               try{
                 const out=obfuscate(src,opts);
-
-                // populate both textareas
                 document.getElementById('lua-out').value=out;
                 document.getElementById('lua-out-full').value=out;
-
                 setProgress(100,'Done ✓');
-
                 const lines=out.split('\n').length;
                 const ratio=(out.length/src.length).toFixed(2)+'×';
                 const size=fmtBytes(out.length);
-
-                // update stat chip
                 document.getElementById('stat-ratio').textContent=ratio;
                 document.getElementById('stat-size').textContent=size;
                 document.getElementById('stat-lines').textContent=lines;
                 document.getElementById('stats-chip').style.display='';
                 document.getElementById('view-full-btn').style.display='';
-
                 notice('ok',`Done — ${src.length} → ${out.length} chars (${ratio}) · ${lines} lines`);
-
-                // flash output card
                 const card=document.getElementById('output-card');
                 card.classList.remove('output-flash');
-                void card.offsetWidth; // reflow
+                void card.offsetWidth;
                 card.classList.add('output-flash');
-
-                // scroll to output
-                setTimeout(()=>{
-                  card.scrollIntoView({behavior:'smooth',block:'nearest'});
-                },150);
-
-                // auto-open full view
+                setTimeout(()=>{card.scrollIntoView({behavior:'smooth',block:'nearest'})},150);
                 openFullView();
-
               }catch(e){
                 notice('err','Error: '+e.message);
                 document.getElementById('lua-out').value='-- Error: '+e.message;

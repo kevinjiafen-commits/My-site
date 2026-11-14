@@ -20,66 +20,25 @@
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
 }
-
-/* ── RESET ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 ::selection{background:rgba(110,86,207,.45);color:#fff}
 :focus-visible{outline:2px solid var(--accent-hi);outline-offset:2px}
 textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none}
 input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus{
-  -webkit-text-fill-color:var(--text-0);
-  -webkit-box-shadow:0 0 0 1000px var(--bg-0) inset;
-  caret-color:var(--text-0);transition:background-color 9999s}
-
-/* ── ROOT / BODY ──
-   注意：不在 html 上设置 overflow:hidden，避免部分 Android 浏览器
-   禁用内部滚动容器。滚动完全交给 .main。 */
-html {
-  height: 100%;
-  background: var(--bg-0);
-}
-body {
-  height: 100%;
-  margin: 0;
-  background: var(--bg-0);
-  color: var(--text-0);
-  font-family: var(--sans);
-  font-size: 14px;
-  line-height: 1.6;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
-
-/* ── SHELL ──
-   用 flex 替代 grid，兼容性更好、滚动更可靠 */
-.shell {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-}
-
-/* ── TOPBAR ── */
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--bg-1);
-  border-bottom: 1px solid var(--border);
-  position: relative;
-  z-index: 10;
-  flex-shrink: 0;
-  padding: var(--safe-top) 20px 0;
-  height: calc(48px + var(--safe-top));
-  min-height: calc(48px + var(--safe-top));
-}
-.topbar::after {
-  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  -webkit-text-fill-color:var(--text-0);-webkit-box-shadow:0 0 0 1000px var(--bg-0) inset;caret-color:var(--text-0);transition:background-color 9999s}
+html { height: 100%; background: var(--bg-0); }
+body { height: 100%; margin: 0; background: var(--bg-0); color: var(--text-0);
+  font-family: var(--sans); font-size: 14px; line-height: 1.6;
+  -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+.shell { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+.topbar { display: flex; align-items: center; gap: 12px; background: var(--bg-1);
+  border-bottom: 1px solid var(--border); position: relative; z-index: 10; flex-shrink: 0;
+  padding: var(--safe-top) 20px 0; height: calc(48px + var(--safe-top));
+  min-height: calc(48px + var(--safe-top)); }
+.topbar::after { content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent 0%,var(--accent) 30%,var(--teal) 60%,transparent 100%);
-  background-size:200% 100%;animation:shimBar 4s linear infinite;opacity:.6;
-}
+  background-size:200% 100%;animation:shimBar 4s linear infinite;opacity:.6; }
 @keyframes shimBar{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
 .logo{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:600;font-size:15px;color:var(--text-0);user-select:none}
 .logo svg{width:24px;height:24px;flex-shrink:0}
 .logo-sep{width:1px;height:20px;background:var(--border-hi);margin:0 4px}
@@ -90,65 +49,22 @@ body {
 .user-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-hi));color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;font-family:var(--mono);flex-shrink:0}
 .user-name{font-family:var(--mono);font-size:12px;color:var(--text-1)}
 .user-role{font-size:9px;padding:1px 6px;border-radius:3px;background:var(--accent-lo);color:var(--accent-hi);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
-
-/* ── MAIN SCROLL CONTAINER ──
-   关键修复：
-   • 使用 block 布局（而非 flex column），避免子元素被 flex-shrink
-     压缩导致滚动高度计算异常
-   • flex:1 + min-height:0 让它在 shell 中占据剩余高度
-   • -webkit-overflow-scrolling:touch 提供 iOS 惯性滚动
-   • overscroll-behavior-y:contain 防止滚动链 */
-.main {
-  flex: 1 1 auto;
-  min-height: 0;
-  display: block;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
-  background: var(--bg-0);
-  padding: 24px 28px;
-  padding-bottom: calc(32px + var(--safe-bot));
-  padding-left: calc(28px + var(--safe-left));
-  padding-right: calc(28px + var(--safe-right));
-  scrollbar-width: thin;
-  scrollbar-color: var(--bg-3) transparent;
-}
-.main > * + * {
-  margin-top: 18px;
-}
+.main { flex: 1 1 auto; min-height: 0; display: block; overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; background: var(--bg-0);
+  padding: 24px 28px; padding-bottom: calc(32px + var(--safe-bot));
+  padding-left: calc(28px + var(--safe-left)); padding-right: calc(28px + var(--safe-right));
+  scrollbar-width: thin; scrollbar-color: var(--bg-3) transparent; }
+.main > * + * { margin-top: 18px; }
 .main::-webkit-scrollbar{width:6px}
 .main::-webkit-scrollbar-thumb{background:var(--bg-3);border-radius:3px}
-
-/* 注意：原来的 .shell::before 扫描线 fixed 覆盖层已移除。
-   它是移动端无法滑动的最大嫌疑（即使 pointer-events:none，
-   部分 Android WebView 仍会拦截触摸滚动）。 */
-
-/* ── AUTH ──
-   修复：align-items 改为 flex-start，配合 .auth-card 的 margin:auto，
-   既能在内容较少时垂直居中，又能在内容溢出时正常滚动到顶部 */
-.auth-screen{
-  position:fixed;inset:0;background:var(--bg-0);
-  display:flex;align-items:flex-start;justify-content:center;
-  z-index:1000;padding:20px;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
-  background-image:
-    radial-gradient(circle at 15% 20%,rgba(110,86,207,.12),transparent 45%),
-    radial-gradient(circle at 85% 80%,rgba(45,212,191,.07),transparent 45%);
-}
+.auth-screen{position:fixed;inset:0;background:var(--bg-0);display:flex;align-items:flex-start;justify-content:center;
+  z-index:1000;padding:20px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  background-image:radial-gradient(circle at 15% 20%,rgba(110,86,207,.12),transparent 45%),radial-gradient(circle at 85% 80%,rgba(45,212,191,.07),transparent 45%);}
 .auth-screen.hidden{display:none}
-.auth-card{
-  width:100%;max-width:400px;
-  background:rgba(13,18,32,.85);border:1px solid var(--border);border-radius:12px;
-  padding:32px 28px 24px;
-  box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 0 1px rgba(110,86,207,.08);
-  backdrop-filter:blur(20px) saturate(1.6);
-  -webkit-backdrop-filter:blur(20px) saturate(1.6);
-  animation:authIn .25s ease;
-  margin:auto;
-}
+.auth-card{width:100%;max-width:400px;background:rgba(13,18,32,.85);border:1px solid var(--border);border-radius:12px;
+  padding:32px 28px 24px;box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 0 1px rgba(110,86,207,.08);
+  backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);
+  animation:authIn .25s ease;margin:auto;}
 @keyframes authIn{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
 .auth-logo{display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--mono);font-size:20px;font-weight:600;color:var(--text-0);margin-bottom:6px}
 .auth-logo svg{width:28px;height:28px;flex-shrink:0}
@@ -169,47 +85,23 @@ body {
 .btn-google:hover{background:#f1f1f1}
 .auth-note{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:10px;color:var(--text-3);text-align:center;font-family:var(--mono);line-height:1.7}
 .auth-note strong{color:var(--text-2);font-weight:500}
-
-/* ── PANEL HEADER ── */
 .panel-header{display:flex;align-items:flex-start;gap:14px;padding-bottom:16px;border-bottom:1px solid var(--border)}
 .panel-icon{width:36px;height:36px;border-radius:8px;background:var(--bg-3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent-hi)}
 .panel-icon svg{width:18px;height:18px}
 .panel-title{font-size:18px;font-weight:600;color:var(--text-0);line-height:1.3;text-shadow:0 0 20px rgba(110,86,207,.3)}
 .panel-desc{font-size:12px;color:var(--text-2);margin-top:2px;line-height:1.5}
-
-/* ── CARDS ── */
 .card{background:rgba(13,18,32,.6);border:1px solid var(--border);border-radius:8px;overflow:hidden;backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);box-shadow:0 4px 24px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.04);transition:border-color .2s,box-shadow .2s}
 .card:hover{border-color:var(--border-hi);box-shadow:0 0 0 1px var(--border-hi),0 4px 32px rgba(110,86,207,.15),inset 0 1px 0 rgba(255,255,255,.05)}
 .card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg-2);flex-wrap:wrap}
 .card-label{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--text-2);letter-spacing:.04em;text-transform:uppercase}
 .card-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .card-body{padding:14px}
-
-/* ── INPUTS ── */
-textarea,input[type="text"],input[type="number"],select{
-  width:100%;background:var(--bg-0);border:1px solid var(--border);border-radius:5px;
-  color:var(--text-0);font-family:var(--mono);font-size:14px;line-height:1.65;
-  padding:10px 12px;resize:vertical;outline:none;transition:border-color .12s;
-  caret-color:var(--accent-hi);-webkit-font-smoothing:antialiased;
-  -webkit-appearance:none;
-  appearance:none;
-}
-@media(max-width:700px){
-  textarea,input[type="text"],input[type="number"],select{font-size:16px!important}
-}
-textarea:focus,input:focus,select:focus{
-  border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow),inset 0 1px 3px rgba(0,0,0,.3)
-}
+textarea,input[type="text"],input[type="number"],select{width:100%;background:var(--bg-0);border:1px solid var(--border);border-radius:5px;color:var(--text-0);font-family:var(--mono);font-size:14px;line-height:1.65;padding:10px 12px;resize:vertical;outline:none;transition:border-color .12s;caret-color:var(--accent-hi);-webkit-font-smoothing:antialiased;-webkit-appearance:none;appearance:none;}
+@media(max-width:700px){textarea,input[type="text"],input[type="number"],select{font-size:16px!important}}
+textarea:focus,input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow),inset 0 1px 3px rgba(0,0,0,.3)}
 textarea{min-height:140px}
-select{
-  cursor:pointer;padding-right:30px;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236e56cf' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 10px center;
-  resize:none;
-}
+select{cursor:pointer;padding-right:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236e56cf' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;resize:none;}
 select option{background:var(--bg-2)}
-
-/* ── BUTTONS ── */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:5px;border:none;cursor:pointer;font-family:var(--sans);font-size:12.5px;font-weight:500;transition:all .12s;text-decoration:none;user-select:none;white-space:nowrap;position:relative;overflow:hidden;min-height:36px;touch-action:manipulation}
 .btn svg{width:13px;height:13px;flex-shrink:0}
 .btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.08);opacity:0;transition:opacity .15s}
@@ -222,14 +114,10 @@ select option{background:var(--bg-2)}
 .btn-ghost:hover{background:var(--bg-3);color:var(--text-1);border-color:var(--border)}
 .btn-nuke{background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(110,86,207,.2));color:#f87171;border:1px solid rgba(239,68,68,.3)}
 .btn-nuke:hover{background:linear-gradient(135deg,rgba(239,68,68,.3),rgba(110,86,207,.3));color:#fff;border-color:rgba(239,68,68,.5);box-shadow:0 0 20px rgba(239,68,68,.2)}
-
-/* ── LAYOUT HELPERS ── */
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
 .col{display:flex;flex-direction:column;gap:6px;flex:1;min-width:120px}
 .label{font-size:11px;font-weight:500;color:var(--text-2);letter-spacing:.03em;font-family:var(--mono)}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-
-/* ── OPTIONS GRID ── */
 .opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:7px}
 .opt-item{display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg-2);border:1px solid var(--border);border-radius:5px;cursor:pointer;transition:border-color .1s,background .1s;user-select:none;min-height:44px;touch-action:manipulation}
 .opt-item:hover{background:var(--bg-3);border-color:var(--border-hi)}
@@ -240,175 +128,79 @@ select option{background:var(--bg-2)}
 .opt-cb{width:16px;height:16px;border-radius:3px;border:1.5px solid var(--border-hi);background:var(--bg-0);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .1s,border-color .1s}
 .opt-item.checked .opt-cb{background:var(--accent);border-color:var(--accent)}
 .opt-item.checked .opt-cb::after{content:'';display:block;width:8px;height:5px;border-left:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:rotate(-45deg) translateY(-1px)}
-
-/* ── PRESETS ── */
 .presets{display:flex;gap:7px;flex-wrap:wrap}
 .preset-btn{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg-2);color:var(--text-2);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;user-select:none;min-height:36px;touch-action:manipulation}
 .preset-btn:hover{border-color:var(--accent);color:var(--accent-hi);background:var(--bg-3)}
 .preset-btn.active{border-color:var(--accent);color:var(--accent-hi);background:rgba(110,86,207,.12)}
-
-/* ── STRENGTH METER ── */
-.strength-meter{display:flex;align-items:center;gap:10px}
+.strength-meter{display:flex;align-items:center;gap:10px;flex:1;min-width:160px}
 .strength-bar{flex:1;height:4px;background:var(--bg-3);border-radius:2px;overflow:hidden}
 .strength-fill{height:100%;border-radius:2px;transition:width .3s,background .3s}
 .strength-label{font-family:var(--mono);font-size:11px;color:var(--text-2);min-width:56px;text-align:right}
-
-/* ── STAT CHIPS ── */
+input[type="range"]{height:20px;cursor:pointer;background:transparent;border:none;-webkit-appearance:none;appearance:none}
+input[type="range"]::-webkit-slider-runnable-track{height:4px;background:var(--bg-3);border-radius:2px}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid var(--accent-hi);margin-top:-5px;box-shadow:0 0 8px var(--accent-glow);cursor:pointer}
+input[type="range"]::-moz-range-track{height:4px;background:var(--bg-3);border-radius:2px}
+input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid var(--accent-hi);box-shadow:0 0 8px var(--accent-glow);cursor:pointer}
 .stat-chip{display:flex;align-items:center;gap:6px;padding:4px 10px;background:var(--bg-2);border:1px solid var(--border);border-radius:20px;font-family:var(--mono);font-size:11px;color:var(--text-2)}
 .stat-chip span{color:var(--accent-hi);font-weight:500}
-
-/* ── NOTICE ── */
 .notice{padding:10px 14px;border-radius:5px;font-size:12px;font-family:var(--mono);display:none;align-items:flex-start;gap:8px;line-height:1.5}
 .notice.show{display:flex;animation:noticeIn .2s ease}
 .notice-ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#4ade80}
 .notice-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:#fbbf24}
 .notice-err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171}
 @keyframes noticeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-
-/* ── PROGRESS ── */
 .progress-wrap{display:none;align-items:center;gap:10px;padding:10px 14px;background:rgba(110,86,207,.08);border:1px solid var(--border);border-radius:5px;font-family:var(--mono);font-size:11px;color:var(--text-2)}
 .progress-wrap.show{display:flex}
 .progress-track{flex:1;height:3px;background:var(--bg-3);border-radius:2px;overflow:hidden}
 .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .2s}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner{width:12px;height:12px;border:2px solid var(--bg-4);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
-
-/* ── SECTION LABEL ── */
 .section-label{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;font-family:var(--mono);padding-bottom:8px;border-bottom:1px solid var(--border)}
-
-/* ── UPLOAD ZONE ── */
-.upload-zone{
-  border:1.5px dashed var(--border-hi);border-radius:6px;
-  padding:14px 16px;display:flex;align-items:center;gap:12px;
-  cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s;
-  background:var(--bg-2);touch-action:manipulation;
-}
-.upload-zone:hover,.upload-zone:active{
-  border-color:var(--accent);background:rgba(110,86,207,.07);
-  box-shadow:0 0 0 2px var(--accent-glow);
-}
-.upload-zone.drag-over{
-  border-color:var(--accent-hi);background:rgba(110,86,207,.14);
-  box-shadow:0 0 0 3px var(--accent-glow);
-}
-.upload-zone-icon{
-  width:34px;height:34px;border-radius:6px;
-  background:var(--bg-3);border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  transition:background .15s,border-color .15s;
-}
-.upload-zone:hover .upload-zone-icon,.upload-zone.drag-over .upload-zone-icon{
-  background:var(--accent-lo);border-color:rgba(110,86,207,.4)
-}
+.upload-zone{border:1.5px dashed var(--border-hi);border-radius:6px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s;background:var(--bg-2);touch-action:manipulation;}
+.upload-zone:hover,.upload-zone:active{border-color:var(--accent);background:rgba(110,86,207,.07);box-shadow:0 0 0 2px var(--accent-glow);}
+.upload-zone.drag-over{border-color:var(--accent-hi);background:rgba(110,86,207,.14);box-shadow:0 0 0 3px var(--accent-glow);}
+.upload-zone-icon{width:34px;height:34px;border-radius:6px;background:var(--bg-3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s,border-color .15s;}
+.upload-zone:hover .upload-zone-icon,.upload-zone.drag-over .upload-zone-icon{background:var(--accent-lo);border-color:rgba(110,86,207,.4)}
 .upload-zone-icon svg{width:15px;height:15px;color:var(--text-2);transition:color .15s}
 .upload-zone:hover .upload-zone-icon svg,.upload-zone.drag-over .upload-zone-icon svg{color:var(--accent-hi)}
 .upload-zone-info{flex:1;min-width:0}
 .upload-zone-title{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--text-1);transition:color .15s}
 .upload-zone-sub{font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:2px}
 .upload-zone:hover .upload-zone-title,.upload-zone.drag-over .upload-zone-title{color:var(--accent-hi)}
-
-/* File badge */
-.file-badge{
-  display:none;align-items:center;gap:8px;
-  padding:8px 10px 8px 10px;
-  background:rgba(110,86,207,.10);border:1px solid rgba(110,86,207,.28);
-  border-radius:5px;font-family:var(--mono);font-size:11px;color:var(--accent-hi);
-  max-width:100%;
-}
+.file-badge{display:none;align-items:center;gap:8px;padding:8px 10px 8px 10px;background:rgba(110,86,207,.10);border:1px solid rgba(110,86,207,.28);border-radius:5px;font-family:var(--mono);font-size:11px;color:var(--accent-hi);max-width:100%;}
 .file-badge.show{display:flex}
 .file-badge-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .file-badge-size{color:var(--text-3);flex-shrink:0;font-size:10px}
-.file-badge-close{
-  width:28px;height:28px;border-radius:4px;border:none;
-  background:transparent;color:var(--text-3);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  transition:background .1s,color .1s;touch-action:manipulation;
-}
+.file-badge-close{width:28px;height:28px;border-radius:4px;border:none;background:transparent;color:var(--text-3);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .1s,color .1s;touch-action:manipulation;}
 .file-badge-close:hover,.file-badge-close:active{background:rgba(239,68,68,.15);color:#f87171}
-
-/* Input divider */
-.input-divider{
-  display:flex;align-items:center;gap:10px;
-  font-family:var(--mono);font-size:10px;color:var(--text-3);
-  letter-spacing:.08em;text-transform:uppercase;
-}
+.input-divider{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase;}
 .input-divider::before,.input-divider::after{content:'';flex:1;height:1px;background:var(--border)}
-
-/* ── OUTPUT FLASH ── */
 @keyframes outputFlash{
   0%{border-color:var(--border);box-shadow:0 4px 24px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.04)}
   30%{border-color:var(--accent-hi);box-shadow:0 0 0 2px var(--accent-glow),0 0 48px rgba(110,86,207,.4),inset 0 1px 0 rgba(255,255,255,.08)}
   100%{border-color:var(--border);box-shadow:0 4px 24px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.04)}
 }
 .output-flash{animation:outputFlash 1.6s ease}
-
-/* ── FULL OUTPUT OVERLAY ── */
-.out-overlay{
-  position:fixed;inset:0;z-index:2000;
-  background:rgba(6,9,16,.97);
-  backdrop-filter:blur(18px) saturate(1.4);
-  -webkit-backdrop-filter:blur(18px) saturate(1.4);
+.out-overlay{position:fixed;inset:0;z-index:2000;background:rgba(6,9,16,.97);
+  backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);
   display:flex;flex-direction:column;gap:12px;
-  padding-top: calc(16px + var(--safe-top));
-  padding-bottom: calc(16px + var(--safe-bot));
-  padding-left: calc(20px + var(--safe-left));
-  padding-right: calc(20px + var(--safe-right));
-  animation:overlayIn .2s ease;
-}
+  padding-top: calc(16px + var(--safe-top));padding-bottom: calc(16px + var(--safe-bot));
+  padding-left: calc(20px + var(--safe-left));padding-right: calc(20px + var(--safe-right));
+  animation:overlayIn .2s ease;}
 @keyframes overlayIn{from{opacity:0}to{opacity:1}}
 .out-overlay.hidden{display:none}
-
-.out-overlay-head{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:10px;flex-wrap:wrap;flex-shrink:0;
-}
-.out-overlay-title{
-  font-family:var(--mono);font-size:13px;font-weight:600;
-  color:var(--accent-hi);display:flex;align-items:center;gap:8px;
-}
+.out-overlay-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;flex-shrink:0;}
+.out-overlay-title{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent-hi);display:flex;align-items:center;gap:8px;}
 .out-overlay-title svg{width:14px;height:14px}
 .out-overlay-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
-
-.out-overlay-textarea{
-  flex:1;
-  min-height:0;
-  resize:none;
-  font-size:12.5px;line-height:1.7;
-  background:var(--bg-1);border:1px solid var(--border);
-  border-radius:6px;padding:14px;color:var(--text-0);
-  font-family:var(--mono);outline:none;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
-  touch-action:pan-y;
-}
-
-.out-meta{
-  display:flex;gap:12px;flex-wrap:wrap;align-items:center;
-  font-family:var(--mono);font-size:11px;color:var(--text-3);
-  flex-shrink:0;
-}
-.out-meta-chip{
-  display:flex;align-items:center;gap:5px;
-  padding:3px 9px;background:var(--bg-2);border:1px solid var(--border);
-  border-radius:12px;
-}
+.out-overlay-textarea{flex:1;min-height:0;resize:none;font-size:12.5px;line-height:1.7;background:var(--bg-1);border:1px solid var(--border);border-radius:6px;padding:14px;color:var(--text-0);font-family:var(--mono);outline:none;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;}
+.out-meta{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-family:var(--mono);font-size:11px;color:var(--text-3);flex-shrink:0;}
+.out-meta-chip{display:flex;align-items:center;gap:5px;padding:3px 9px;background:var(--bg-2);border:1px solid var(--border);border-radius:12px;}
 .out-meta-chip span{color:var(--accent-hi);font-weight:500}
-
-/* ══════════════════════════════════════
-   MOBILE — max-width: 700px
-══════════════════════════════════════ */
 @media(max-width:700px){
-  .main{
-    padding:14px 14px calc(20px + var(--safe-bot)) 14px;
-  }
-  .main > * + * {
-    margin-top: 14px;
-  }
-  .topbar{
-    padding-left:14px;padding-right:14px;
-    gap:8px;
-  }
+  .main{padding:14px 14px calc(20px + var(--safe-bot)) 14px;}
+  .main > * + * {margin-top: 14px;}
+  .topbar{padding-left:14px;padding-right:14px;gap:8px;}
   .logo-sub,.logo-sep,.topbar-badge{display:none}
   .user-name{display:none}
   .two-col{grid-template-columns:1fr}
@@ -421,29 +213,22 @@ select option{background:var(--bg-2)}
   .upload-zone{padding:12px}
   .panel-desc{font-size:11px}
   .preset-btn{padding:8px 12px;font-size:11px}
-  .out-overlay{
-    padding:calc(10px + var(--safe-top)) 12px calc(10px + var(--safe-bot)) 12px;
-    gap:10px;
-  }
+  .out-overlay{padding:calc(10px + var(--safe-top)) 12px calc(10px + var(--safe-bot)) 12px;gap:10px;}
   .out-overlay-actions{gap:6px}
   .out-overlay-textarea{font-size:12px}
 }
-
 @media(max-width:380px){
   .opts{grid-template-columns:1fr}
   .presets{gap:5px}
   .preset-btn{padding:7px 10px;font-size:10.5px}
 }
-
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;animation-iteration-count:1!important}
-}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;animation-iteration-count:1!important}}
 @supports not (backdrop-filter:blur(1px)){.card{background:var(--bg-1)}}
 </style>
 </head>
 <body>
 
-<!-- ══ AUTH ══ -->
+<!-- AUTH -->
 <div class="auth-screen" id="auth-screen">
   <div class="auth-card">
     <div class="auth-logo">
@@ -491,7 +276,7 @@ select option{background:var(--bg-2)}
   </div>
 </div>
 
-<!-- ══ APP SHELL ══ -->
+<!-- APP SHELL -->
 <div class="shell" id="app-shell" style="display:none">
   <header class="topbar">
     <div class="logo">
@@ -511,12 +296,11 @@ select option{background:var(--bg-2)}
       <span class="user-role" id="user-role">USER</span>
       <button class="btn btn-ghost" onclick="logout()" style="font-size:11px;padding:5px 8px">Out</button>
     </div>
-    <div class="topbar-badge">v3.1.0</div>
+    <div class="topbar-badge">v3.2.0</div>
   </header>
 
   <main class="main" id="main-scroll">
 
-    <!-- HEADER -->
     <div class="panel-header">
       <div class="panel-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -525,11 +309,11 @@ select option{background:var(--bg-2)}
       </div>
       <div>
         <div class="panel-title">Lua Obfuscator</div>
-        <div class="panel-desc">Multi-stage pipeline — variable rename · string byte-encoding · number obfuscation · junk injection · control flow · loadstring wrapping · double-pack. All processing is client-side.</div>
+        <div class="panel-desc">Multi-stage pipeline — variable rename · string encryption · number obfuscation · junk injection · opaque predicates · loop wrap · loadstring packing · anti-debug. 100% client-side.</div>
       </div>
     </div>
 
-    <!-- PRESETS + STRENGTH -->
+    <!-- PRESETS + STRENGTH SLIDER -->
     <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
       <div class="presets">
         <button class="preset-btn" onclick="applyPreset('off')">Off</button>
@@ -537,13 +321,16 @@ select option{background:var(--bg-2)}
         <button class="preset-btn" id="preset-strong" onclick="applyPreset('strong')">Strong</button>
         <button class="preset-btn" id="preset-nuclear" onclick="applyPreset('nuclear')">☢ Nuclear</button>
       </div>
-      <div class="strength-meter" style="flex:1;min-width:140px">
+      <div class="strength-meter">
+        <input type="range" id="strength-slider" min="0" max="100" value="30"
+               oninput="onStrengthChange(this.value)"
+               aria-label="Protection strength">
         <div class="strength-bar"><div class="strength-fill" id="strength-fill" style="width:30%;background:var(--ok)"></div></div>
         <div class="strength-label" id="strength-label">Light</div>
       </div>
     </div>
 
-    <!-- INPUT CARD -->
+    <!-- INPUT -->
     <div class="card">
       <div class="card-head">
         <span class="card-label">Input — Lua source</span>
@@ -630,10 +417,6 @@ select option{background:var(--bg-2)}
               <div class="opt-cb"></div>
               <div><div class="opt-label">Rename params</div><div class="opt-desc">function(a,b) → (_0x,_0x)</div></div>
             </div>
-            <div class="opt-item" data-key="renameGlobals" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Mangle globals</div><div class="opt-desc">Wrap _G refs via proxy</div></div>
-            </div>
           </div>
           <div style="margin-top:10px">
             <div class="two-col">
@@ -677,6 +460,17 @@ select option{background:var(--bg-2)}
               <div><div class="opt-label">Number exprs</div><div class="opt-desc">42 → (0x15*0x02+0x0c)</div></div>
             </div>
           </div>
+          <div style="margin-top:10px">
+            <div class="col">
+              <label class="label">String cipher</label>
+              <select id="string-mode">
+                <option value="byte">string.char (fast)</option>
+                <option value="xor">XOR — rolling key + decoder</option>
+                <option value="hex">Hex + decoder</option>
+                <option value="split">Split &amp; concat</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         <div>
@@ -690,9 +484,17 @@ select option{background:var(--bg-2)}
               <div class="opt-cb"></div>
               <div><div class="opt-label">Junk blocks</div><div class="opt-desc">if false then … end</div></div>
             </div>
+            <div class="opt-item" data-key="opaquePredicates" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Opaque predicates</div><div class="opt-desc">if (a*b==c) then … end</div></div>
+            </div>
             <div class="opt-item" data-key="doEndWrap" onclick="toggleOpt(this)">
               <div class="opt-cb"></div>
               <div><div class="opt-label">do…end wrap</div><div class="opt-desc">Wrap top-level in do</div></div>
+            </div>
+            <div class="opt-item" data-key="loopWrap" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Loop wrap</div><div class="opt-desc">for _=1,1 do … end</div></div>
             </div>
             <div class="opt-item" data-key="tableProxy" onclick="toggleOpt(this)">
               <div class="opt-cb"></div>
@@ -702,7 +504,7 @@ select option{background:var(--bg-2)}
         </div>
 
         <div>
-          <div class="section-label" style="margin-bottom:10px">Packing</div>
+          <div class="section-label" style="margin-bottom:10px">Packing &amp; Defense</div>
           <div class="opts">
             <div class="opt-item checked" data-key="loadstringWrap" onclick="toggleOpt(this)">
               <div class="opt-cb"></div>
@@ -715,6 +517,10 @@ select option{background:var(--bg-2)}
             <div class="opt-item" data-key="obfWrapper" onclick="toggleOpt(this)">
               <div class="opt-cb"></div>
               <div><div class="opt-label">Obfuscate wrapper</div><div class="opt-desc">Rename vars in wrapper</div></div>
+            </div>
+            <div class="opt-item" data-key="antiDebug" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div>
+              <div><div class="opt-label">Anti-debug</div><div class="opt-desc">Timing guard</div></div>
             </div>
           </div>
         </div>
@@ -735,17 +541,14 @@ select option{background:var(--bg-2)}
       <button class="btn btn-secondary" onclick="downloadOutput()">↓ .lua</button>
     </div>
 
-    <!-- PROGRESS -->
     <div class="progress-wrap" id="progress-wrap">
       <div class="spinner"></div>
       <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
       <span id="progress-label" style="min-width:100px">Processing…</span>
     </div>
 
-    <!-- NOTICE -->
     <div class="notice" id="lua-notice"></div>
 
-    <!-- OUTPUT CARD -->
     <div class="card" id="output-card">
       <div class="card-head">
         <span class="card-label">Output — obfuscated</span>
@@ -770,7 +573,7 @@ select option{background:var(--bg-2)}
   </main>
 </div>
 
-<!-- ══ FULL OUTPUT OVERLAY ══ -->
+<!-- FULL OUTPUT OVERLAY -->
 <div class="out-overlay hidden" id="out-overlay">
   <div class="out-overlay-head">
     <div class="out-overlay-title">
@@ -963,6 +766,7 @@ function getOpts(){
   document.querySelectorAll('.opt-item[data-key]').forEach(el=>{o[el.dataset.key]=el.classList.contains('checked')});
   o.nameStyle=document.getElementById('name-style').value;
   o.passes=parseInt(document.getElementById('rename-passes').value)||1;
+  o.stringMode=document.getElementById('string-mode').value;
   return o;
 }
 function setOpts(cfg){
@@ -973,26 +777,35 @@ function setOpts(cfg){
   });
   if(cfg.nameStyle)document.getElementById('name-style').value=cfg.nameStyle;
   if(cfg.passes)document.getElementById('rename-passes').value=String(cfg.passes);
+  if(cfg.stringMode)document.getElementById('string-mode').value=cfg.stringMode;
   updateStrength();
 }
 
 const PRESETS={
-  off:{stripComments:false,minify:false,renameLocals:false,renameParams:false,renameGlobals:false,
+  off:{stripComments:false,minify:false,
+       renameLocals:false,renameParams:false,
        encodeStrings:false,splitStrings:false,encodeNumbers:false,encodeNumbersExpr:false,
-       junkVars:false,junkBlocks:false,doEndWrap:false,tableProxy:false,
-       loadstringWrap:false,doublePack:false,obfWrapper:false},
-  light:{stripComments:true,minify:true,renameLocals:true,renameParams:true,renameGlobals:false,
+       junkVars:false,junkBlocks:false,opaquePredicates:false,doEndWrap:false,loopWrap:false,tableProxy:false,
+       loadstringWrap:false,doublePack:false,obfWrapper:false,antiDebug:false,
+       nameStyle:'hex',passes:1,stringMode:'byte'},
+  light:{stripComments:true,minify:true,
+         renameLocals:true,renameParams:true,
          encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:false,
-         junkVars:false,junkBlocks:false,doEndWrap:false,tableProxy:false,
-         loadstringWrap:true,doublePack:false,obfWrapper:false,nameStyle:'hex',passes:1},
-  strong:{stripComments:true,minify:true,renameLocals:true,renameParams:true,renameGlobals:false,
+         junkVars:false,junkBlocks:false,opaquePredicates:false,doEndWrap:false,loopWrap:false,tableProxy:false,
+         loadstringWrap:true,doublePack:false,obfWrapper:false,antiDebug:false,
+         nameStyle:'hex',passes:1,stringMode:'byte'},
+  strong:{stripComments:true,minify:true,
+          renameLocals:true,renameParams:true,
           encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:true,
-          junkVars:true,junkBlocks:true,doEndWrap:true,tableProxy:true,
-          loadstringWrap:true,doublePack:false,obfWrapper:true,nameStyle:'chaos',passes:2},
-  nuclear:{stripComments:true,minify:true,renameLocals:true,renameParams:true,renameGlobals:true,
+          junkVars:true,junkBlocks:true,opaquePredicates:true,doEndWrap:true,loopWrap:false,tableProxy:true,
+          loadstringWrap:true,doublePack:false,obfWrapper:true,antiDebug:false,
+          nameStyle:'chaos',passes:2,stringMode:'xor'},
+  nuclear:{stripComments:true,minify:true,
+           renameLocals:true,renameParams:true,
            encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:true,
-           junkVars:true,junkBlocks:true,doEndWrap:true,tableProxy:true,
-           loadstringWrap:true,doublePack:true,obfWrapper:true,nameStyle:'chaos',passes:3}
+           junkVars:true,junkBlocks:true,opaquePredicates:true,doEndWrap:true,loopWrap:true,tableProxy:true,
+           loadstringWrap:true,doublePack:true,obfWrapper:true,antiDebug:true,
+           nameStyle:'chaos',passes:3,stringMode:'xor'}
 };
 
 function applyPreset(name){
@@ -1000,15 +813,58 @@ function applyPreset(name){
   const btn=document.getElementById('preset-'+name);
   if(btn)btn.classList.add('active');
   if(PRESETS[name])setOpts(PRESETS[name]);
+  document.getElementById('strength-slider').value=strengthFromPreset(name);
 }
-function updateStrength(){
-  const o=getOpts();
-  const pts=[o.stripComments,o.minify,o.renameLocals,o.renameParams,o.renameGlobals,
-             o.encodeStrings,o.splitStrings,o.encodeNumbers,o.encodeNumbersExpr,
-             o.junkVars,o.junkBlocks,o.doEndWrap,o.tableProxy,
-             o.loadstringWrap,o.doublePack,o.obfWrapper];
-  const on=pts.filter(Boolean).length;
-  const pct=Math.round(on/pts.length*100);
+function strengthFromPreset(name){
+  if(name==='off')return 0;
+  if(name==='light')return 35;
+  if(name==='strong')return 68;
+  return 100;
+}
+
+/* Slider → options mapping */
+function strengthToOpts(pct){
+  return {
+    stripComments:      pct>=10,
+    minify:             pct>=15,
+    renameLocals:       pct>=25,
+    renameParams:       pct>=30,
+    encodeStrings:      pct>=40,
+    splitStrings:       pct>=45,
+    encodeNumbers:      pct>=50,
+    encodeNumbersExpr:  pct>=55,
+    junkVars:           pct>=60,
+    junkBlocks:         pct>=65,
+    opaquePredicates:   pct>=70,
+    tableProxy:         pct>=75,
+    doEndWrap:          pct>=80,
+    loopWrap:           pct>=82,
+    loadstringWrap:     pct>=85,
+    obfWrapper:         pct>=88,
+    antiDebug:          pct>=90,
+    doublePack:         pct>=95,
+    nameStyle:          pct>=85?'chaos':'hex',
+    passes:             pct>=90?3:pct>=60?2:1,
+    stringMode:         pct>=70?'xor':pct>=50?'hex':'byte'
+  };
+}
+
+function onStrengthChange(val){
+  const pct=parseInt(val);
+  const o=strengthToOpts(pct);
+  document.querySelectorAll('.opt-item[data-key]').forEach(el=>{
+    if(o.hasOwnProperty(el.dataset.key)){
+      if(o[el.dataset.key])el.classList.add('checked');else el.classList.remove('checked');
+    }
+  });
+  document.getElementById('name-style').value=o.nameStyle;
+  document.getElementById('rename-passes').value=String(o.passes);
+  document.getElementById('string-mode').value=o.stringMode;
+  paintStrength(pct);
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+}
+
+function paintStrength(pct){
   const fill=document.getElementById('strength-fill');
   const label=document.getElementById('strength-label');
   fill.style.width=pct+'%';
@@ -1016,6 +872,16 @@ function updateStrength(){
   else if(pct<40){fill.style.background='var(--ok)';label.textContent='Light';label.style.color='var(--ok)'}
   else if(pct<70){fill.style.background='var(--warn)';label.textContent='Strong';label.style.color='var(--warn)'}
   else{fill.style.background='var(--danger)';label.textContent='Nuclear';label.style.color='var(--danger)'}
+}
+function updateStrength(){
+  const o=getOpts();
+  const pts=[o.stripComments,o.minify,o.renameLocals,o.renameParams,
+             o.encodeStrings,o.splitStrings,o.encodeNumbers,o.encodeNumbersExpr,
+             o.junkVars,o.junkBlocks,o.opaquePredicates,o.doEndWrap,o.loopWrap,o.tableProxy,
+             o.loadstringWrap,o.doublePack,o.obfWrapper,o.antiDebug];
+  const on=pts.filter(Boolean).length;
+  const pct=Math.round(on/pts.length*100);
+  paintStrength(pct);
 }
 
 let _noticeT;
@@ -1270,6 +1136,7 @@ function stageRenameLocals(tokens,opts,genName){
   });
 }
 
+/* ─── Legacy string encoding (string.char) ─── */
 function stageEncodeStrings(tokens,opts){
   const chunkSize=opts.splitStrings?30:200;
   return tokens.map(t=>{
@@ -1278,6 +1145,59 @@ function stageEncodeStrings(tokens,opts){
     if(bytes.length===0)return t;
     return{t:'RAW',v:bytesToStringCharCall(bytes,chunkSize)};
   });
+}
+
+/* ─── New: multi-mode string encryption ─── */
+function bytesToLuaString(bytes){
+  if(bytes.length===0)return'""';
+  return'"'+bytes.map(b=>'\\'+String(b).padStart(3,'0')).join('')+'"';
+}
+function jsXorEncode(bytes){
+  const out=new Array(bytes.length);
+  for(let i=0;i<bytes.length;i++){
+    const key=((i+1)*7+13)%256;
+    out[i]=bytes[i]^key;
+  }
+  return out;
+}
+function genXorDecoder(name){
+  return`local function ${name}(s)local r={}for i=1,#s do local c=string.byte(s,i)local k=(i*7+13)%256 local a=c local b=k local x=0 local p=1 while a>0 or b>0 do local aa=a%2 local bb=b%2 if aa~=bb then x=x+p end a=math.floor(a/2)b=math.floor(b/2)p=p*2 end r[i]=string.char(x)end return table.concat(r)end `;
+}
+function genHexDecoder(name){
+  return`local function ${name}(s)return(s:gsub("..",function(h)return string.char(tonumber(h,16))end))end `;
+}
+function stageEncryptStrings(tokens,opts,genName){
+  const mode=opts.stringMode||'byte';
+  if(mode==='byte')return stageEncodeStrings(tokens,opts);
+
+  let decoderName=null,prefix='';
+  if(mode==='xor'){decoderName=genName();prefix=genXorDecoder(decoderName)}
+  else if(mode==='hex'){decoderName=genName();prefix=genHexDecoder(decoderName)}
+
+  const newTokens=[];
+  let hasString=false;
+  for(const t of tokens){
+    if(t.t!=='S'){newTokens.push(t);continue}
+    hasString=true;
+    const bytes=luaStrBytes(t);
+    if(bytes.length===0){newTokens.push({t:'RAW',v:'""'});continue}
+    if(mode==='xor'){
+      const enc=jsXorEncode(bytes);
+      newTokens.push({t:'RAW',v:`${decoderName}(${bytesToLuaString(enc)})`});
+    }else if(mode==='hex'){
+      const hex=bytes.map(b=>b.toString(16).padStart(2,'0')).join('');
+      newTokens.push({t:'RAW',v:`${decoderName}("${hex}")`});
+    }else if(mode==='split'){
+      const chunkSize=opts.splitStrings?20:100;
+      const parts=[];
+      for(let i=0;i<bytes.length;i+=chunkSize){
+        parts.push('string.char('+bytes.slice(i,i+chunkSize).join(',')+')');
+      }
+      newTokens.push({t:'RAW',v:'('+parts.join('..')+')'});
+    }
+  }
+  if(hasString&&prefix)newTokens.unshift({t:'RAW',v:prefix});
+  return newTokens;
 }
 
 function stageEncodeNumbers(tokens,opts){
@@ -1352,7 +1272,30 @@ function stageJunkBlocks(tokens,genName){
   return out;
 }
 
+/* ─── New: opaque predicates (always-true guards) ─── */
+function stageOpaquePredicates(tokens,genName,rate){
+  rate=rate==null?0.25:rate;
+  const out=[];
+  for(const t of tokens){
+    out.push(t);
+    if((t.v==='end'||t.v===';')&&Math.random()<rate){
+      const a=2+Math.floor(Math.random()*9);
+      const b=2+Math.floor(Math.random()*9);
+      const c=a*b;
+      const v=genName();
+      out.push({t:'RAW',v:` if (${a}*${b}==${c}) then local ${v}=nil end `});
+    }
+  }
+  return out;
+}
+
 function stageDoEndWrap(src){return`do\n${src}\nend\n`}
+
+/* ─── New: loop wrap ─── */
+function stageLoopWrap(src,genName){
+  const v=genName();
+  return`for ${v}=1,1 do\n${src}\nend`;
+}
 
 function stageTableProxy(src,genName){
   const tbl=genName(),sc=genName(),mc=genName();
@@ -1378,26 +1321,42 @@ function stageLoadstringWrap(src,obfuscateWrapper,nameStyle){
   return`local _t={${entries}};(loadstring or load)(table.concat(_t,""))()`;
 }
 
+/* ─── New: anti-debug guard ─── */
+function stageAntiDebug(genName){
+  const t=genName(),c=genName(),i=genName(),e=genName(),k=genName();
+  return`do local ${t}=(tick and tick() or os.clock())local ${c}=0 for ${i}=1,997 do ${c}=${c}+${i}%7 end local ${e}=(tick and tick() or os.clock())if ${e}-${t}>1 then local ${k}=0 while true do ${k}=${k}+1 end end end `;
+}
+
 /* ═══════════════════════════════════════════
    MAIN PIPELINE
 ═══════════════════════════════════════════ */
 function obfuscate(src,opts){
   const genName=makeNameGen(opts.nameStyle||'hex');
   let tokens=tokenizeLua(src);
+
   if(opts.stripComments)tokens=stageStripComments(tokens);
+
   for(let pass=0;pass<(opts.passes||1);pass++){
     if(opts.renameLocals||opts.renameParams)tokens=stageRenameLocals(tokens,opts,genName);
   }
-  if(opts.encodeStrings)tokens=stageEncodeStrings(tokens,opts);
+
+  if(opts.encodeStrings)tokens=stageEncryptStrings(tokens,opts,genName);
   if(opts.encodeNumbers||opts.encodeNumbersExpr)tokens=stageEncodeNumbers(tokens,opts);
   if(opts.junkVars)tokens=stageJunkVars(tokens,genName);
   if(opts.junkBlocks)tokens=stageJunkBlocks(tokens,genName);
+  if(opts.opaquePredicates)tokens=stageOpaquePredicates(tokens,genName,0.25);
+
   if(opts.minify)tokens=stageMinify(tokens);
+
   let out=tokensToString(tokens);
+
   if(opts.tableProxy)out=stageTableProxy(out,genName);
   if(opts.doEndWrap)out=stageDoEndWrap(out);
+  if(opts.loopWrap)out=stageLoopWrap(out,genName);
   if(opts.loadstringWrap)out=stageLoadstringWrap(out,opts.obfWrapper,opts.nameStyle);
   if(opts.doublePack)out=stageLoadstringWrap(out,opts.obfWrapper,opts.nameStyle);
+  if(opts.antiDebug)out=stageAntiDebug(genName)+'\n'+out;
+
   return out;
 }
 
@@ -1474,7 +1433,9 @@ function runObfuscate(){
   const s=getSession();
   if(s)enterApp(s);
   updateStrength();
+  document.getElementById('strength-slider').value='30';
+  paintStrength(30);
 })();
 </script>
 </body>
-                    </html>
+              </html>

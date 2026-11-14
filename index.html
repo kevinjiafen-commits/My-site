@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Arch Hub — Lua Obfuscator</title>
+<title>Arch Hub — Lua Obfuscator / Deobfuscator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -90,6 +90,27 @@ body { height: 100%; margin: 0; background: var(--bg-0); color: var(--text-0);
 .panel-icon svg{width:18px;height:18px}
 .panel-title{font-size:18px;font-weight:600;color:var(--text-0);line-height:1.3;text-shadow:0 0 20px rgba(110,86,207,.3)}
 .panel-desc{font-size:12px;color:var(--text-2);margin-top:2px;line-height:1.5}
+
+/* ── MODE SWITCH ── */
+.mode-switch{display:flex;background:var(--bg-2);border:1px solid var(--border);border-radius:9px;padding:4px;gap:4px;width:fit-content;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+.mode-btn{display:flex;align-items:center;gap:7px;padding:9px 20px;border-radius:6px;border:none;background:transparent;color:var(--text-2);font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;min-height:40px;touch-action:manipulation;letter-spacing:.01em}
+.mode-btn:hover{color:var(--text-1);background:var(--bg-3)}
+.mode-btn.active{background:var(--accent);color:#fff;box-shadow:0 0 16px var(--accent-glow)}
+.mode-btn.active svg{color:#fff}
+.mode-btn svg{width:14px;height:14px;color:var(--text-2);transition:color .15s}
+.mode-btn:hover svg{color:var(--text-1)}
+.mode-btn.deob.active{background:linear-gradient(135deg,#0f766e,#2dd4bf);box-shadow:0 0 18px rgba(45,212,191,.35)}
+
+/* ── DETECTION PANEL ── */
+.detection-panel{background:rgba(45,212,191,.05);border:1px solid rgba(45,212,191,.22);border-radius:8px;padding:14px;animation:noticeIn .25s ease}
+.detection-list{display:flex;flex-wrap:wrap;gap:6px}
+.det-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.3);border-radius:14px;font-family:var(--mono);font-size:11px;color:var(--teal);white-space:nowrap}
+.det-chip::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--teal);flex-shrink:0;box-shadow:0 0 6px var(--teal)}
+.det-chip.low{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.28);color:#fbbf24}
+.det-chip.low::before{background:#fbbf24;box-shadow:0 0 6px #fbbf24}
+.det-chip.none{background:rgba(122,138,170,.08);border-color:var(--border);color:var(--text-2)}
+.det-chip.none::before{background:var(--text-3);box-shadow:none}
+
 .card{background:rgba(13,18,32,.6);border:1px solid var(--border);border-radius:8px;overflow:hidden;backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);box-shadow:0 4px 24px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.04);transition:border-color .2s,box-shadow .2s}
 .card:hover{border-color:var(--border-hi);box-shadow:0 0 0 1px var(--border-hi),0 4px 32px rgba(110,86,207,.15),inset 0 1px 0 rgba(255,255,255,.05)}
 .card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg-2);flex-wrap:wrap}
@@ -108,6 +129,8 @@ select option{background:var(--bg-2)}
 .btn:active::after{opacity:1}
 .btn-primary{background:var(--accent);color:#fff;box-shadow:0 0 12px rgba(110,86,207,.25)}
 .btn-primary:hover{background:var(--accent-hi);box-shadow:0 0 20px rgba(110,86,207,.4)}
+.btn-deob{background:linear-gradient(135deg,#0d9488,#2dd4bf);color:#02120f;box-shadow:0 0 14px rgba(45,212,191,.28);font-weight:600}
+.btn-deob:hover{background:linear-gradient(135deg,#14b8a6,#5eead4);box-shadow:0 0 22px rgba(45,212,191,.45)}
 .btn-secondary{background:var(--bg-3);color:var(--text-1);border:1px solid var(--border)}
 .btn-secondary:hover{background:var(--bg-4);color:var(--text-0);border-color:var(--border-hi)}
 .btn-ghost{background:transparent;color:var(--text-2);border:1px solid transparent;padding:4px 8px;font-size:11px}
@@ -148,6 +171,7 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
 .notice-ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#4ade80}
 .notice-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:#fbbf24}
 .notice-err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171}
+.notice-info{background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.2);color:#2dd4bf}
 @keyframes noticeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 .progress-wrap{display:none;align-items:center;gap:10px;padding:10px 14px;background:rgba(110,86,207,.08);border:1px solid var(--border);border-radius:5px;font-family:var(--mono);font-size:11px;color:var(--text-2)}
 .progress-wrap.show{display:flex}
@@ -216,11 +240,13 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
   .out-overlay{padding:calc(10px + var(--safe-top)) 12px calc(10px + var(--safe-bot)) 12px;gap:10px;}
   .out-overlay-actions{gap:6px}
   .out-overlay-textarea{font-size:12px}
+  .mode-btn{padding:8px 14px;font-size:12px}
 }
 @media(max-width:380px){
   .opts{grid-template-columns:1fr}
   .presets{gap:5px}
   .preset-btn{padding:7px 10px;font-size:10.5px}
+  .mode-btn{padding:8px 11px;font-size:11px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;animation-iteration-count:1!important}}
 @supports not (backdrop-filter:blur(1px)){.card{background:var(--bg-1)}}
@@ -239,7 +265,7 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
       </svg>
       Arch Hub
     </div>
-    <div class="auth-tagline">Lua Obfuscator</div>
+    <div class="auth-tagline">Lua Obfuscator / Deobfuscator</div>
     <div class="auth-tabs">
       <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">Sign In</button>
       <button class="auth-tab" data-tab="register" onclick="switchAuthTab('register')">Register</button>
@@ -296,44 +322,260 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
       <span class="user-role" id="user-role">USER</span>
       <button class="btn btn-ghost" onclick="logout()" style="font-size:11px;padding:5px 8px">Out</button>
     </div>
-    <div class="topbar-badge">v3.2.0</div>
+    <div class="topbar-badge">v3.3.0</div>
   </header>
 
   <main class="main" id="main-scroll">
 
     <div class="panel-header">
-      <div class="panel-icon">
+      <div class="panel-icon" id="panel-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/><circle cx="17" cy="7" r="2" fill="currentColor" stroke="none"/>
         </svg>
       </div>
       <div>
-        <div class="panel-title">Lua Obfuscator</div>
-        <div class="panel-desc">Multi-stage pipeline — variable rename · string encryption · number obfuscation · junk injection · opaque predicates · loop wrap · loadstring packing · anti-debug. 100% client-side.</div>
+        <div class="panel-title" id="panel-title">Lua Obfuscator</div>
+        <div class="panel-desc" id="panel-desc">Multi-stage pipeline — variable rename · string encryption · number obfuscation · junk injection · opaque predicates · loop wrap · loadstring packing · anti-debug. 100% client-side.</div>
       </div>
     </div>
 
-    <!-- PRESETS + STRENGTH SLIDER -->
-    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-      <div class="presets">
-        <button class="preset-btn" onclick="applyPreset('off')">Off</button>
-        <button class="preset-btn active" id="preset-light" onclick="applyPreset('light')">Light</button>
-        <button class="preset-btn" id="preset-strong" onclick="applyPreset('strong')">Strong</button>
-        <button class="preset-btn" id="preset-nuclear" onclick="applyPreset('nuclear')">☢ Nuclear</button>
+    <!-- MODE SWITCH -->
+    <div class="mode-switch" id="mode-switch">
+      <button class="mode-btn active" data-mode="obfuscate" onclick="switchMode('obfuscate')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+        </svg>
+        Obfuscate
+      </button>
+      <button class="mode-btn deob" data-mode="deobfuscate" onclick="switchMode('deobfuscate')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 019.9-1"/>
+        </svg>
+        Deobfuscate
+      </button>
+    </div>
+
+    <!-- OBFUSCATE MODE -->
+    <div id="mode-obfuscate">
+      <!-- PRESETS + STRENGTH SLIDER -->
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div class="presets">
+          <button class="preset-btn" onclick="applyPreset('off')">Off</button>
+          <button class="preset-btn active" id="preset-light" onclick="applyPreset('light')">Light</button>
+          <button class="preset-btn" id="preset-strong" onclick="applyPreset('strong')">Strong</button>
+          <button class="preset-btn" id="preset-nuclear" onclick="applyPreset('nuclear')">☢ Nuclear</button>
+        </div>
+        <div class="strength-meter">
+          <input type="range" id="strength-slider" min="0" max="100" value="30"
+                 oninput="onStrengthChange(this.value)"
+                 aria-label="Protection strength">
+          <div class="strength-bar"><div class="strength-fill" id="strength-fill" style="width:30%;background:var(--ok)"></div></div>
+          <div class="strength-label" id="strength-label">Light</div>
+        </div>
       </div>
-      <div class="strength-meter">
-        <input type="range" id="strength-slider" min="0" max="100" value="30"
-               oninput="onStrengthChange(this.value)"
-               aria-label="Protection strength">
-        <div class="strength-bar"><div class="strength-fill" id="strength-fill" style="width:30%;background:var(--ok)"></div></div>
-        <div class="strength-label" id="strength-label">Light</div>
+
+      <!-- OPTIONS -->
+      <div class="card" style="margin-top:18px">
+        <div class="card-head"><span class="card-label">Pipeline options</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:16px">
+
+          <div>
+            <div class="section-label" style="margin-bottom:10px">Syntax</div>
+            <div class="opts">
+              <div class="opt-item checked" data-key="stripComments" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Strip comments</div><div class="opt-desc">Remove -- and --[[ ]]</div></div>
+              </div>
+              <div class="opt-item checked" data-key="minify" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Minify whitespace</div><div class="opt-desc">Collapse spaces &amp; newlines</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-label" style="margin-bottom:10px">Variables &amp; Identifiers</div>
+            <div class="opts">
+              <div class="opt-item checked" data-key="renameLocals" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Rename locals</div><div class="opt-desc">local x → _0x0001</div></div>
+              </div>
+              <div class="opt-item checked" data-key="renameParams" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Rename params</div><div class="opt-desc">function(a,b) → (_0x,_0x)</div></div>
+              </div>
+            </div>
+            <div style="margin-top:10px">
+              <div class="two-col">
+                <div class="col">
+                  <label class="label">Name style</label>
+                  <select id="name-style">
+                    <option value="hex">Hex counter (_0x0001 …)</option>
+                    <option value="chaos">Chaos (IlIOlI1lO …)</option>
+                    <option value="rand">Random hex (_a3f2c1 …)</option>
+                  </select>
+                </div>
+                <div class="col">
+                  <label class="label">Passes</label>
+                  <select id="rename-passes">
+                    <option value="1">1 pass</option>
+                    <option value="2">2 passes</option>
+                    <option value="3">3 passes</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-label" style="margin-bottom:10px">Literals</div>
+            <div class="opts">
+              <div class="opt-item checked" data-key="encodeStrings" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Encode strings</div><div class="opt-desc">"hi" → string.char(…)</div></div>
+              </div>
+              <div class="opt-item checked" data-key="splitStrings" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Split strings</div><div class="opt-desc">Chunk at 30-byte boundaries</div></div>
+              </div>
+              <div class="opt-item checked" data-key="encodeNumbers" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Encode numbers</div><div class="opt-desc">42 → 0x2a</div></div>
+              </div>
+              <div class="opt-item" data-key="encodeNumbersExpr" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Number exprs</div><div class="opt-desc">42 → (0x15*0x02+0x0c)</div></div>
+              </div>
+            </div>
+            <div style="margin-top:10px">
+              <div class="col">
+                <label class="label">String cipher</label>
+                <select id="string-mode">
+                  <option value="byte">string.char (fast)</option>
+                  <option value="xor">XOR — rolling key + decoder</option>
+                  <option value="hex">Hex + decoder</option>
+                  <option value="split">Split &amp; concat</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-label" style="margin-bottom:10px">Injection &amp; Flow</div>
+            <div class="opts">
+              <div class="opt-item" data-key="junkVars" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Junk variables</div><div class="opt-desc">Dead local assignments</div></div>
+              </div>
+              <div class="opt-item" data-key="junkBlocks" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Junk blocks</div><div class="opt-desc">if false then … end</div></div>
+              </div>
+              <div class="opt-item" data-key="opaquePredicates" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Opaque predicates</div><div class="opt-desc">if (a*b==c) then … end</div></div>
+              </div>
+              <div class="opt-item" data-key="doEndWrap" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">do…end wrap</div><div class="opt-desc">Wrap top-level in do</div></div>
+              </div>
+              <div class="opt-item" data-key="loopWrap" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Loop wrap</div><div class="opt-desc">for _=1,1 do … end</div></div>
+              </div>
+              <div class="opt-item" data-key="tableProxy" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Lib proxy</div><div class="opt-desc">Cache string/math local</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-label" style="margin-bottom:10px">Packing &amp; Defense</div>
+            <div class="opts">
+              <div class="opt-item checked" data-key="loadstringWrap" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">loadstring wrap</div><div class="opt-desc">Encode as byte array + load</div></div>
+              </div>
+              <div class="opt-item" data-key="doublePack" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Double pack</div><div class="opt-desc">Second loadstring layer</div></div>
+              </div>
+              <div class="opt-item" data-key="obfWrapper" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Obfuscate wrapper</div><div class="opt-desc">Rename vars in wrapper</div></div>
+              </div>
+              <div class="opt-item" data-key="antiDebug" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Anti-debug</div><div class="opt-desc">Timing guard</div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
 
-    <!-- INPUT -->
-    <div class="card">
+    <!-- DEOBFUSCATE MODE -->
+    <div id="mode-deobfuscate" style="display:none">
+      <div class="card">
+        <div class="card-head"><span class="card-label">Deobfuscation options</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:16px">
+
+          <div>
+            <div class="section-label" style="margin-bottom:10px">Unpacking &amp; Decoding</div>
+            <div class="opts">
+              <div class="opt-item checked" data-dkey="unpackStrings" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Unpack loadstring</div><div class="opt-desc">Byte-array → source (multi-layer)</div></div>
+              </div>
+              <div class="opt-item checked" data-dkey="decodeStrings" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Decode strings</div><div class="opt-desc">XOR · hex · string.char</div></div>
+              </div>
+              <div class="opt-item checked" data-dkey="decodeNumbers" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Decode numbers</div><div class="opt-desc">Hex literals &amp; expressions</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-label" style="margin-bottom:10px">Cleanup &amp; Output</div>
+            <div class="opts">
+              <div class="opt-item checked" data-dkey="stripJunk" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Strip junk</div><div class="opt-desc">Junk · opaque · anti-debug</div></div>
+              </div>
+              <div class="opt-item checked" data-dkey="unwrapBlocks" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Unwrap blocks</div><div class="opt-desc">do…end · for…do…end</div></div>
+              </div>
+              <div class="opt-item checked" data-dkey="formatOut" onclick="toggleOpt(this)">
+                <div class="opt-cb"></div>
+                <div><div class="opt-label">Format output</div><div class="opt-desc">Re-indent &amp; readability</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding:10px 14px;background:rgba(45,212,191,.05);border:1px solid rgba(45,212,191,.18);border-radius:6px;font-family:var(--mono);font-size:11px;color:var(--text-2);line-height:1.6">
+            <strong style="color:var(--teal)">What can be recovered:</strong> string &amp; number literals, control flow (do/for wraps), all loadstring pack layers, junk &amp; opaque predicates, anti-debug guards — plus a technique-detection report.
+            <br><strong style="color:var(--warn)">What cannot:</strong> original variable names (irreversibly renamed) and stripped comments.
+          </div>
+
+        </div>
+      </div>
+
+      <div class="detection-panel" id="detection-panel" style="display:none;margin-top:18px">
+        <div class="section-label" style="margin-bottom:10px;border-bottom:none;padding-bottom:0">Detected techniques</div>
+        <div class="detection-list" id="detection-list"></div>
+      </div>
+    </div>
+
+    <!-- INPUT (shared) -->
+    <div class="card" style="margin-top:18px">
       <div class="card-head">
-        <span class="card-label">Input — Lua source</span>
+        <span class="card-label" id="input-label">Input — Lua source</span>
         <div class="card-actions">
           <button class="btn btn-ghost" onclick="resetInput()">Clear</button>
           <button class="btn btn-ghost" onclick="loadSample()">Sample</button>
@@ -387,155 +629,20 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
       </div>
     </div>
 
-    <!-- OPTIONS -->
-    <div class="card">
-      <div class="card-head"><span class="card-label">Pipeline options</span></div>
-      <div class="card-body" style="display:flex;flex-direction:column;gap:16px">
-
-        <div>
-          <div class="section-label" style="margin-bottom:10px">Syntax</div>
-          <div class="opts">
-            <div class="opt-item checked" data-key="stripComments" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Strip comments</div><div class="opt-desc">Remove -- and --[[ ]]</div></div>
-            </div>
-            <div class="opt-item checked" data-key="minify" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Minify whitespace</div><div class="opt-desc">Collapse spaces &amp; newlines</div></div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="section-label" style="margin-bottom:10px">Variables &amp; Identifiers</div>
-          <div class="opts">
-            <div class="opt-item checked" data-key="renameLocals" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Rename locals</div><div class="opt-desc">local x → _0x0001</div></div>
-            </div>
-            <div class="opt-item checked" data-key="renameParams" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Rename params</div><div class="opt-desc">function(a,b) → (_0x,_0x)</div></div>
-            </div>
-          </div>
-          <div style="margin-top:10px">
-            <div class="two-col">
-              <div class="col">
-                <label class="label">Name style</label>
-                <select id="name-style">
-                  <option value="hex">Hex counter (_0x0001 …)</option>
-                  <option value="chaos">Chaos (IlIOlI1lO …)</option>
-                  <option value="rand">Random hex (_a3f2c1 …)</option>
-                </select>
-              </div>
-              <div class="col">
-                <label class="label">Passes</label>
-                <select id="rename-passes">
-                  <option value="1">1 pass</option>
-                  <option value="2">2 passes</option>
-                  <option value="3">3 passes</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="section-label" style="margin-bottom:10px">Literals</div>
-          <div class="opts">
-            <div class="opt-item checked" data-key="encodeStrings" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Encode strings</div><div class="opt-desc">"hi" → string.char(…)</div></div>
-            </div>
-            <div class="opt-item checked" data-key="splitStrings" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Split strings</div><div class="opt-desc">Chunk at 30-byte boundaries</div></div>
-            </div>
-            <div class="opt-item checked" data-key="encodeNumbers" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Encode numbers</div><div class="opt-desc">42 → 0x2a</div></div>
-            </div>
-            <div class="opt-item" data-key="encodeNumbersExpr" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Number exprs</div><div class="opt-desc">42 → (0x15*0x02+0x0c)</div></div>
-            </div>
-          </div>
-          <div style="margin-top:10px">
-            <div class="col">
-              <label class="label">String cipher</label>
-              <select id="string-mode">
-                <option value="byte">string.char (fast)</option>
-                <option value="xor">XOR — rolling key + decoder</option>
-                <option value="hex">Hex + decoder</option>
-                <option value="split">Split &amp; concat</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="section-label" style="margin-bottom:10px">Injection &amp; Flow</div>
-          <div class="opts">
-            <div class="opt-item" data-key="junkVars" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Junk variables</div><div class="opt-desc">Dead local assignments</div></div>
-            </div>
-            <div class="opt-item" data-key="junkBlocks" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Junk blocks</div><div class="opt-desc">if false then … end</div></div>
-            </div>
-            <div class="opt-item" data-key="opaquePredicates" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Opaque predicates</div><div class="opt-desc">if (a*b==c) then … end</div></div>
-            </div>
-            <div class="opt-item" data-key="doEndWrap" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">do…end wrap</div><div class="opt-desc">Wrap top-level in do</div></div>
-            </div>
-            <div class="opt-item" data-key="loopWrap" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Loop wrap</div><div class="opt-desc">for _=1,1 do … end</div></div>
-            </div>
-            <div class="opt-item" data-key="tableProxy" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Lib proxy</div><div class="opt-desc">Cache string/math local</div></div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="section-label" style="margin-bottom:10px">Packing &amp; Defense</div>
-          <div class="opts">
-            <div class="opt-item checked" data-key="loadstringWrap" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">loadstring wrap</div><div class="opt-desc">Encode as byte array + load</div></div>
-            </div>
-            <div class="opt-item" data-key="doublePack" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Double pack</div><div class="opt-desc">Second loadstring layer</div></div>
-            </div>
-            <div class="opt-item" data-key="obfWrapper" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Obfuscate wrapper</div><div class="opt-desc">Rename vars in wrapper</div></div>
-            </div>
-            <div class="opt-item" data-key="antiDebug" onclick="toggleOpt(this)">
-              <div class="opt-cb"></div>
-              <div><div class="opt-label">Anti-debug</div><div class="opt-desc">Timing guard</div></div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
     <!-- RUN -->
-    <div class="row" style="gap:8px">
-      <button class="btn btn-primary" onclick="runObfuscate()" id="run-btn" style="font-size:13px;padding:10px 20px">
+    <div class="row" style="gap:8px;margin-top:18px">
+      <button class="btn btn-primary" onclick="runMain()" id="run-btn" style="font-size:13px;padding:10px 20px">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        Obfuscate
+        <span id="run-btn-text">Obfuscate</span>
       </button>
-      <button class="btn btn-nuke" onclick="applyPreset('nuclear');runObfuscate()" style="font-size:13px;padding:10px 20px">
+      <button class="btn btn-nuke" id="nuclear-btn" onclick="applyPreset('nuclear');runObfuscate()" style="font-size:13px;padding:10px 20px">
         ☢ Nuclear Run
+      </button>
+      <button class="btn btn-deob" id="detect-btn" onclick="runDeobfuscate()" style="display:none;font-size:13px;padding:10px 20px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+        </svg>
+        Detect &amp; Deobfuscate
       </button>
       <button class="btn btn-secondary" onclick="copyOutput()">Copy</button>
       <button class="btn btn-secondary" onclick="downloadOutput()">↓ .lua</button>
@@ -551,7 +658,7 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
 
     <div class="card" id="output-card">
       <div class="card-head">
-        <span class="card-label">Output — obfuscated</span>
+        <span class="card-label" id="output-label">Output — obfuscated</span>
         <div class="card-actions">
           <div class="stat-chip" id="stats-chip" style="display:none">
             <span id="stat-ratio">—</span>&nbsp;·&nbsp;<span id="stat-size">—</span>&nbsp;·&nbsp;<span id="stat-lines">—</span>&nbsp;ln
@@ -566,7 +673,7 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
         </div>
       </div>
       <div class="card-body">
-        <textarea id="lua-out" placeholder="-- Obfuscated output appears here..." spellcheck="false" readonly style="min-height:180px"></textarea>
+        <textarea id="lua-out" placeholder="-- Output appears here..." spellcheck="false" readonly style="min-height:180px"></textarea>
       </div>
     </div>
 
@@ -580,7 +687,7 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/><circle cx="17" cy="7" r="2" fill="currentColor" stroke="none"/>
       </svg>
-      Obfuscated Output
+      <span id="out-overlay-title-text">Obfuscated Output</span>
     </div>
     <div class="out-overlay-actions">
       <button class="btn btn-secondary" onclick="copyOutput()">
@@ -732,6 +839,7 @@ function resetInput(){
   document.getElementById('stats-chip').style.display='none';
   document.getElementById('view-full-btn').style.display='none';
   document.getElementById('file-input').value='';
+  document.getElementById('detection-panel').style.display='none';
   _loadedFromFile=false;
 }
 
@@ -742,6 +850,8 @@ function openFullView(){
   const out=document.getElementById('lua-out').value;
   if(!out)return;
   document.getElementById('lua-out-full').value=out;
+  document.getElementById('out-overlay-title-text').textContent =
+    (currentMode === 'deobfuscate') ? 'Deobfuscated Output' : 'Obfuscated Output';
   const src=document.getElementById('lua-in').value;
   const lines=out.split('\n').length;
   const ratio=(out.length/Math.max(src.length,1)).toFixed(2)+'×';
@@ -757,6 +867,53 @@ function closeFullView(){document.getElementById('out-overlay').classList.add('h
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeFullView()});
 
 /* ═══════════════════════════════════════════
+   MODE SWITCH
+═══════════════════════════════════════════ */
+let currentMode='obfuscate';
+
+function switchMode(mode){
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+
+  const isDeob = mode === 'deobfuscate';
+  document.getElementById('mode-obfuscate').style.display = isDeob ? 'none' : '';
+  document.getElementById('mode-deobfuscate').style.display = isDeob ? '' : 'none';
+
+  // Panel header
+  document.getElementById('panel-title').textContent = isDeob ? 'Lua Deobfuscator' : 'Lua Obfuscator';
+  document.getElementById('panel-desc').textContent = isDeob
+    ? 'Automatic detection & multi-layer unpacking — decodes loadstring byte arrays, XOR / hex / string.char literals, number expressions, and strips junk, opaque predicates, anti-debug guards and do/for wrappers. 100% client-side.'
+    : 'Multi-stage pipeline — variable rename · string encryption · number obfuscation · junk injection · opaque predicates · loop wrap · loadstring packing · anti-debug. 100% client-side.';
+  const icon = document.getElementById('panel-icon');
+  icon.style.color = isDeob ? 'var(--teal)' : 'var(--accent-hi)';
+  icon.innerHTML = isDeob
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 019.9-1"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="17" cy="7" r="2" fill="currentColor" stroke="none"/></svg>';
+
+  // Buttons
+  document.getElementById('run-btn-text').textContent = isDeob ? 'Deobfuscate' : 'Obfuscate';
+  const runBtn = document.getElementById('run-btn');
+  runBtn.className = isDeob ? 'btn btn-deob' : 'btn btn-primary';
+  runBtn.style.fontSize='13px'; runBtn.style.padding='10px 20px';
+  document.getElementById('nuclear-btn').style.display = isDeob ? 'none' : '';
+  document.getElementById('detect-btn').style.display = isDeob ? '' : 'none';
+
+  // Labels
+  document.getElementById('input-label').textContent = isDeob ? 'Input — obfuscated Lua' : 'Input — Lua source';
+  document.getElementById('output-label').textContent = isDeob ? 'Output — deobfuscated' : 'Output — obfuscated';
+  document.getElementById('lua-in').placeholder = isDeob
+    ? '-- Paste an obfuscated Lua script here, or upload a file above...'
+    : '-- Paste Lua source here, or upload a file above...';
+
+  if (!isDeob) document.getElementById('detection-panel').style.display = 'none';
+}
+
+function runMain(){
+  if (currentMode === 'deobfuscate') runDeobfuscate();
+  else runObfuscate();
+}
+
+/* ═══════════════════════════════════════════
    UI HELPERS
 ═══════════════════════════════════════════ */
 function toggleOpt(el){el.classList.toggle('checked');updateStrength()}
@@ -767,6 +924,11 @@ function getOpts(){
   o.nameStyle=document.getElementById('name-style').value;
   o.passes=parseInt(document.getElementById('rename-passes').value)||1;
   o.stringMode=document.getElementById('string-mode').value;
+  return o;
+}
+function getDeobfOpts(){
+  const o={};
+  document.querySelectorAll('.opt-item[data-dkey]').forEach(el=>{o[el.dataset.dkey]=el.classList.contains('checked')});
   return o;
 }
 function setOpts(cfg){
@@ -822,7 +984,6 @@ function strengthFromPreset(name){
   return 100;
 }
 
-/* Slider → options mapping */
 function strengthToOpts(pct){
   return {
     stripComments:      pct>=10,
@@ -888,7 +1049,7 @@ let _noticeT;
 function notice(type,msg){
   const el=document.getElementById('lua-notice');
   el.className='notice notice-'+type+' show';el.textContent=msg;
-  clearTimeout(_noticeT);_noticeT=setTimeout(()=>el.classList.remove('show'),5000);
+  clearTimeout(_noticeT);_noticeT=setTimeout(()=>el.classList.remove('show'),6000);
 }
 function copyOutput(){
   const v=document.getElementById('lua-out').value;if(!v)return;
@@ -906,10 +1067,18 @@ function downloadOutput(){
   const v=document.getElementById('lua-out').value;if(!v)return;
   const a=document.createElement('a');
   a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(v);
-  a.download='obfuscated.lua';a.click();
+  a.download = currentMode === 'deobfuscate' ? 'deobfuscated.lua' : 'obfuscated.lua';
+  a.click();
 }
 function loadSample(){
   _loadedFromFile=false;document.getElementById('file-badge').classList.remove('show');
+  if (currentMode === 'deobfuscate') {
+    // Put a small obfuscated-looking sample
+    document.getElementById('lua-in').value =
+`(loadstring or load)(string.char(112,114,105,110,116,40,34,72,101,108,108,111,44,32,119,111,114,108,100,33,34,41))()`;
+    notice('info','Loaded deobfuscation sample — press Detect & Deobfuscate.');
+    return;
+  }
   document.getElementById('lua-in').value=`-- Player utility module
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -1013,6 +1182,7 @@ function tokenizeLua(src){
   return tokens;
 }
 function tokensToString(tokens){return tokens.map(t=>t.v).join('')}
+function escapeRegex(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
 
 /* ═══════════════════════════════════════════
    STRING BYTE DECODER
@@ -1136,7 +1306,6 @@ function stageRenameLocals(tokens,opts,genName){
   });
 }
 
-/* ─── Legacy string encoding (string.char) ─── */
 function stageEncodeStrings(tokens,opts){
   const chunkSize=opts.splitStrings?30:200;
   return tokens.map(t=>{
@@ -1147,7 +1316,6 @@ function stageEncodeStrings(tokens,opts){
   });
 }
 
-/* ─── New: multi-mode string encryption ─── */
 function bytesToLuaString(bytes){
   if(bytes.length===0)return'""';
   return'"'+bytes.map(b=>'\\'+String(b).padStart(3,'0')).join('')+'"';
@@ -1272,7 +1440,6 @@ function stageJunkBlocks(tokens,genName){
   return out;
 }
 
-/* ─── New: opaque predicates (always-true guards) ─── */
 function stageOpaquePredicates(tokens,genName,rate){
   rate=rate==null?0.25:rate;
   const out=[];
@@ -1291,7 +1458,6 @@ function stageOpaquePredicates(tokens,genName,rate){
 
 function stageDoEndWrap(src){return`do\n${src}\nend\n`}
 
-/* ─── New: loop wrap ─── */
 function stageLoopWrap(src,genName){
   const v=genName();
   return`for ${v}=1,1 do\n${src}\nend`;
@@ -1321,7 +1487,6 @@ function stageLoadstringWrap(src,obfuscateWrapper,nameStyle){
   return`local _t={${entries}};(loadstring or load)(table.concat(_t,""))()`;
 }
 
-/* ─── New: anti-debug guard ─── */
 function stageAntiDebug(genName){
   const t=genName(),c=genName(),i=genName(),e=genName(),k=genName();
   return`do local ${t}=(tick and tick() or os.clock())local ${c}=0 for ${i}=1,997 do ${c}=${c}+${i}%7 end local ${e}=(tick and tick() or os.clock())if ${e}-${t}>1 then local ${k}=0 while true do ${k}=${k}+1 end end end `;
@@ -1361,81 +1526,709 @@ function obfuscate(src,opts){
 }
 
 /* ═══════════════════════════════════════════
-   RUN
+   DEOBFUSCATION — DETECTION
 ═══════════════════════════════════════════ */
-function setProgress(pct,label){
-  document.getElementById('progress-fill').style.width=pct+'%';
-  document.getElementById('progress-label').textContent=label;
+function detectObfuscation(src) {
+  const detections = [];
+
+  // ── loadstring byte-array packing
+  const hasSinglePack =
+    /\(\s*loadstring\s+or\s+load\s*\)\s*\(\s*string\.char\s*\(/i.test(src) ||
+    /loadstring\s*\(\s*string\.char\s*\(/i.test(src) ||
+    /local\s+\w+\s*=\s*string\s*;\s*local\s+\w+\s*=\s*\w+\.char\s*;/i.test(src);
+  const hasMultiPack =
+    /table\.concat\s*\(\s*\w+\s*,\s*""\s*\)/i.test(src) &&
+    /\[1\]\s*=\s*string\.char\s*\(/i.test(src);
+  if (hasSinglePack || hasMultiPack) {
+    detections.push({ name: 'loadstring 字节数组打包', confidence: 'high' });
+  }
+
+  // ── XOR string encryption
+  if (/\(i\*7\+13\)%256/.test(src) || /while\s+a>0\s+or\s+b>0/.test(src)) {
+    detections.push({ name: 'XOR 字符串加密', confidence: 'high' });
+  }
+
+  // ── hex decoder
+  if (/gsub\s*\(\s*"\.\."\s*,\s*function\s*\(\s*h\s*\)\s*return\s+string\.char\s*\(\s*tonumber\s*\(\s*h\s*,\s*16\s*\)/i.test(src)) {
+    detections.push({ name: '十六进制字符串解码器', confidence: 'high' });
+  }
+
+  // ── string.char usage
+  const charCalls = (src.match(/string\.char\s*\(/g) || []).length;
+  if (charCalls >= 2) {
+    detections.push({ name: `string.char 编码 (${charCalls} 处)`, confidence: 'medium' });
+  }
+
+  // ── hex numbers
+  const hexNums = (src.match(/\b0x[\da-fA-F]+\b/g) || []).length;
+  if (hexNums >= 2) {
+    detections.push({ name: `十六进制数字 (${hexNums} 处)`, confidence: 'medium' });
+  }
+
+  // ── number expressions
+  if (/\(\s*0x[\da-fA-F]+\s*\*\s*0x[\da-fA-F]+\s*[+\-]\s*0x[\da-fA-F]+\s*\)/.test(src)) {
+    detections.push({ name: '数字表达式混淆', confidence: 'high' });
+  }
+
+  // ── opaque predicates
+  if (/if\s*\(\s*\d+\s*\*\s*\d+\s*==\s*\d+\s*\)\s*then\s*local\s+\w+\s*=\s*nil\s*end/.test(src)) {
+    detections.push({ name: '不透明谓词 (opaque predicate)', confidence: 'high' });
+  }
+
+  // ── junk blocks
+  if (/if\s+false\s+then\s+local/i.test(src)) {
+    detections.push({ name: '垃圾代码块 (if false…)', confidence: 'high' });
+  }
+
+  // ── anti-debug
+  if (/tick\s+and\s+tick\(\)\s+or\s+os\.clock\(\)/.test(src)) {
+    detections.push({ name: '反调试计时守卫', confidence: 'high' });
+  }
+
+  // ── loop wrap
+  if (/^\s*for\s+\w+\s*=\s*1\s*,\s*1\s+do/.test(src.trim())) {
+    detections.push({ name: 'for…do…end 循环包裹', confidence: 'medium' });
+  }
+
+  // ── do…end wrap
+  if (/^\s*do\b[\s\S]*\bend\s*$/.test(src.trim()) && !/^\s*for\b/.test(src.trim())) {
+    detections.push({ name: 'do…end 包裹', confidence: 'low' });
+  }
+
+  // ── variable renaming
+  const renamed = (src.match(/\b_0x[\da-fA-F]{3,}\b/g) || []).length;
+  if (renamed >= 4) {
+    detections.push({ name: `变量重命名 (_0x…, ${renamed} 处)`, confidence: 'medium' });
+  }
+  const chaos = (src.match(/\b_[IlIOo0]{2,}\b/g) || []).length;
+  if (chaos >= 4) {
+    detections.push({ name: `变量重命名 (chaos 风格, ${chaos} 处)`, confidence: 'medium' });
+  }
+
+  // ── table proxy
+  if (/local\s+\w+\s*=\s*\{\s*\[\s*\w+\s*\]\s*=\s*string\s*,\s*\[\s*\w+\s*\]\s*=\s*math\s*\}/.test(src)) {
+    detections.push({ name: '库代理表 (table proxy)', confidence: 'high' });
+  }
+
+  // ── minified
+  const lines = src.split('\n').length;
+  if (lines <= 3 && src.length > 400) {
+    detections.push({ name: '压缩/单行代码', confidence: 'medium' });
+  }
+
+  if (detections.length === 0) {
+    detections.push({ name: '未检测到已知混淆特征', confidence: 'none' });
+  }
+
+  return detections;
 }
 
-function runObfuscate(){
-  const src=document.getElementById('lua-in').value.trim();
-  if(!src){notice('warn','No input — paste or upload a Lua script first.');return}
-  const opts=getOpts();
-  const pw=document.getElementById('progress-wrap');
-  pw.classList.add('show');
-  document.getElementById('run-btn').disabled=true;
-  setProgress(0,'Tokenizing…');
+/* ═══════════════════════════════════════════
+   DEOBFUSCATION — HELPERS
+═══════════════════════════════════════════ */
+function bytesToStr(bytes) {
+  try {
+    return new TextDecoder('utf-8', { fatal: false }).decode(new Uint8Array(bytes));
+  } catch {
+    return String.fromCharCode(...bytes);
+  }
+}
+function luaStringLiteral(bytes) {
+  let s = '"';
+  for (const b of bytes) {
+    if (b === 34) s += '\\"';
+    else if (b === 92) s += '\\\\';
+    else if (b === 10) s += '\\n';
+    else if (b === 13) s += '\\r';
+    else if (b === 9) s += '\\t';
+    else if (b >= 32 && b < 127) s += String.fromCharCode(b);
+    else s += '\\' + b;
+  }
+  return s + '"';
+}
+function jsXorDecode(encBytes) {
+  const out = new Array(encBytes.length);
+  for (let i = 0; i < encBytes.length; i++) {
+    const key = ((i + 1) * 7 + 13) % 256;
+    out[i] = encBytes[i] ^ key;
+  }
+  return out;
+}
 
-  setTimeout(()=>{
-    try{
-      setProgress(20,'Stripping comments…');
-      setTimeout(()=>{
-        setProgress(40,'Renaming variables…');
-        setTimeout(()=>{
-          setProgress(60,'Encoding literals…');
-          setTimeout(()=>{
-            setProgress(80,'Packing…');
-            setTimeout(()=>{
-              try{
-                const out=obfuscate(src,opts);
-                document.getElementById('lua-out').value=out;
-                document.getElementById('lua-out-full').value=out;
-                setProgress(100,'Done ✓');
-                const lines=out.split('\n').length;
-                const ratio=(out.length/src.length).toFixed(2)+'×';
-                const size=fmtBytes(out.length);
-                document.getElementById('stat-ratio').textContent=ratio;
-                document.getElementById('stat-size').textContent=size;
-                document.getElementById('stat-lines').textContent=lines;
-                document.getElementById('stats-chip').style.display='';
-                document.getElementById('view-full-btn').style.display='';
-                notice('ok',`Done — ${src.length} → ${out.length} chars (${ratio}) · ${lines} lines`);
-                const card=document.getElementById('output-card');
+/* ═══════════════════════════════════════════
+   DEOBFUSCATION — UNPACK loadstring
+═══════════════════════════════════════════ */
+function unpackLoadstring(src) {
+  // ── 1) Wrapper + single chunk:
+  //    local A=string;local B=A.char;local C=loadstring or load;C(B(1,2,3))()
+  let m = src.match(
+    /local\s+(\w+)\s*=\s*string\s*;\s*local\s+(\w+)\s*=\s*\1\s*\.\s*char\s*;\s*local\s+(\w+)\s*=\s*loadstring\s+or\s+load\s*;\s*\3\s*\(\s*\2\s*\(\s*([\d,]+)\s*\)\s*\)\s*\(\s*\)/
+  );
+  if (m) {
+    const bytes = m[4].split(',').map(n => parseInt(n.trim(), 10));
+    return bytesToStr(bytes);
+  }
+
+  // ── 2) No wrapper + single chunk:
+  //    (loadstring or load)(string.char(1,2,3))()
+  m = src.match(
+    /\(\s*loadstring\s+or\s+load\s*\)\s*\(\s*string\.char\s*\(\s*([\d,]+)\s*\)\s*\)\s*\(\s*\)/
+  );
+  if (m) {
+    const bytes = m[1].split(',').map(n => parseInt(n.trim(), 10));
+    return bytesToStr(bytes);
+  }
+
+  // ── 3) Wrapper + multi chunk:
+  //    local A={[1]=string.char(..),...};local B=table.concat;local C=loadstring or load;C(B(A,""))()
+  m = src.match(
+    /local\s+(\w+)\s*=\s*\{([^}]*)\}\s*;\s*local\s+(\w+)\s*=\s*table\.concat\s*;\s*local\s+(\w+)\s*=\s*loadstring\s+or\s+load\s*;\s*\4\s*\(\s*\3\s*\(\s*\1\s*,\s*""\s*\)\s*\)\s*\(\s*\)/
+  );
+  if (m && /string\.char/.test(m[2])) {
+    const parts = [];
+    const charRe = /string\.char\s*\(\s*([\d,]+)\s*\)/g;
+    let cm;
+    while ((cm = charRe.exec(m[2]))) {
+      parts.push(...cm[1].split(',').map(n => parseInt(n.trim(), 10)));
+    }
+    if (parts.length) return bytesToStr(parts);
+  }
+
+  // ── 4) No wrapper + multi chunk:
+  //    local _t={[1]=string.char(..),...};(loadstring or load)(table.concat(_t,""))()
+  m = src.match(
+    /local\s+(\w+)\s*=\s*\{([^}]*)\}\s*;\s*\(\s*loadstring\s+or\s+load\s*\)\s*\(\s*table\.concat\s*\(\s*\1\s*,\s*""\s*\)\s*\)\s*\(\s*\)/
+  );
+  if (m && /string\.char/.test(m[2])) {
+    const parts = [];
+    const charRe = /string\.char\s*\(\s*([\d,]+)\s*\)/g;
+    let cm;
+    while ((cm = charRe.exec(m[2]))) {
+      parts.push(...cm[1].split(',').map(n => parseInt(n.trim(), 10)));
+    }
+    if (parts.length) return bytesToStr(parts);
+  }
+
+  return null;
+}
+
+/* ═══════════════════════════════════════════
+   DEOBFUSCATION — STRING DECODERS
+═══════════════════════════════════════════ */
+function decodeXorStrings(src) {
+  const decRe = /local function (\w+)\(s\)local r=\{\}for i=1,#s do local c=string\.byte\(s,i\)local k=\(i\*7\+13\)%256 local a=c local b=k local x=0 local p=1 while a>0 or b>0 do local aa=a%2 local bb=b%2 if aa~=bb then x=x\+p end a=math\.floor\(a\/2\)b=math\.floor\(b\/2\)p=p\*2 end r\[i\]=string\.char\(x\)end return table\.concat\(r\)end\s*/g;
+  const decoders = [];
+  let m;
+  while ((m = decRe.exec(src))) decoders.push(m[1]);
+  if (!decoders.length) return src;
+
+  src = src.replace(decRe, '');
+
+  for (const name of decoders) {
+    const callRe = new RegExp(`\\b${escapeRegex(name)}\\s*\\(\\s*("(?:[^"\\\\]|\\\\.)*")\\s*\\)`, 'g');
+    src = src.replace(callRe, (mm, lit) => {
+      try {
+        const encBytes = luaStrBytes({ v: lit });
+        const decBytes = jsXorDecode(encBytes);
+        return luaStringLiteral(decBytes);
+      } catch { return mm; }
+    });
+  }
+  return src;
+}
+
+function decodeHexStrings(src) {
+  const decRe = /local function (\w+)\(s\)return\(s:gsub\("\.\.",function\(h\)return string\.char\(tonumber\(h,16\)\)end\)\)end\s*/g;
+  const decoders = [];
+  let m;
+  while ((m = decRe.exec(src))) decoders.push(m[1]);
+  if (!decoders.length) return src;
+
+  src = src.replace(decRe, '');
+
+  for (const name of decoders) {
+    const callRe = new RegExp(`\\b${escapeRegex(name)}\\s*\\(\\s*"([0-9a-fA-F]*)"\\s*\\)`, 'g');
+    src = src.replace(callRe, (mm, hex) => {
+      const bytes = [];
+      for (let i = 0; i < hex.length; i += 2) {
+        bytes.push(parseInt(hex.substr(i, 2), 16));
+      }
+      return luaStringLiteral(bytes);
+    });
+  }
+  return src;
+}
+
+function decodeStringCharCalls(src) {
+  return src.replace(/string\.char\s*\(\s*(\d+(?:\s*,\s*\d+)*)\s*\)/g, (m, nums) => {
+    try {
+      const bytes = nums.split(',').map(n => parseInt(n.trim(), 10));
+      return luaStringLiteral(bytes);
+    } catch { return m; }
+  });
+}
+
+function simplifyStringConcat(src) {
+  let changed = true;
+  let prev;
+  let guard = 0;
+  while (changed && guard++ < 200) {
+    prev = src;
+    src = src.replace(
+      /"((?:[^"\\]|\\.)*)"\s*\.\.\s*"((?:[^"\\]|\\.)*)"/g,
+      (m, a, b) => '"' + a + b + '"'
+    );
+    changed = prev !== src;
+  }
+  return src;
+}
+
+/* ═══════════════════════════════════════════
+   DEOBFUSCATION — NUMBER DECODING
+═══════════════════════════════════════════ */
+function decodeNumberExpressions(src) {
+  // (0xA*0xB) or (0xA*0xB+0xC) or (0xA*0xB-0xC)
+  src = src.replace(
+    /\(\s*0x([\da-fA-F]+)\s*\*\s*0x([\da-fA-F]+)\s*(?:([+\-])\s*0x([\da-fA-F]+)\s*)?\)/g,
+    (m, a, b, op, c) => {
+      let v = parseInt(a, 16) * parseInt(b, 16);
+      if (op === '+') v += parseInt(c, 16);
+      if (op === '-') v -= parseInt(c, 16);
+      return String(v);
+    }
+  );
+
+  // Bare hex literals — guard against strings via lookbehind
+  src = src.replace(/(?<!["'\w])0x([\da-fA-F]+)\b/g, (m, h) => String(parseInt(h, 16)));
+
+  return src;
+}
+
+/* ═══════════════════════════════════════════
+   DEOBFUSCATION — WRAPPER / BLOCK UNWRAPPING
+═══════════════════════════════════════════ */
+function blockDepth(src) {
+  const tokens = tokenizeLua(src);
+  let d = 0;
+  for (const t of tokens) {
+    if (t.t !== 'K') continue;
+    if (t.v === 'if' || t.v === 'function' || t.v === 'do' || t.v === 'repeat') d++;
+    else if (t.v === 'end' || t.v === 'until') d--;
+    if (d < 0) return -999;
+  }
+  return d;
+}
+
+function stripOuterWrap(src) {
+  let changed = true;
+  let guard = 0;
+  while (changed && guard++ < 20) {
+    changed = false;
+    src = src.trim();
+
+    let m = src.match(/^for\s+[A-Za-z_]\w*\s*=\s*1\s*,\s*1\s+do([\s\S]*)end\s*$/);
+    if (m) {
+      const inner = m[1].trim();
+      if (inner && blockDepth(inner) === 0) {
+        src = inner;
+        changed = true;
+        continue;
+      }
+    }
+
+    m = src.match(/^do\s*([\s\S]*?)\s*end\s*$/);
+    if (m) {
+      const inner = m[1].trim();
+      if (inner && blockDepth(inner) === 0) {
+        src = inner;
+        changed = true;
+        continue;
+      }
+    }
+  }
+  return src;
+}
+
+/* ═══════════════════════════════════════════
+   DEOBFUSCATION — JUNK / GUARD REMOVAL
+═══════════════════════════════════════════ */
+function stripAntiDebug(src) {
+  return src.replace(
+    /do\s+local\s+\w+\s*=\s*\(tick\s+and\s+tick\(\)\s+or\s+os\.clock\(\)\)[\s\S]*?while\s+true\s+do\s+\w+\s*=\s*\w+\s*\+\s*1\s+end\s+end\s+end\s*/g,
+    ''
+  );
+}
+
+function stripOpaquePredicates(src) {
+  return src.replace(
+    /if\s*\(\s*\d+\s*\*\s*\d+\s*==\s*\d+\s*\)\s*then\s*local\s+\w+\s*=\s*nil\s*end\s*/g,
+    ''
+  );
+}
+
+function stripJunkBlocks(src) {
+  src = src.replace(/if\s+false\s+then\s+local\s+\w+\s*=\s*nil\s*end\s*/g, '');
+  src = src.replace(/do\s+local\s+\w+\s*=\s*0x[\da-fA-F]+\s+end\s*/g, '');
+  src = src.replace(/do\s+local\s+\w+\s*=\s*nil\s*;\s*local\s+\w+\s*=\s*nil\s+end\s*/g, '');
+  return src;
+}
+
+function stripTableProxy(src) {
+  return src.replace(
+    /local\s+\w+\s*=\s*\{\s*\[\s*\w+\s*\]\s*=\s*string\s*,\s*\[\s*\w+\s*\]\s*=\s*math\s*\}\s*/g,
+    ''
+  );
+}
+
+function stripJunkVars(src) {
+  const re = /\blocal\s+([A-Za-z_]\w*)\s*=\s*nil\s*;?\s*/g;
+  const toRemove = [];
+  let m;
+  while ((m = re.exec(src))) {
+    const name = m[1];
+    const occurrences = (src.match(new RegExp('\\b' + escapeRegex(name) + '\\b', 'g')) || []).length;
+    if (occurrences === 1) toRemove.push(m[0]);
+  }
+  for (const s of toRemove) {
+    src = src.replace(s, '');
+  }
+  return src;
+}
+
+/* ═══════════════════════════════════════════
+   DEOBFUSCATION — FORMATTER
+═══════════════════════════════════════════ */
+function formatLua(src) {
+  let tokens;
+  try {
+    tokens = tokenizeLua(src).filter(t => t.t !== 'W' && t.t !== 'NL');
+  } catch {
+    return src;
+  }
+
+  let out = '';
+  let indent = 0;
+  const IND = '  ';
+
+  function newline() {
+    out = out.replace(/[ \t]+$/, '');
+    out += '\n' + IND.repeat(indent);
+  }
+
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+    const v = t.v;
+
+    if (t.t === 'K') {
+      if (v === 'end' || v === 'until') {
+        indent = Math.max(0, indent - 1);
+        newline();
+        out += v;
+        if (v === 'until') out += ' ';
+        continue;
+      }
+      if (v === 'elseif') {
+        indent = Math.max(0, indent - 1);
+        newline();
+        out += 'elseif ';
+        continue;
+      }
+      if (v === 'else') {
+        indent = Math.max(0, indent - 1);
+        newline();
+        out += 'else';
+        indent++;
+        newline();
+        continue;
+      }
+      if (v === 'then') {
+        out += ' then';
+        indent++;
+        newline();
+        continue;
+      }
+      if (v === 'do') {
+        out += ' do';
+        indent++;
+        newline();
+        continue;
+      }
+      if (v === 'repeat') {
+        out += 'repeat';
+        indent++;
+        newline();
+        continue;
+      }
+      // Other keywords
+      if (out && !/[\s\(\{\[.,;:=+\-*/%^#<>~]$/.test(out)) out += ' ';
+      out += v;
+      if (/^(local|return|if|while|for|function|not|and|or|in)$/.test(v)) out += ' ';
+      continue;
+    }
+
+    if (t.t === 'O') {
+      if (v === '(' || v === '[') { out += v; continue; }
+      if (v === ')' || v === ']') { out += v; continue; }
+      if (v === '{') {
+        if (/[\s\(\{\[]$/.test(out) || out === '') out += v;
+        else out += ' ' + v;
+        continue;
+      }
+      if (v === '}') { out += v; continue; }
+      if (v === '.' || v === ':') { out += v; continue; }
+      if (v === ',' || v === ';') { out += v + ' '; continue; }
+      // Generic operator
+      out += ' ' + v + ' ';
+      continue;
+    }
+
+    // Identifiers / numbers / strings / RAW
+    if (out && !/[\s\(\{\[.,;:=+\-*/%^#<>~]$/.test(out)) {
+      out += ' ';
+    }
+    out += v;
+  }
+
+  return out.replace(/\n{3,}/g, '\n\n').trim();
+}
+
+/* ═══════════════════════════════════════════
+   DEOBFUSCATION — MAIN PIPELINE
+═══════════════════════════════════════════ */
+function deobfuscate(src, opts) {
+  const detected = detectObfuscation(src);
+  const changes = [];
+  let out = src;
+
+  // 1) Strip anti-debug guard (outermost)
+  if (opts.stripJunk) {
+    const before = out;
+    out = stripAntiDebug(out);
+    if (before !== out) changes.push('移除反调试守卫');
+  }
+
+  // 2) Unpack loadstring layers (up to 5)
+  if (opts.unpackStrings) {
+    for (let i = 0; i < 5; i++) {
+      const unpacked = unpackLoadstring(out);
+      if (unpacked === null) break;
+      out = unpacked;
+      changes.push(`解包 loadstring 第 ${i + 1} 层`);
+    }
+  }
+
+  // 3) Decode XOR / hex string functions
+  if (opts.decodeStrings) {
+    const beforeX = out;
+    out = decodeXorStrings(out);
+    if (beforeX !== out) changes.push('解码 XOR 字符串');
+
+    const beforeH = out;
+    out = decodeHexStrings(out);
+    if (beforeH !== out) changes.push('解码十六进制字符串');
+  }
+
+  // 4) Remove opaque predicates / junk blocks / table proxy
+  if (opts.stripJunk) {
+    const before = out;
+    out = stripOpaquePredicates(out);
+    out = stripJunkBlocks(out);
+    out = stripTableProxy(out);
+    if (before !== out) changes.push('移除垃圾 / 不透明谓词 / 库代理');
+  }
+
+  // 5) Decode string.char(…) calls
+  if (opts.decodeStrings) {
+    const before = out;
+    out = decodeStringCharCalls(out);
+    if (before !== out) changes.push('解码 string.char 调用');
+    out = simplifyStringConcat(out);
+  }
+
+  // 6) Decode numbers
+  if (opts.decodeNumbers) {
+    const before = out;
+    out = decodeNumberExpressions(out);
+    if (before !== out) changes.push('解码数字字面量');
+  }
+
+  // 7) Strip junk variables
+  if (opts.stripJunk) {
+    const before = out;
+    out = stripJunkVars(out);
+    if (before !== out) changes.push('移除垃圾变量');
+  }
+
+  // 8) Unwrap do…end / for…do…end
+  if (opts.unwrapBlocks) {
+    const before = out;
+    out = stripOuterWrap(out);
+    if (before !== out) changes.push('移除 do/for 包裹层');
+  }
+
+  // 9) Format
+  if (opts.formatOut) {
+    try {
+      out = formatLua(out);
+      changes.push('格式化输出');
+    } catch (e) { /* keep raw */ }
+  }
+
+  return { source: out, detected, changes };
+}
+
+/* ═══════════════════════════════════════════
+   RUN — OBFUSCATE
+═══════════════════════════════════════════ */
+function setProgress(pct, label) {
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = label;
+}
+
+function runObfuscate() {
+  const src = document.getElementById('lua-in').value.trim();
+  if (!src) { notice('warn', 'No input — paste or upload a Lua script first.'); return; }
+  const opts = getOpts();
+  const pw = document.getElementById('progress-wrap');
+  pw.classList.add('show');
+  document.getElementById('run-btn').disabled = true;
+  setProgress(0, 'Tokenizing…');
+
+  setTimeout(() => {
+    try {
+      setProgress(20, 'Stripping comments…');
+      setTimeout(() => {
+        setProgress(40, 'Renaming variables…');
+        setTimeout(() => {
+          setProgress(60, 'Encoding literals…');
+          setTimeout(() => {
+            setProgress(80, 'Packing…');
+            setTimeout(() => {
+              try {
+                const out = obfuscate(src, opts);
+                document.getElementById('lua-out').value = out;
+                document.getElementById('lua-out-full').value = out;
+                setProgress(100, 'Done ✓');
+                const lines = out.split('\n').length;
+                const ratio = (out.length / src.length).toFixed(2) + '×';
+                const size = fmtBytes(out.length);
+                document.getElementById('stat-ratio').textContent = ratio;
+                document.getElementById('stat-size').textContent = size;
+                document.getElementById('stat-lines').textContent = lines;
+                document.getElementById('stats-chip').style.display = '';
+                document.getElementById('view-full-btn').style.display = '';
+                notice('ok', `Done — ${src.length} → ${out.length} chars (${ratio}) · ${lines} lines`);
+                const card = document.getElementById('output-card');
                 card.classList.remove('output-flash');
                 void card.offsetWidth;
                 card.classList.add('output-flash');
-                setTimeout(()=>{card.scrollIntoView({behavior:'smooth',block:'nearest'})},150);
+                setTimeout(() => { card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 150);
                 openFullView();
-              }catch(e){
-                notice('err','Error: '+e.message);
-                document.getElementById('lua-out').value='-- Error: '+e.message;
+              } catch (e) {
+                notice('err', 'Error: ' + e.message);
+                document.getElementById('lua-out').value = '-- Error: ' + e.message;
               }
               pw.classList.remove('show');
-              document.getElementById('run-btn').disabled=false;
-            },150);
-          },80);
-        },80);
-      },80);
-    }catch(e){
-      notice('err','Tokenize error: '+e.message);
+              document.getElementById('run-btn').disabled = false;
+            }, 150);
+          }, 80);
+        }, 80);
+      }, 80);
+    } catch (e) {
+      notice('err', 'Tokenize error: ' + e.message);
       pw.classList.remove('show');
-      document.getElementById('run-btn').disabled=false;
+      document.getElementById('run-btn').disabled = false;
     }
-  },30);
+  }, 30);
+}
+
+/* ═══════════════════════════════════════════
+   RUN — DEOBFUSCATE
+═══════════════════════════════════════════ */
+function runDeobfuscate() {
+  const src = document.getElementById('lua-in').value.trim();
+  if (!src) { notice('warn', 'No input — paste an obfuscated Lua script first.'); return; }
+
+  const opts = getDeobfOpts();
+  const pw = document.getElementById('progress-wrap');
+  pw.classList.add('show');
+  document.getElementById('run-btn').disabled = true;
+  document.getElementById('detect-btn').disabled = true;
+  setProgress(0, 'Detecting techniques…');
+
+  setTimeout(() => {
+    setProgress(25, 'Unpacking loadstring…');
+    setTimeout(() => {
+      setProgress(50, 'Decoding strings / numbers…');
+      setTimeout(() => {
+        setProgress(75, 'Stripping junk & guards…');
+        setTimeout(() => {
+          try {
+            const result = deobfuscate(src, opts);
+
+            // Detection report
+            const panel = document.getElementById('detection-panel');
+            const list = document.getElementById('detection-list');
+            if (result.detected.length && result.detected[0].confidence !== 'none') {
+              panel.style.display = '';
+              list.innerHTML = result.detected.map(d =>
+                `<span class="det-chip${d.confidence === 'low' ? ' low' : ''}">${d.name}</span>`
+              ).join('');
+            } else {
+              panel.style.display = '';
+              list.innerHTML = '<span class="det-chip none">未检测到已知混淆特征 — 可能已是明文或使用了未知方案</span>';
+            }
+
+            const out = result.source;
+            document.getElementById('lua-out').value = out;
+            document.getElementById('lua-out-full').value = out;
+
+            setProgress(100, 'Done ✓');
+
+            const lines = out.split('\n').length;
+            const ratio = (out.length / Math.max(src.length, 1)).toFixed(2) + '×';
+            const size = fmtBytes(out.length);
+            document.getElementById('stat-ratio').textContent = ratio;
+            document.getElementById('stat-size').textContent = size;
+            document.getElementById('stat-lines').textContent = lines;
+            document.getElementById('stats-chip').style.display = '';
+            document.getElementById('view-full-btn').style.display = '';
+
+            const summary = result.changes.length
+              ? result.changes.join(' · ')
+              : '没有可恢复的变换（已是最小化结果）';
+            notice('ok', `Deobfuscated — ${src.length} → ${out.length} chars · ${lines} lines · ${summary}`);
+
+            const card = document.getElementById('output-card');
+            card.classList.remove('output-flash');
+            void card.offsetWidth;
+            card.classList.add('output-flash');
+            setTimeout(() => { card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 150);
+            openFullView();
+          } catch (e) {
+            notice('err', 'Deobfuscation error: ' + e.message);
+            document.getElementById('lua-out').value = '-- Error: ' + e.message;
+          }
+          pw.classList.remove('show');
+          document.getElementById('run-btn').disabled = false;
+          document.getElementById('detect-btn').disabled = false;
+        }, 120);
+      }, 80);
+    }, 80);
+  }, 40);
 }
 
 /* ═══════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════ */
-(function init(){
+(function init() {
   ensureAdmin();
-  const s=getSession();
-  if(s)enterApp(s);
+  const s = getSession();
+  if (s) enterApp(s);
   updateStrength();
-  document.getElementById('strength-slider').value='30';
+  document.getElementById('strength-slider').value = '30';
   paintStrength(30);
 })();
 </script>
 </body>
-              </html>
+  </html>

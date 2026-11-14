@@ -31,34 +31,31 @@ input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus
   -webkit-box-shadow:0 0 0 1000px var(--bg-0) inset;
   caret-color:var(--text-0);transition:background-color 9999s}
 
-/* ── ROOT / BODY ── */
+/* ── ROOT / BODY ──
+   注意：不在 html 上设置 overflow:hidden，避免部分 Android 浏览器
+   禁用内部滚动容器。滚动完全交给 .main。 */
 html {
   height: 100%;
-  /* Android Chrome: prevent body scroll while keeping inner scroll working */
-  overflow: hidden;
   background: var(--bg-0);
 }
 body {
   height: 100%;
-  overflow: hidden;
+  margin: 0;
   background: var(--bg-0);
   color: var(--text-0);
   font-family: var(--sans);
   font-size: 14px;
   line-height: 1.6;
-  /* Prevent text size adjustment on orientation change */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
 
 /* ── SHELL ──
-   grid: topbar (auto) + scrollable main (1fr)
-   overflow:hidden on shell keeps topbar sticky */
+   用 flex 替代 grid，兼容性更好、滚动更可靠 */
 .shell {
-  display: grid;
-  grid-template-rows: auto 1fr;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  height: 100dvh; /* modern browsers */
   overflow: hidden;
 }
 
@@ -72,7 +69,6 @@ body {
   position: relative;
   z-index: 10;
   flex-shrink: 0;
-  /* safe area for notch / status bar */
   padding: var(--safe-top) 20px 0;
   height: calc(48px + var(--safe-top));
   min-height: calc(48px + var(--safe-top));
@@ -96,47 +92,45 @@ body {
 .user-role{font-size:9px;padding:1px 6px;border-radius:3px;background:var(--accent-lo);color:var(--accent-hi);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
 
 /* ── MAIN SCROLL CONTAINER ──
-   THE KEY FIX:
-   • min-height:0 → allows grid child to shrink and scroll (without this, grid
-     child expands to content height and overflow:auto has nothing to scroll)
-   • -webkit-overflow-scrolling:touch → iOS momentum scroll
-   • overscroll-behavior:contain → prevents parent chain scroll on Android/iOS
-   • touch-action:pan-y → hint to browser for Android touch handling */
+   关键修复：
+   • 使用 block 布局（而非 flex column），避免子元素被 flex-shrink
+     压缩导致滚动高度计算异常
+   • flex:1 + min-height:0 让它在 shell 中占据剩余高度
+   • -webkit-overflow-scrolling:touch 提供 iOS 惯性滚动
+   • overscroll-behavior-y:contain 防止滚动链 */
 .main {
-  min-height: 0;                        /* ← critical for CSS grid scroll */
+  flex: 1 1 auto;
+  min-height: 0;
+  display: block;
   overflow-y: auto;
   overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;    /* ← iOS momentum */
-  overscroll-behavior: contain;         /* ← Android: prevent scroll chaining */
-  touch-action: pan-y;                  /* ← Android touch hint */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
   background: var(--bg-0);
   padding: 24px 28px;
   padding-bottom: calc(32px + var(--safe-bot));
   padding-left: calc(28px + var(--safe-left));
   padding-right: calc(28px + var(--safe-right));
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  /* custom scrollbar for desktop */
   scrollbar-width: thin;
   scrollbar-color: var(--bg-3) transparent;
+}
+.main > * + * {
+  margin-top: 18px;
 }
 .main::-webkit-scrollbar{width:6px}
 .main::-webkit-scrollbar-thumb{background:var(--bg-3);border-radius:3px}
 
-/* ── SCAN LINE ── */
-.shell::before{
-  content:'';position:fixed;inset:0;
-  background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.03) 0px,rgba(0,0,0,.03) 1px,transparent 1px,transparent 2px);
-  pointer-events:none;z-index:999;
-}
+/* 注意：原来的 .shell::before 扫描线 fixed 覆盖层已移除。
+   它是移动端无法滑动的最大嫌疑（即使 pointer-events:none，
+   部分 Android WebView 仍会拦截触摸滚动）。 */
 
-/* ── AUTH ── */
+/* ── AUTH ──
+   修复：align-items 改为 flex-start，配合 .auth-card 的 margin:auto，
+   既能在内容较少时垂直居中，又能在内容溢出时正常滚动到顶部 */
 .auth-screen{
   position:fixed;inset:0;background:var(--bg-0);
-  display:flex;align-items:center;justify-content:center;
+  display:flex;align-items:flex-start;justify-content:center;
   z-index:1000;padding:20px;
-  /* auth screen itself scrolls if card is taller than screen */
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
@@ -153,8 +147,7 @@ body {
   backdrop-filter:blur(20px) saturate(1.6);
   -webkit-backdrop-filter:blur(20px) saturate(1.6);
   animation:authIn .25s ease;
-  /* prevent card from being too tall on small phones */
-  margin: auto;
+  margin:auto;
 }
 @keyframes authIn{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
 .auth-logo{display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--mono);font-size:20px;font-weight:600;color:var(--text-0);margin-bottom:6px}
@@ -198,11 +191,9 @@ textarea,input[type="text"],input[type="number"],select{
   color:var(--text-0);font-family:var(--mono);font-size:14px;line-height:1.65;
   padding:10px 12px;resize:vertical;outline:none;transition:border-color .12s;
   caret-color:var(--accent-hi);-webkit-font-smoothing:antialiased;
-  /* Prevent iOS zoom on focus — keep 16px equivalent or above */
   -webkit-appearance:none;
   appearance:none;
 }
-/* Mobile: bump to 16px to prevent iOS/Android zoom on focus */
 @media(max-width:700px){
   textarea,input[type="text"],input[type="number"],select{font-size:16px!important}
 }
@@ -219,9 +210,7 @@ select{
 select option{background:var(--bg-2)}
 
 /* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:5px;border:none;cursor:pointer;font-family:var(--sans);font-size:12.5px;font-weight:500;transition:all .12s;text-decoration:none;user-select:none;white-space:nowrap;position:relative;overflow:hidden;
-  /* minimum touch target 44px for mobile */
-  min-height:36px;touch-action:manipulation}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:5px;border:none;cursor:pointer;font-family:var(--sans);font-size:12.5px;font-weight:500;transition:all .12s;text-decoration:none;user-select:none;white-space:nowrap;position:relative;overflow:hidden;min-height:36px;touch-action:manipulation}
 .btn svg{width:13px;height:13px;flex-shrink:0}
 .btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.08);opacity:0;transition:opacity .15s}
 .btn:active::after{opacity:1}
@@ -240,12 +229,9 @@ select option{background:var(--bg-2)}
 .label{font-size:11px;font-weight:500;color:var(--text-2);letter-spacing:.03em;font-family:var(--mono)}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 
-/* ── OPTIONS GRID ──
-   Reduced minmax from 195px → 140px so 2 columns fit on small phones */
+/* ── OPTIONS GRID ── */
 .opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:7px}
-.opt-item{display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg-2);border:1px solid var(--border);border-radius:5px;cursor:pointer;transition:border-color .1s,background .1s;user-select:none;
-  /* touch target */
-  min-height:44px;touch-action:manipulation}
+.opt-item{display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg-2);border:1px solid var(--border);border-radius:5px;cursor:pointer;transition:border-color .1s,background .1s;user-select:none;min-height:44px;touch-action:manipulation}
 .opt-item:hover{background:var(--bg-3);border-color:var(--border-hi)}
 .opt-item:active{background:var(--bg-4)}
 .opt-item.checked{background:rgba(110,86,207,.08);border-color:rgba(110,86,207,.35)}
@@ -257,8 +243,7 @@ select option{background:var(--bg-2)}
 
 /* ── PRESETS ── */
 .presets{display:flex;gap:7px;flex-wrap:wrap}
-.preset-btn{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg-2);color:var(--text-2);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;user-select:none;
-  min-height:36px;touch-action:manipulation}
+.preset-btn{padding:8px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg-2);color:var(--text-2);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;user-select:none;min-height:36px;touch-action:manipulation}
 .preset-btn:hover{border-color:var(--accent);color:var(--accent-hi);background:var(--bg-3)}
 .preset-btn.active{border-color:var(--accent);color:var(--accent-hi);background:rgba(110,86,207,.12)}
 
@@ -364,7 +349,6 @@ select option{background:var(--bg-2)}
   backdrop-filter:blur(18px) saturate(1.4);
   -webkit-backdrop-filter:blur(18px) saturate(1.4);
   display:flex;flex-direction:column;gap:12px;
-  /* safe areas */
   padding-top: calc(16px + var(--safe-top));
   padding-bottom: calc(16px + var(--safe-bot));
   padding-left: calc(20px + var(--safe-left));
@@ -387,7 +371,7 @@ select option{background:var(--bg-2)}
 
 .out-overlay-textarea{
   flex:1;
-  min-height:0;      /* ← critical: allow textarea to shrink inside flex column */
+  min-height:0;
   resize:none;
   font-size:12.5px;line-height:1.7;
   background:var(--bg-1);border:1px solid var(--border);
@@ -413,49 +397,30 @@ select option{background:var(--bg-2)}
 
 /* ══════════════════════════════════════
    MOBILE — max-width: 700px
-   Android + small iOS
 ══════════════════════════════════════ */
 @media(max-width:700px){
   .main{
     padding:14px 14px calc(20px + var(--safe-bot)) 14px;
-    gap:14px;
+  }
+  .main > * + * {
+    margin-top: 14px;
   }
   .topbar{
     padding-left:14px;padding-right:14px;
     gap:8px;
   }
-  /* hide verbose topbar items */
   .logo-sub,.logo-sep,.topbar-badge{display:none}
-  /* collapse username on very narrow screens */
   .user-name{display:none}
-
-  /* two-col becomes one-col */
   .two-col{grid-template-columns:1fr}
-
-  /* opts: 2 columns on most phones (140px each) */
   .opts{grid-template-columns:repeat(2,1fr)}
-
-  /* card header wraps gracefully */
   .card-head{padding:10px 12px}
   .card-body{padding:12px}
-
-  /* buttons: bigger touch targets */
   .btn{min-height:42px;padding:9px 14px}
   .btn-ghost{min-height:36px}
-
-  /* run row: stack on very narrow */
   .row{gap:8px}
-
-  /* upload zone compact */
   .upload-zone{padding:12px}
-
-  /* panel desc smaller */
   .panel-desc{font-size:11px}
-
-  /* preset buttons: full-row friendly */
   .preset-btn{padding:8px 12px;font-size:11px}
-
-  /* overlay */
   .out-overlay{
     padding:calc(10px + var(--safe-top)) 12px calc(10px + var(--safe-bot)) 12px;
     gap:10px;
@@ -464,7 +429,6 @@ select option{background:var(--bg-2)}
   .out-overlay-textarea{font-size:12px}
 }
 
-/* Very small screens < 380px */
 @media(max-width:380px){
   .opts{grid-template-columns:1fr}
   .presets{gap:5px}
@@ -984,7 +948,6 @@ function openFullView(){
     `<div class="out-meta-chip"><span>${size}</span></div>`+
     `<div class="out-meta-chip"><span>${lines}</span> lines</div>`;
   document.getElementById('out-overlay').classList.remove('hidden');
-  // scroll textarea to top
   setTimeout(()=>{document.getElementById('lua-out-full').scrollTop=0},50);
 }
 function closeFullView(){document.getElementById('out-overlay').classList.add('hidden')}
@@ -1514,4 +1477,4 @@ function runObfuscate(){
 })();
 </script>
 </body>
-</html>
+                    </html>

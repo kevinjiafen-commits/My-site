@@ -162,7 +162,6 @@ select option{background:var(--bg-2)}
 /* ── LAYOUT HELPERS ── */
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
 .col{display:flex;flex-direction:column;gap:6px;flex:1}
-.col-auto{flex:0 0 auto}
 .label{font-size:11px;font-weight:500;color:var(--text-2);letter-spacing:.03em;font-family:var(--mono)}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 
@@ -200,7 +199,6 @@ select option{background:var(--bg-2)}
 .notice-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:#fbbf24}
 .notice-err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171}
 @keyframes noticeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-@keyframes panelIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── PROGRESS ── */
 .progress-wrap{display:none;align-items:center;gap:10px;padding:8px 12px;background:rgba(110,86,207,.08);border:1px solid var(--border);border-radius:5px;font-family:var(--mono);font-size:11px;color:var(--text-2)}
@@ -213,6 +211,119 @@ select option{background:var(--bg-2)}
 /* ── SECTION LABEL ── */
 .section-label{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;font-family:var(--mono);padding-bottom:8px;border-bottom:1px solid var(--border)}
 
+/* ══ UPLOAD ZONE ══ */
+.upload-zone{
+  border:1.5px dashed var(--border-hi);border-radius:6px;
+  padding:14px 16px;display:flex;align-items:center;gap:14px;
+  cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s;
+  background:var(--bg-2);
+}
+.upload-zone:hover{
+  border-color:var(--accent);background:rgba(110,86,207,.07);
+  box-shadow:0 0 0 2px var(--accent-glow);
+}
+.upload-zone.drag-over{
+  border-color:var(--accent-hi);background:rgba(110,86,207,.14);
+  box-shadow:0 0 0 3px var(--accent-glow);
+}
+.upload-zone-icon{
+  width:34px;height:34px;border-radius:6px;
+  background:var(--bg-3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:background .15s,border-color .15s;
+}
+.upload-zone:hover .upload-zone-icon,.upload-zone.drag-over .upload-zone-icon{
+  background:var(--accent-lo);border-color:rgba(110,86,207,.4)
+}
+.upload-zone-icon svg{width:15px;height:15px;color:var(--text-2);transition:color .15s}
+.upload-zone:hover .upload-zone-icon svg,.upload-zone.drag-over .upload-zone-icon svg{color:var(--accent-hi)}
+.upload-zone-info{flex:1;min-width:0}
+.upload-zone-title{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--text-1);transition:color .15s}
+.upload-zone-sub{font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:2px}
+.upload-zone:hover .upload-zone-title,.upload-zone.drag-over .upload-zone-title{color:var(--accent-hi)}
+
+/* File badge */
+.file-badge{
+  display:none;align-items:center;gap:8px;
+  padding:6px 10px 6px 8px;
+  background:rgba(110,86,207,.10);border:1px solid rgba(110,86,207,.28);
+  border-radius:5px;font-family:var(--mono);font-size:11px;color:var(--accent-hi);
+  max-width:100%;
+}
+.file-badge.show{display:flex}
+.file-badge-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.file-badge-size{color:var(--text-3);flex-shrink:0;font-size:10px}
+.file-badge-close{
+  width:16px;height:16px;border-radius:3px;border:none;
+  background:transparent;color:var(--text-3);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:background .1s,color .1s;
+}
+.file-badge-close:hover{background:rgba(239,68,68,.15);color:#f87171}
+
+/* Input divider */
+.input-divider{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--mono);font-size:10px;color:var(--text-3);
+  letter-spacing:.08em;text-transform:uppercase;
+}
+.input-divider::before,.input-divider::after{
+  content:'';flex:1;height:1px;background:var(--border)
+}
+
+/* ══ OUTPUT FLASH ══ */
+@keyframes outputFlash{
+  0%{border-color:var(--border);box-shadow:0 4px 24px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.04)}
+  30%{border-color:var(--accent-hi);box-shadow:0 0 0 2px var(--accent-glow),0 0 48px rgba(110,86,207,.4),inset 0 1px 0 rgba(255,255,255,.08)}
+  100%{border-color:var(--border);box-shadow:0 4px 24px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.04)}
+}
+.output-flash{animation:outputFlash 1.6s ease}
+
+/* ══ FULL OUTPUT OVERLAY ══ */
+.out-overlay{
+  position:fixed;inset:0;z-index:2000;
+  background:rgba(6,9,16,.96);
+  backdrop-filter:blur(18px) saturate(1.4);
+  -webkit-backdrop-filter:blur(18px) saturate(1.4);
+  display:flex;flex-direction:column;gap:14px;
+  padding:20px 28px calc(20px + env(safe-area-inset-bottom,0px)) 28px;
+  padding-top:calc(20px + env(safe-area-inset-top,0px));
+  animation:overlayIn .2s ease;
+}
+@keyframes overlayIn{from{opacity:0}to{opacity:1}}
+.out-overlay.hidden{display:none}
+
+.out-overlay-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;flex-wrap:wrap;flex-shrink:0;
+}
+.out-overlay-title{
+  font-family:var(--mono);font-size:13px;font-weight:600;
+  color:var(--accent-hi);display:flex;align-items:center;gap:8px;
+}
+.out-overlay-title svg{width:14px;height:14px}
+.out-overlay-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+.out-overlay-textarea{
+  flex:1;min-height:0;resize:none;
+  font-size:12.5px;line-height:1.7;
+  background:var(--bg-1);border:1px solid var(--border);
+  border-radius:6px;padding:14px;color:var(--text-0);
+  font-family:var(--mono);outline:none;
+}
+
+.out-meta{
+  display:flex;gap:16px;flex-wrap:wrap;align-items:center;
+  font-family:var(--mono);font-size:11px;color:var(--text-3);
+  flex-shrink:0;
+}
+.out-meta-chip{
+  display:flex;align-items:center;gap:5px;
+  padding:3px 9px;background:var(--bg-2);border:1px solid var(--border);
+  border-radius:12px;
+}
+.out-meta-chip span{color:var(--accent-hi);font-weight:500}
+
 /* ── MOBILE ── */
 @media(max-width:700px){
   .main{padding:16px 12px calc(16px + env(safe-area-inset-bottom,0px))}
@@ -220,6 +331,8 @@ select option{background:var(--bg-2)}
   .logo-sub,.logo-sep,.topbar-badge{display:none}
   .two-col{grid-template-columns:1fr}
   textarea,input,select{font-size:16px}
+  .out-overlay{padding:12px;padding-top:calc(12px + env(safe-area-inset-top,0px))}
+  .out-overlay-actions{gap:6px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;animation-iteration-count:1 !important}}
 @supports not (backdrop-filter:blur(1px)){.card{background:var(--bg-1)}}
@@ -227,7 +340,7 @@ select option{background:var(--bg-2)}
 </head>
 <body>
 
-<!-- AUTH -->
+<!-- ══ AUTH ══ -->
 <div class="auth-screen" id="auth-screen">
   <div class="auth-card">
     <div class="auth-logo">
@@ -275,7 +388,7 @@ select option{background:var(--bg-2)}
   </div>
 </div>
 
-<!-- APP SHELL -->
+<!-- ══ APP SHELL ══ -->
 <div class="shell" id="app-shell" style="display:none">
   <header class="topbar">
     <div class="logo">
@@ -295,10 +408,11 @@ select option{background:var(--bg-2)}
       <span class="user-role" id="user-role">USER</span>
       <button class="btn btn-ghost" onclick="logout()">Sign out</button>
     </div>
-    <div class="topbar-badge">v3.0.0</div>
+    <div class="topbar-badge">v3.1.0</div>
   </header>
 
-  <main class="main">
+  <main class="main" id="main-scroll">
+
     <!-- HEADER -->
     <div class="panel-header">
       <div class="panel-icon">
@@ -326,17 +440,68 @@ select option{background:var(--bg-2)}
       </div>
     </div>
 
-    <!-- INPUT -->
+    <!-- ══ INPUT CARD ══ -->
     <div class="card">
       <div class="card-head">
         <span class="card-label">Input — Lua source</span>
         <div class="card-actions">
-          <button class="btn btn-ghost" onclick="document.getElementById('lua-in').value='';document.getElementById('lua-out').value=''">Clear</button>
+          <button class="btn btn-ghost" onclick="resetInput()">Clear</button>
           <button class="btn btn-ghost" onclick="loadSample()">Sample</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('file-input').click()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Upload .lua
+          </button>
         </div>
       </div>
-      <div class="card-body">
-        <textarea id="lua-in" placeholder="-- Paste Lua source here..." spellcheck="false"></textarea>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+
+        <!-- Hidden file input -->
+        <input type="file" id="file-input" accept=".lua,.txt" style="display:none" onchange="handleFileSelect(event)">
+
+        <!-- Drop zone -->
+        <div class="upload-zone" id="upload-zone"
+             onclick="document.getElementById('file-input').click()"
+             ondragover="handleDragOver(event)"
+             ondragleave="handleDragLeave(event)"
+             ondrop="handleDrop(event)">
+          <div class="upload-zone-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 14.899A7 7 0 1115.71 8h1.79a4.5 4.5 0 012.5 8.242"/>
+              <path d="M12 12v9M8 17l4-5 4 5"/>
+            </svg>
+          </div>
+          <div class="upload-zone-info">
+            <div class="upload-zone-title">Drop a .lua file here</div>
+            <div class="upload-zone-sub">or click to browse — max 1 MB</div>
+          </div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);flex-shrink:0">.lua · .txt</div>
+        </div>
+
+        <!-- Loaded file badge -->
+        <div class="file-badge" id="file-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0">
+            <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/>
+            <polyline points="13 2 13 9 20 9"/>
+          </svg>
+          <span class="file-badge-name" id="file-badge-name">script.lua</span>
+          <span class="file-badge-size" id="file-badge-size">0 B</span>
+          <button class="file-badge-close" onclick="event.stopPropagation();resetInput()" title="Remove file">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Divider -->
+        <div class="input-divider">or type / paste below</div>
+
+        <!-- Source textarea — shows file content or manual input -->
+        <textarea id="lua-in" placeholder="-- Paste Lua source here, or upload a file above..." spellcheck="false" oninput="onManualInput()"></textarea>
+
       </div>
     </div>
 
@@ -469,14 +634,21 @@ select option{background:var(--bg-2)}
     <!-- NOTICE -->
     <div class="notice" id="lua-notice"></div>
 
-    <!-- OUTPUT -->
-    <div class="card">
+    <!-- ══ OUTPUT CARD ══ -->
+    <div class="card" id="output-card">
       <div class="card-head">
         <span class="card-label">Output — obfuscated</span>
         <div class="card-actions">
           <div class="stat-chip" id="stats-chip" style="display:none">
-            <span id="stat-ratio">—</span>&nbsp;ratio&nbsp;·&nbsp;<span id="stat-size">—</span>
+            <span id="stat-ratio">—</span>&nbsp;ratio&nbsp;·&nbsp;<span id="stat-size">—</span>&nbsp;·&nbsp;<span id="stat-lines">—</span>&nbsp;lines
           </div>
+          <button class="btn btn-ghost" id="view-full-btn" style="display:none" onclick="openFullView()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+              <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+            </svg>
+            Full view
+          </button>
         </div>
       </div>
       <div class="card-body">
@@ -485,7 +657,43 @@ select option{background:var(--bg-2)}
     </div>
 
   </main>
-</div><!-- /.shell -->
+</div>
+
+<!-- ══ FULL OUTPUT OVERLAY ══ -->
+<div class="out-overlay hidden" id="out-overlay">
+  <div class="out-overlay-head">
+    <div class="out-overlay-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><circle cx="17" cy="7" r="2" fill="currentColor" stroke="none"/>
+      </svg>
+      Obfuscated Output
+    </div>
+    <div class="out-overlay-actions">
+      <div class="out-meta" id="overlay-meta"></div>
+      <button class="btn btn-secondary" onclick="copyOutput()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+        </svg>
+        Copy
+      </button>
+      <button class="btn btn-secondary" onclick="downloadOutput()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download .lua
+      </button>
+      <button class="btn btn-ghost" onclick="closeFullView()" style="padding:7px 14px;font-size:12px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="width:12px;height:12px">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+        Close
+      </button>
+    </div>
+  </div>
+  <div class="out-meta" id="overlay-meta-bar" style="flex-shrink:0"></div>
+  <textarea class="out-overlay-textarea" id="lua-out-full" readonly spellcheck="false"></textarea>
+</div>
 
 <script>
 /* ═══════════════════════════════════════════
@@ -520,7 +728,9 @@ function switchAuthTab(t){
 }
 function handleLogin(e){
   e.preventDefault();
-  const u=document.getElementById('login-user').value.trim(),p=document.getElementById('login-pass').value,err=document.getElementById('login-error');
+  const u=document.getElementById('login-user').value.trim(),
+        p=document.getElementById('login-pass').value,
+        err=document.getElementById('login-error');
   err.className='auth-error';err.textContent='';
   if(!u||!p){err.textContent='Please fill both fields.';return}
   const users=getUsers(),user=users[u];
@@ -560,6 +770,110 @@ function logout(){
 }
 
 /* ═══════════════════════════════════════════
+   FILE UPLOAD
+═══════════════════════════════════════════ */
+const MAX_FILE_BYTES = 1_000_000;
+let _loadedFromFile = false;
+
+function fmtBytes(n){
+  if(n<1024)return n+' B';
+  if(n<1048576)return(n/1024).toFixed(1)+' KB';
+  return(n/1048576).toFixed(2)+' MB';
+}
+
+function loadFileContent(file){
+  if(!file)return;
+  if(file.size>MAX_FILE_BYTES){notice('err','File too large — max 1 MB.');return}
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(!['lua','txt'].includes(ext)){notice('warn','Expected a .lua or .txt file.');return}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const text=e.target.result;
+    document.getElementById('lua-in').value=text;
+    _loadedFromFile=true;
+    // show badge
+    const badge=document.getElementById('file-badge');
+    document.getElementById('file-badge-name').textContent=file.name;
+    document.getElementById('file-badge-size').textContent=fmtBytes(file.size);
+    badge.classList.add('show');
+    notice('ok','Loaded: '+file.name+' ('+fmtBytes(file.size)+')');
+    // reset file input so the same file can be re-selected
+    document.getElementById('file-input').value='';
+  };
+  reader.onerror=()=>notice('err','Could not read the file.');
+  reader.readAsText(file);
+}
+
+function handleFileSelect(e){
+  const file=e.target.files[0];
+  if(file)loadFileContent(file);
+}
+
+function handleDragOver(e){
+  e.preventDefault();e.stopPropagation();
+  document.getElementById('upload-zone').classList.add('drag-over');
+}
+function handleDragLeave(e){
+  e.preventDefault();e.stopPropagation();
+  document.getElementById('upload-zone').classList.remove('drag-over');
+}
+function handleDrop(e){
+  e.preventDefault();e.stopPropagation();
+  document.getElementById('upload-zone').classList.remove('drag-over');
+  const file=e.dataTransfer.files[0];
+  if(file)loadFileContent(file);
+}
+
+function onManualInput(){
+  // If the user starts typing manually, dismiss the file badge
+  if(_loadedFromFile){
+    _loadedFromFile=false;
+    document.getElementById('file-badge').classList.remove('show');
+  }
+}
+
+function resetInput(){
+  document.getElementById('lua-in').value='';
+  document.getElementById('lua-out').value='';
+  document.getElementById('file-badge').classList.remove('show');
+  document.getElementById('stats-chip').style.display='none';
+  document.getElementById('view-full-btn').style.display='none';
+  document.getElementById('file-input').value='';
+  _loadedFromFile=false;
+}
+
+/* ═══════════════════════════════════════════
+   FULL VIEW OVERLAY
+═══════════════════════════════════════════ */
+function openFullView(){
+  const out=document.getElementById('lua-out').value;
+  if(!out)return;
+  document.getElementById('lua-out-full').value=out;
+
+  // populate meta bar
+  const src=document.getElementById('lua-in').value;
+  const lines=out.split('\n').length;
+  const ratio=(out.length/Math.max(src.length,1)).toFixed(2)+'×';
+  const size=fmtBytes(out.length);
+  document.getElementById('overlay-meta-bar').innerHTML=
+    `<div class="out-meta-chip"><span>${ratio}</span> ratio</div>`+
+    `<div class="out-meta-chip"><span>${size}</span> size</div>`+
+    `<div class="out-meta-chip"><span>${lines}</span> lines</div>`;
+
+  document.getElementById('out-overlay').classList.remove('hidden');
+  document.getElementById('lua-out-full').focus();
+}
+
+function closeFullView(){
+  document.getElementById('out-overlay').classList.add('hidden');
+}
+
+// Close overlay on Escape
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeFullView();
+});
+
+/* ═══════════════════════════════════════════
    UI HELPERS
 ═══════════════════════════════════════════ */
 function toggleOpt(el){el.classList.toggle('checked');updateStrength()}
@@ -584,10 +898,22 @@ function setOpts(cfg){
 }
 
 const PRESETS={
-  off:{stripComments:false,minify:false,renameLocals:false,renameParams:false,renameGlobals:false,encodeStrings:false,splitStrings:false,encodeNumbers:false,encodeNumbersExpr:false,junkVars:false,junkBlocks:false,doEndWrap:false,tableProxy:false,loadstringWrap:false,doublePack:false,obfWrapper:false},
-  light:{stripComments:true,minify:true,renameLocals:true,renameParams:true,renameGlobals:false,encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:false,junkVars:false,junkBlocks:false,doEndWrap:false,tableProxy:false,loadstringWrap:true,doublePack:false,obfWrapper:false,nameStyle:'hex',passes:1},
-  strong:{stripComments:true,minify:true,renameLocals:true,renameParams:true,renameGlobals:false,encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:true,junkVars:true,junkBlocks:true,doEndWrap:true,tableProxy:true,loadstringWrap:true,doublePack:false,obfWrapper:true,nameStyle:'chaos',passes:2},
-  nuclear:{stripComments:true,minify:true,renameLocals:true,renameParams:true,renameGlobals:true,encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:true,junkVars:true,junkBlocks:true,doEndWrap:true,tableProxy:true,loadstringWrap:true,doublePack:true,obfWrapper:true,nameStyle:'chaos',passes:3}
+  off:{stripComments:false,minify:false,renameLocals:false,renameParams:false,renameGlobals:false,
+       encodeStrings:false,splitStrings:false,encodeNumbers:false,encodeNumbersExpr:false,
+       junkVars:false,junkBlocks:false,doEndWrap:false,tableProxy:false,
+       loadstringWrap:false,doublePack:false,obfWrapper:false},
+  light:{stripComments:true,minify:true,renameLocals:true,renameParams:true,renameGlobals:false,
+         encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:false,
+         junkVars:false,junkBlocks:false,doEndWrap:false,tableProxy:false,
+         loadstringWrap:true,doublePack:false,obfWrapper:false,nameStyle:'hex',passes:1},
+  strong:{stripComments:true,minify:true,renameLocals:true,renameParams:true,renameGlobals:false,
+          encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:true,
+          junkVars:true,junkBlocks:true,doEndWrap:true,tableProxy:true,
+          loadstringWrap:true,doublePack:false,obfWrapper:true,nameStyle:'chaos',passes:2},
+  nuclear:{stripComments:true,minify:true,renameLocals:true,renameParams:true,renameGlobals:true,
+           encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:true,
+           junkVars:true,junkBlocks:true,doEndWrap:true,tableProxy:true,
+           loadstringWrap:true,doublePack:true,obfWrapper:true,nameStyle:'chaos',passes:3}
 };
 
 function applyPreset(name){
@@ -599,7 +925,10 @@ function applyPreset(name){
 
 function updateStrength(){
   const o=getOpts();
-  const pts=[o.stripComments,o.minify,o.renameLocals,o.renameParams,o.renameGlobals,o.encodeStrings,o.splitStrings,o.encodeNumbers,o.encodeNumbersExpr,o.junkVars,o.junkBlocks,o.doEndWrap,o.tableProxy,o.loadstringWrap,o.doublePack,o.obfWrapper];
+  const pts=[o.stripComments,o.minify,o.renameLocals,o.renameParams,o.renameGlobals,
+             o.encodeStrings,o.splitStrings,o.encodeNumbers,o.encodeNumbersExpr,
+             o.junkVars,o.junkBlocks,o.doEndWrap,o.tableProxy,
+             o.loadstringWrap,o.doublePack,o.obfWrapper];
   const on=pts.filter(Boolean).length;
   const pct=Math.round(on/pts.length*100);
   const fill=document.getElementById('strength-fill');
@@ -622,16 +951,25 @@ function copyOutput(){
   const v=document.getElementById('lua-out').value;if(!v)return;
   navigator.clipboard.writeText(v).catch(()=>{});
   let t=document.getElementById('_toast');
-  if(!t){t=document.createElement('div');t.id='_toast';t.style.cssText='position:fixed;top:60px;right:20px;z-index:3000;background:var(--bg-3);border:1px solid var(--border-hi);color:var(--ok);font-family:var(--mono);font-size:12px;padding:8px 14px;border-radius:6px;box-shadow:0 4px 20px rgba(0,0,0,.4);transition:opacity .25s;pointer-events:none;opacity:0';document.body.appendChild(t)}
-  t.textContent='✓  copied';clearTimeout(t._t);t.style.opacity='1';t._t=setTimeout(()=>t.style.opacity='0',1800);
+  if(!t){
+    t=document.createElement('div');t.id='_toast';
+    t.style.cssText='position:fixed;top:60px;right:20px;z-index:3000;background:var(--bg-3);border:1px solid var(--border-hi);color:var(--ok);font-family:var(--mono);font-size:12px;padding:8px 14px;border-radius:6px;box-shadow:0 4px 20px rgba(0,0,0,.4);transition:opacity .25s;pointer-events:none;opacity:0';
+    document.body.appendChild(t);
+  }
+  t.textContent='✓  copied';clearTimeout(t._t);t.style.opacity='1';
+  t._t=setTimeout(()=>t.style.opacity='0',1800);
 }
 
 function downloadOutput(){
   const v=document.getElementById('lua-out').value;if(!v)return;
-  const a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(v);a.download='obfuscated.lua';a.click();
+  const a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(v);
+  a.download='obfuscated.lua';a.click();
 }
 
 function loadSample(){
+  _loadedFromFile=false;
+  document.getElementById('file-badge').classList.remove('show');
   document.getElementById('lua-in').value=`-- Player utility module
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -676,13 +1014,20 @@ setJumpPower(60)`;
 /* ═══════════════════════════════════════════
    LUA TOKENIZER
 ═══════════════════════════════════════════ */
-const LUA_KEYWORDS=new Set(['and','break','do','else','elseif','end','false','for','function','goto','if','in','local','nil','not','or','repeat','return','then','true','until','while']);
-const LUA_STD=new Set(['print','pairs','ipairs','next','select','type','tostring','tonumber','rawget','rawset','rawequal','rawlen','require','load','loadstring','dofile','loadfile','pcall','xpcall','error','assert','unpack','table','string','math','io','os','coroutine','package','debug','setmetatable','getmetatable','setfenv','getfenv','_G','_ENV','_VERSION','game','workspace','script','Instance','Vector3','CFrame','tick','wait','spawn','delay','Enum','UDim','UDim2','Color3','Vector2','BrickColor','task','warn','typeof']);
+const LUA_KEYWORDS=new Set(['and','break','do','else','elseif','end','false','for','function',
+  'goto','if','in','local','nil','not','or','repeat','return','then','true','until','while']);
+const LUA_STD=new Set(['print','pairs','ipairs','next','select','type','tostring','tonumber',
+  'rawget','rawset','rawequal','rawlen','require','load','loadstring','dofile','loadfile',
+  'pcall','xpcall','error','assert','unpack','table','string','math','io','os','coroutine',
+  'package','debug','setmetatable','getmetatable','setfenv','getfenv',
+  '_G','_ENV','_VERSION','arg','...',
+  'game','workspace','script','Instance','Vector3','CFrame','tick','wait','spawn','delay',
+  'Enum','UDim','UDim2','Color3','Vector2','BrickColor','task','warn','typeof']);
 
 function tokenizeLua(src){
   const tokens=[];let i=0;
   while(i<src.length){
-    // block comment / long comment
+    // block / long comment
     if(src[i]==='-'&&src[i+1]==='-'){
       let lv=-1,j=i+2;
       if(src[j]==='['){let k=j+1,l=0;while(src[k]==='='){l++;k++}if(src[k]==='['){lv=l;j=k}}
@@ -737,7 +1082,6 @@ function tokenizeLua(src){
   }
   return tokens;
 }
-
 function tokensToString(tokens){return tokens.map(t=>t.v).join('')}
 
 /* ═══════════════════════════════════════════
@@ -750,10 +1094,7 @@ function luaStrBytes(tok){
     if(inner[i]!=='\\'){
       const c=inner.charCodeAt(i);
       if(c<128){bytes.push(c);i++}
-      else{
-        const enc=new TextEncoder().encode(inner[i]);
-        enc.forEach(b=>bytes.push(b));i++;
-      }
+      else{new TextEncoder().encode(inner[i]).forEach(b=>bytes.push(b));i++}
       continue;
     }
     i++;if(i>=inner.length)break;
@@ -776,14 +1117,11 @@ function luaStrBytes(tok){
   }
   return bytes;
 }
-
 function bytesToStringCharCall(bytes,chunkSize){
   if(bytes.length===0)return'""';
   chunkSize=chunkSize||50;
   const chunks=[];
-  for(let i=0;i<bytes.length;i+=chunkSize){
-    chunks.push('string.char('+bytes.slice(i,i+chunkSize).join(',')+')')
-  }
+  for(let i=0;i<bytes.length;i+=chunkSize)chunks.push('string.char('+bytes.slice(i,i+chunkSize).join(',')+')');
   return chunks.length===1?chunks[0]:'('+chunks.join('..')+')';
 }
 
@@ -797,7 +1135,6 @@ function makeNameGen(style){
     const n=counter++;
     if(style==='hex')return'_0x'+n.toString(16).padStart(4,'0');
     if(style==='chaos'){let s='_',v=n;do{s+=CHAOS[v%CHAOS.length];v=Math.floor(v/CHAOS.length)-1}while(v>=0);return s}
-    // rand
     return'_'+Math.floor(Math.random()*0xFFFFFFFF).toString(16).padStart(8,'0');
   };
 }
@@ -805,26 +1142,21 @@ function makeNameGen(style){
 /* ═══════════════════════════════════════════
    OBFUSCATION STAGES
 ═══════════════════════════════════════════ */
-
-// 1. Strip comments
 function stageStripComments(tokens){
   return tokens.filter(t=>t.t!=='LC'&&t.t!=='BC');
 }
 
-// 2. Collect all renameable local names from token stream
 function collectLocals(tokens){
   const names=new Set();
   for(let i=0;i<tokens.length;i++){
     const t=tokens[i];
-    // local [ function ] name
     if(t.t==='K'&&t.v==='local'){
       let j=i+1;
       while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++;
       if(tokens[j]?.t==='K'&&tokens[j].v==='function'){
         j++;while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++;
         if(tokens[j]?.t==='I')names.add(tokens[j].v);
-      } else if(tokens[j]?.t==='I'){
-        // local a, b, c
+      }else if(tokens[j]?.t==='I'){
         names.add(tokens[j].v);j++;
         while(j<tokens.length){
           while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++;
@@ -833,11 +1165,9 @@ function collectLocals(tokens){
         }
       }
     }
-    // function params
     if(t.t==='K'&&t.v==='function'){
       let j=i+1;
       while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++;
-      // skip function name (ident, dots, colons)
       while(j<tokens.length&&tokens[j].t==='I'){
         j++;while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++;
         if(tokens[j]?.v==='.'||tokens[j]?.v===':'){j++;while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++}
@@ -854,7 +1184,6 @@ function collectLocals(tokens){
         }
       }
     }
-    // for vars
     if(t.t==='K'&&t.v==='for'){
       let j=i+1;
       while(j<tokens.length){
@@ -868,7 +1197,6 @@ function collectLocals(tokens){
   return names;
 }
 
-// 3. Rename locals
 function stageRenameLocals(tokens,opts,genName){
   const names=collectLocals(tokens);
   const renameMap=new Map();
@@ -880,29 +1208,24 @@ function stageRenameLocals(tokens,opts,genName){
   });
 }
 
-// 4. Encode strings
 function stageEncodeStrings(tokens,opts){
   const chunkSize=opts.splitStrings?30:200;
   return tokens.map(t=>{
     if(t.t!=='S')return t;
     const bytes=luaStrBytes(t);
     if(bytes.length===0)return t;
-    const encoded=bytesToStringCharCall(bytes,chunkSize);
-    return{t:'RAW',v:encoded};
+    return{t:'RAW',v:bytesToStringCharCall(bytes,chunkSize)};
   });
 }
 
-// 5. Encode numbers
 function stageEncodeNumbers(tokens,opts){
   return tokens.map(t=>{
     if(t.t!=='N')return t;
     const raw=t.v;
-    // Skip if already hex or float
     if(raw.startsWith('0x')||raw.startsWith('0X')||raw.includes('.')||raw.includes('e')||raw.includes('E'))return t;
     const n=parseInt(raw);
     if(isNaN(n)||n<0)return t;
     if(opts.encodeNumbersExpr&&n>1){
-      // Express as (a*b + c)
       const a=Math.max(2,Math.floor(Math.sqrt(n)));
       const b=Math.floor(n/a);
       const c=n-a*b;
@@ -915,18 +1238,15 @@ function stageEncodeNumbers(tokens,opts){
   });
 }
 
-// 6. Minify
 function stageMinify(tokens){
   const out=[];
   for(let i=0;i<tokens.length;i++){
     const t=tokens[i];
     if(t.t==='NL'){
-      // Keep one newline max, collapse multiples
       if(out.length&&out[out.length-1].t==='NL')continue;
-      // Between ident/keyword tokens, need separator
       const prev=out[out.length-1];const next=tokens.find((x,j)=>j>i&&x.t!=='NL'&&x.t!=='W');
       if(prev&&next&&
-         (prev.t==='I'||prev.t==='K'||prev.t==='N'||prev.v===')'||prev.v===']'||prev.v==='"'||prev.v==="'")&&
+         (prev.t==='I'||prev.t==='K'||prev.t==='N'||prev.v===')'||prev.v===']')&&
          (next.t==='I'||next.t==='K'||next.t==='N'))
       {out.push({t:'W',v:' '});continue}
       continue;
@@ -935,12 +1255,8 @@ function stageMinify(tokens){
       const prev=out[out.length-1];const next=tokens[i+1];
       if(!prev||prev.t==='NL'||prev.t==='W')continue;
       if(!next||next.t==='NL'||next.t==='W')continue;
-      // Need space between ident+ident, keyword+ident etc.
-      const needSep=(a,b)=>{
-        const idLike=x=>x&&(x.t==='I'||x.t==='K'||x.t==='N');
-        return idLike(a)&&idLike(b);
-      };
-      if(needSep(prev,next)){out.push({t:'W',v:' '});continue}
+      const idLike=x=>x&&(x.t==='I'||x.t==='K'||x.t==='N');
+      if(idLike(prev)&&idLike(next)){out.push({t:'W',v:' '});continue}
       continue;
     }
     out.push(t);
@@ -948,81 +1264,58 @@ function stageMinify(tokens){
   return out;
 }
 
-// 7. Inject junk vars
 function stageJunkVars(tokens,genName){
-  const out=[];
-  let inserted=0;
+  const out=[];let inserted=0;
   for(let i=0;i<tokens.length;i++){
     out.push(tokens[i]);
-    // Insert after 'end' or semicolons occasionally
     if((tokens[i].v==='end'||tokens[i].v===';')&&Math.random()<0.25&&inserted<30){
-      const jv=genName();
-      out.push({t:'RAW',v:` local ${jv}=nil `});
+      out.push({t:'RAW',v:` local ${genName()}=nil `});
       inserted++;
     }
   }
   return out;
 }
 
-// 8. Inject junk blocks
 function stageJunkBlocks(tokens,genName){
   const JUNK=[
     ()=>{const v=genName();return` if false then local ${v}=nil end `},
-    ()=>{const v=genName();const n=Math.floor(Math.random()*256);return` do local ${v}=0x${n.toString(16)} end `},
-    ()=>{const v=genName(),v2=genName();return` do local ${v}=${genName().replace(/[^0-9a-fx]/gi,'')};local ${v2}=nil end `},
+    ()=>{const n=Math.floor(Math.random()*256);return` do local ${genName()}=0x${n.toString(16)} end `},
+    ()=>{return` do local ${genName()}=nil;local ${genName()}=nil end `},
   ];
   const out=[];let blk=0;
   for(let i=0;i<tokens.length;i++){
     out.push(tokens[i]);
     if(tokens[i].v==='end'&&Math.random()<0.2&&blk<20){
-      out.push({t:'RAW',v:JUNK[blk%JUNK.length]()});
-      blk++;
+      out.push({t:'RAW',v:JUNK[blk%JUNK.length]()});blk++;
     }
   }
   return out;
 }
 
-// 9. do…end wrap
-function stageDoEndWrap(src){
-  return`do\n${src}\nend\n`;
-}
+function stageDoEndWrap(src){return`do\n${src}\nend\n`}
 
-// 10. Table proxy for string lib
 function stageTableProxy(src,genName){
-  const tbl=genName(),sc=genName(),mc=genName(),tc=genName();
-  const header=`local ${tbl}={[${sc}]=string,[${mc}]=math,[${tc}]=table}\n`;
-  // Simple replace: string. → _tbl[_sc].  — not perfect but works for simple scripts
-  // For safety, just inject the header as a caching hint
-  return header+src;
+  const tbl=genName(),sc=genName(),mc=genName();
+  return`local ${tbl}={[${sc}]=string,[${mc}]=math}\n`+src;
 }
 
-// 11. loadstring wrap
 function stageLoadstringWrap(src,obfuscateWrapper,nameStyle){
   const bytes=Array.from(new TextEncoder().encode(src));
   const CHUNK=200;
   const chunks=[];
   for(let i=0;i<bytes.length;i+=CHUNK)chunks.push(bytes.slice(i,i+CHUNK));
-
   const genW=makeNameGen(nameStyle);
-  const vTbl=genW(),vStr=genW(),vChr=genW(),vCat=genW(),vLd=genW(),vFn=genW();
-
-  let wrapper;
+  const vTbl=genW(),vStr=genW(),vChr=genW(),vCat=genW(),vLd=genW();
   if(chunks.length===1){
     const charList=chunks[0].join(',');
-    if(obfuscateWrapper){
-      wrapper=`local ${vStr}=string;local ${vChr}=${vStr}.char;local ${vLd}=loadstring or load;${vLd}(${vChr}(${charList}))()`;
-    }else{
-      wrapper=`(loadstring or load)(string.char(${charList}))()`;
-    }
-  }else{
-    const entries=chunks.map((c,idx)=>`[${idx+1}]=string.char(${c.join(',')})`).join(',');
-    if(obfuscateWrapper){
-      wrapper=`local ${vTbl}={${entries}};local ${vCat}=table.concat;local ${vLd}=loadstring or load;${vLd}(${vCat}(${vTbl},""))()`;
-    }else{
-      wrapper=`local _t={${entries}};(loadstring or load)(table.concat(_t,""))()`;
-    }
+    if(obfuscateWrapper)
+      return`local ${vStr}=string;local ${vChr}=${vStr}.char;local ${vLd}=loadstring or load;${vLd}(${vChr}(${charList}))()`;
+    return`(loadstring or load)(string.char(${charList}))()`;
   }
-  return wrapper;
+  const entries=chunks.map((c,idx)=>`[${idx+1}]=string.char(${c.join(',')})`).join(',');
+  if(obfuscateWrapper)
+    return`local ${vTbl}={${entries}};local ${vCat}=table.concat;local ${vLd}=loadstring or load;${vLd}(${vCat}(${vTbl},""))()`;
+  return`local _t={${entries}};(loadstring or load)(table.concat(_t,""))()`;
 }
 
 /* ═══════════════════════════════════════════
@@ -1031,26 +1324,20 @@ function stageLoadstringWrap(src,obfuscateWrapper,nameStyle){
 function obfuscate(src,opts){
   const genName=makeNameGen(opts.nameStyle||'hex');
   let tokens=tokenizeLua(src);
-
   if(opts.stripComments)tokens=stageStripComments(tokens);
-
   for(let pass=0;pass<(opts.passes||1);pass++){
     if(opts.renameLocals||opts.renameParams)tokens=stageRenameLocals(tokens,opts,genName);
   }
-
   if(opts.encodeStrings)tokens=stageEncodeStrings(tokens,opts);
   if(opts.encodeNumbers||opts.encodeNumbersExpr)tokens=stageEncodeNumbers(tokens,opts);
   if(opts.junkVars)tokens=stageJunkVars(tokens,genName);
   if(opts.junkBlocks)tokens=stageJunkBlocks(tokens,genName);
   if(opts.minify)tokens=stageMinify(tokens);
-
   let out=tokensToString(tokens);
-
   if(opts.tableProxy)out=stageTableProxy(out,genName);
   if(opts.doEndWrap)out=stageDoEndWrap(out);
   if(opts.loadstringWrap)out=stageLoadstringWrap(out,opts.obfWrapper,opts.nameStyle);
   if(opts.doublePack)out=stageLoadstringWrap(out,opts.obfWrapper,opts.nameStyle);
-
   return out;
 }
 
@@ -1064,11 +1351,8 @@ function setProgress(pct,label){
 
 function runObfuscate(){
   const src=document.getElementById('lua-in').value.trim();
-  if(!src){notice('warn','No input — paste a Lua script first.');return}
-
+  if(!src){notice('warn','No input — paste or upload a Lua script first.');return}
   const opts=getOpts();
-
-  // Show progress
   const pw=document.getElementById('progress-wrap');
   pw.classList.add('show');
   document.getElementById('run-btn').disabled=true;
@@ -1086,16 +1370,40 @@ function runObfuscate(){
             setTimeout(()=>{
               try{
                 const out=obfuscate(src,opts);
-                document.getElementById('lua-out').value=out;
-                setProgress(100,'Done');
 
+                // populate both textareas
+                document.getElementById('lua-out').value=out;
+                document.getElementById('lua-out-full').value=out;
+
+                setProgress(100,'Done ✓');
+
+                const lines=out.split('\n').length;
                 const ratio=(out.length/src.length).toFixed(2)+'×';
-                const size=out.length>1024?(out.length/1024).toFixed(1)+' KB':out.length+' B';
+                const size=fmtBytes(out.length);
+
+                // update stat chip
                 document.getElementById('stat-ratio').textContent=ratio;
                 document.getElementById('stat-size').textContent=size;
+                document.getElementById('stat-lines').textContent=lines;
                 document.getElementById('stats-chip').style.display='';
+                document.getElementById('view-full-btn').style.display='';
 
-                notice('ok',`Obfuscated — ${src.length} → ${out.length} chars (${ratio})`);
+                notice('ok',`Done — ${src.length} → ${out.length} chars (${ratio}) · ${lines} lines`);
+
+                // flash output card
+                const card=document.getElementById('output-card');
+                card.classList.remove('output-flash');
+                void card.offsetWidth; // reflow
+                card.classList.add('output-flash');
+
+                // scroll to output
+                setTimeout(()=>{
+                  card.scrollIntoView({behavior:'smooth',block:'nearest'});
+                },150);
+
+                // auto-open full view
+                openFullView();
+
               }catch(e){
                 notice('err','Error: '+e.message);
                 document.getElementById('lua-out').value='-- Error: '+e.message;

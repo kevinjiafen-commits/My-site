@@ -270,7 +270,7 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
     <div class="auth-tagline">Lua Obfuscator / Deobfuscator</div>
     <div class="auth-tabs">
       <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">User Sign In</button>
-      <button class="auth-tab" data-tab="admin" onclick="switchAuthTab('admin')">Admin Access</button>
+      <button class="auth-tab" data-tab="admin" onclick="switchAuthTab('admin')">Admin Register</button>
     </div>
     <div id="login-form">
       <div style="text-align:center;margin:8px 0 18px;color:var(--text-2);font-size:12px">Sign in securely using your Google account.</div>
@@ -281,21 +281,25 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
       <div class="auth-error" id="login-error" style="margin-top:14px;text-align:center"></div>
     </div>
     <div id="admin-form" style="display:none">
-      <div style="text-align:center;margin:8px 0 18px;color:var(--text-2);font-size:12px">Authorized administrators only. Credentials are verified by the secure server.</div>
-      <form onsubmit="handleAdminLogin(event)">
+      <div style="text-align:center;margin:8px 0 18px;color:var(--text-2);font-size:12px">Create the administrator account. Registration must be authorized by the server.</div>
+      <form onsubmit="handleAdminRegister(event)">
         <div class="form-group">
           <label for="admin-username">Administrator ID</label>
-          <input id="admin-username" name="username" type="text" autocomplete="username" placeholder="Enter administrator ID" required>
+          <input id="admin-username" name="username" type="text" autocomplete="username" placeholder="Choose an administrator ID" required>
         </div>
         <div class="form-group">
           <label for="admin-password">Password</label>
-          <input id="admin-password" name="password" type="password" autocomplete="current-password" placeholder="Enter password" required>
+          <input id="admin-password" name="password" type="password" autocomplete="new-password" placeholder="Create a password" required>
         </div>
-        <button class="btn auth-submit" type="submit">Sign In as Administrator</button>
+        <div class="form-group">
+          <label for="admin-password-confirm">Confirm Password</label>
+          <input id="admin-password-confirm" name="passwordConfirm" type="password" autocomplete="new-password" placeholder="Confirm your password" required>
+        </div>
+        <button class="btn auth-submit" type="submit">Register Administrator</button>
       </form>
       <div class="auth-error" id="admin-error" style="margin-top:14px;text-align:center"></div>
     </div>
-    <div class="auth-note"><strong>Secure Authentication</strong><br>Google sign-in uses Firebase. Administrator credentials are verified server-side and are never stored in this page.</div>
+    <div class="auth-note"><strong>Secure Authentication</strong><br>Google sign-in uses Firebase. Administrator registration is handled by the server; credentials are not embedded in this HTML file.</div>
   </div>
 </div>
 
@@ -729,10 +733,11 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
 /* ═══════════════════════════════════════════
    AUTHENTICATION
 ═══════════════════════════════════════════ */
-// Administrator authentication is delegated to a trusted backend.
-// The backend validates credentials, issues a Firebase custom token,
-// and assigns the Firebase custom claim { admin: true }.
-const ADMIN_LOGIN_ENDPOINT = '/api/admin/login';
+// Administrator registration is delegated to a trusted backend.
+// The backend must enforce one-time / invitation-authorized registration,
+// validate credentials, issue a Firebase custom token, and assign the
+// Firebase custom claim { admin: true }. Never put administrator secrets here.
+const ADMIN_REGISTER_ENDPOINT = '/api/admin/register';
 
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyC76Jfv5SnWMR5ou8YRpL5HSzsFdEKLQV4",
@@ -826,19 +831,24 @@ async function handleGoogleLogin(){
   }catch(error){ showAuthError(error); }
 }
 
-async function handleAdminLogin(event){
+async function handleAdminRegister(event){
   if(event) event.preventDefault();
   const errorElement = document.getElementById('admin-error');
   const username = document.getElementById('admin-username').value.trim();
   const password = document.getElementById('admin-password').value;
+  const passwordConfirm = document.getElementById('admin-password-confirm').value;
   if(!username || !password) return;
+  if(password !== passwordConfirm){
+    if(errorElement) errorElement.textContent = 'The passwords do not match.';
+    return;
+  }
   if(!firebaseReady || !firebaseAuth){
     if(errorElement) errorElement.textContent = 'Firebase is not configured. Check FIREBASE_CONFIG.';
     return;
   }
   try{
-    if(errorElement) errorElement.textContent = 'Verifying administrator access...';
-    const response = await fetch(ADMIN_LOGIN_ENDPOINT, {
+    if(errorElement) errorElement.textContent = 'Registering administrator account...';
+    const response = await fetch(ADMIN_REGISTER_ENDPOINT, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       credentials: 'same-origin',
@@ -846,12 +856,13 @@ async function handleAdminLogin(event){
     });
     const result = await response.json().catch(()=>({}));
     if(!response.ok || !result.customToken){
-      throw new Error(result.message || 'Administrator sign-in failed. Check your credentials or server configuration.');
+      throw new Error(result.message || 'Administrator registration failed. Registration may be disabled or require an invitation.');
     }
-    await firebaseAuth.signInWithCustomToken(result.customToken);
     document.getElementById('admin-password').value = '';
+    document.getElementById('admin-password-confirm').value = '';
+    await firebaseAuth.signInWithCustomToken(result.customToken);
   }catch(error){
-    if(errorElement) errorElement.textContent = error.message || 'Administrator sign-in failed.';
+    if(errorElement) errorElement.textContent = error.message || 'Administrator registration failed.';
   }
 }
 

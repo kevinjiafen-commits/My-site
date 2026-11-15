@@ -272,22 +272,18 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
       <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">Sign In</button>
       <button class="auth-tab" data-tab="register" onclick="switchAuthTab('register')">Register</button>
     </div>
-    <form id="login-form" onsubmit="handleLogin(event)">
-      <div class="form-group">
-        <label>Username</label>
-        <input type="text" id="login-user" placeholder="Enter username" autocomplete="username" required>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="login-pass" placeholder="Enter password" autocomplete="current-password" required>
-      </div>
-      <div class="auth-error" id="login-error"></div>
-      <button type="submit" class="btn btn-primary auth-submit">Sign In</button>
-    </form>
+    <div id="login-form">
+      <div style="text-align:center;margin:8px 0 18px;color:var(--text-2);font-size:12px">Sign in securely using your Google account.</div>
+      <button type="button" class="btn btn-google" onclick="handleGoogleLogin()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 2.56 34.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Continue with Google
+      </button>
+      <div class="auth-error" id="login-error" style="margin-top:14px;text-align:center"></div>
+    </div>
     <div id="register-form" style="display:none">
       <div style="text-align:center;margin-bottom:24px">
         <div style="font-size:14px;font-weight:600;color:var(--text-0);margin-bottom:8px">Create account</div>
-        <div style="font-size:12px;color:var(--text-2)">Authorize with your Google account to continue.</div>
+        <div style="font-size:12px;color:var(--text-2)">Create or access your account securely with Google OAuth.</div>
       </div>
       <button class="btn btn-google" onclick="handleGoogleLogin()">
         <svg width="18" height="18" viewBox="0 0 48 48">
@@ -300,7 +296,7 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
       </button>
       <div class="auth-error" id="reg-error" style="margin-top:14px;text-align:center"></div>
     </div>
-    <div class="auth-note"><strong>Client-side only</strong><br>Credentials stored locally. All obfuscation runs in your browser.</div>
+    <div class="auth-note"><strong>Client-side only</strong><br>Google authentication is handled by Firebase. Lua processing runs in your browser.</div>
   </div>
 </div>
 
@@ -337,7 +333,7 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
       </div>
       <div>
         <div class="panel-title" id="panel-title">Lua Obfuscator</div>
-        <div class="panel-desc" id="panel-desc">Multi-stage pipeline — variable rename · string encryption · number obfuscation · junk injection · opaque predicates · loop wrap · loadstring packing · anti-debug. 100% client-side.</div>
+        <div class="panel-desc" id="panel-desc">Local multi-stage Lua/Luau transforms with selectable engine-style profiles, nested packing, literal encoding and minification.</div>
       </div>
     </div>
 
@@ -367,25 +363,23 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
           <button class="preset-btn" id="preset-strong" onclick="applyPreset('strong')">Strong</button>
           <button class="preset-btn" id="preset-nuclear" onclick="applyPreset('nuclear')">☢ Nuclear</button>
         </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <label for="engine-profile" style="font-size:11px;color:var(--text-2);font-family:var(--mono)">ENGINE PROFILE</label>
+          <select id="engine-profile" onchange="applyEngineProfile(this.value)" style="background:var(--bg-2);color:var(--text-1);border:1px solid var(--border-hi);border-radius:6px;padding:8px;font:11px var(--mono)">
+            <option value="arch-strong">Arch Hub Strong</option>
+            <option value="luraph-style">Luraph-style (local)</option>
+            <option value="moonsec-style">MoonSec-style (local)</option>
+            <option value="prometheus-style">Prometheus-style (local)</option>
+            <option value="ironbrew-style">IronBrew-style (local)</option>
+            <option value="minify-only">Minify only</option>
+          </select>
+        </div>
         <div class="strength-meter">
           <input type="range" id="strength-slider" min="0" max="100" value="30"
                  oninput="onStrengthChange(this.value)"
                  aria-label="Protection strength">
           <div class="strength-bar"><div class="strength-fill" id="strength-fill" style="width:30%;background:var(--ok)"></div></div>
           <div class="strength-label" id="strength-label">Light</div>
-        </div>
-      </div>
-      <div class="card" style="margin-top:12px">
-        <div class="card-body" style="display:flex;flex-direction:column;gap:7px">
-          <label class="label" for="obfuscator-profile">Obfuscator engine / profile</label>
-          <select id="obfuscator-profile">
-            <option value="arch">Arch Advanced — balanced multi-stage</option>
-            <option value="luraph">Luraph-style — layered strings + packing (local approximation)</option>
-            <option value="prometheus">Prometheus-style — identifier + literal transformation</option>
-            <option value="moonsec">MoonSec-style — aggressive layered packing (local approximation)</option>
-            <option value="minify">Lua Minifier — formatting only</option>
-          </select>
-          <div style="font-size:10px;color:var(--text-3);font-family:var(--mono)">Luraph, MoonSec and Prometheus are independent third-party products/formats. These local profiles do not invoke or reproduce their proprietary engines; use their official services for native output.</div>
         </div>
       </div>
 
@@ -730,79 +724,89 @@ input[type="range"]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;b
   <textarea class="out-overlay-textarea" id="lua-out-full" readonly spellcheck="false"></textarea>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script>
 /* ═══════════════════════════════════════════
    AUTH
 ═══════════════════════════════════════════ */
-const USERS_KEY='archhub_users_v1',SESSION_KEY='archhub_session_v1';
-const ADMIN_USER='kevinjia',ADMIN_PASS='smw-170121';
-
-function simpleHash(s){
-  let h1=0xdeadbeef,h2=0x41c6ce57;
-  for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677)}
-  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
-  h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
-  return(4294967296*(2097151&h2)+(h1>>>0)).toString(16);
-}
-const getUsers=()=>{try{return JSON.parse(localStorage.getItem(USERS_KEY))||{}}catch{return{}}};
-const setUsers=u=>localStorage.setItem(USERS_KEY,JSON.stringify(u));
-const getSession=()=>{try{return JSON.parse(sessionStorage.getItem(SESSION_KEY))||null}catch{return null}};
-const setSession=s=>sessionStorage.setItem(SESSION_KEY,JSON.stringify(s));
-const clearSession=()=>sessionStorage.removeItem(SESSION_KEY);
-
-function ensureAdmin(){
-  const u=getUsers();
-  if(!u[ADMIN_USER]||u[ADMIN_USER].role!=='admin'){
-    u[ADMIN_USER]={password:simpleHash(ADMIN_PASS),role:'admin',created:Date.now()};setUsers(u);
+// Firebase project settings: replace these values with your Firebase Web App config.
+// Firebase Console -> Project settings -> Your apps -> Web app config.
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyC76Jfv5SnWMR5ou8YRpL5HSzsFdEKLQV4",
+  authDomain: "arch-hub-obfuscate.firebaseapp.com",
+  projectId: "arch-hub-obfuscate",
+  storageBucket: "arch-hub-obfuscate.firebasestorage.app",
+  messagingSenderId: "633931564369",
+  appId: "1:633931564369:web:5290c51cc925b12163bf70",
+  measurementId: "G-8BDE17T4TW"
+};
+let firebaseAuth = null;
+let firebaseReady = false;
+function initFirebaseAuth(){
+  const configured = FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith('PASTE_') &&
+    FIREBASE_CONFIG.authDomain && !FIREBASE_CONFIG.authDomain.startsWith('PASTE_') &&
+    FIREBASE_CONFIG.projectId && !FIREBASE_CONFIG.projectId.startsWith('PASTE_') &&
+    FIREBASE_CONFIG.appId && !FIREBASE_CONFIG.appId.startsWith('PASTE_');
+  const loginError=document.getElementById('login-error');
+  const regError=document.getElementById('reg-error');
+  if(!configured){
+    const msg='Firebase is not configured yet. Add your Firebase Web App config in FIREBASE_CONFIG to enable real Google sign-in.';
+    if(loginError)loginError.textContent=msg;
+    if(regError)regError.textContent=msg;
+    return;
   }
+  if(!window.firebase){
+    if(loginError)loginError.textContent='Firebase SDK could not load. Check your internet connection.';
+    return;
+  }
+  try{
+    if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);
+    firebaseAuth=firebase.auth();
+    firebaseAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{});
+    firebaseReady=true;
+    firebaseAuth.getRedirectResult().catch(showAuthError);
+    firebaseAuth.onAuthStateChanged(user=>{
+      if(user)enterApp({username:user.displayName||user.email||'Google user',email:user.email||'',role:'user',uid:user.uid});
+      else{document.getElementById('app-shell').style.display='none';document.getElementById('auth-screen').classList.remove('hidden');}
+    });
+    if(loginError)loginError.textContent='';
+    if(regError)regError.textContent='';
+  }catch(e){showAuthError(e);}
+}
+function showAuthError(error){
+  const msg=(error&&error.code==='auth/unauthorized-domain')?'This domain is not authorized. Add it in Firebase Authentication → Settings → Authorized domains.':(error&&error.message)||'Authentication failed.';
+  ['login-error','reg-error'].forEach(id=>{const el=document.getElementById(id);if(el){el.className='auth-error';el.textContent=msg;}});
 }
 function switchAuthTab(t){
   document.querySelectorAll('.auth-tab').forEach(el=>el.classList.toggle('active',el.dataset.tab===t));
   document.getElementById('login-form').style.display=t==='login'?'':'none';
   document.getElementById('register-form').style.display=t==='register'?'':'none';
 }
-function handleLogin(e){
-  e.preventDefault();
-  const u=document.getElementById('login-user').value.trim(),
-        p=document.getElementById('login-pass').value,
-        err=document.getElementById('login-error');
-  err.className='auth-error';err.textContent='';
-  if(!u||!p){err.textContent='Please fill both fields.';return}
-  const users=getUsers(),user=users[u];
-  if(!user){err.textContent='User not found.';return}
-  if(user.password!==simpleHash(p)){err.textContent='Incorrect password.';return}
-  const s={username:u,role:user.role,loginAt:Date.now()};setSession(s);enterApp(s);
+async function handleGoogleLogin(){
+  const errId=document.getElementById('register-form').style.display==='none'?'login-error':'reg-error';
+  const err=document.getElementById(errId);
+  if(!firebaseReady||!firebaseAuth){if(err)err.textContent='Set up Firebase Web App config first. See FIREBASE_CONFIG in this HTML.';return;}
+  try{
+    if(err){err.className='auth-error';err.textContent='Connecting to Google…';}
+    const provider=new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({prompt:'select_account'});
+    await firebaseAuth.signInWithRedirect(provider);
+  }catch(e){showAuthError(e);}
 }
-function handleGoogleLogin(){
-  const err=document.getElementById('reg-error');
-  err.className='auth-error';err.textContent='Authenticating…';
-  setTimeout(()=>{
-    const id=Math.random().toString(36).substring(2,8),uname='user_'+id;
-    const users=getUsers();
-    if(!users[uname])users[uname]={password:'google_bypass',role:'user',created:Date.now()};
-    setUsers(users);
-    err.className='auth-error ok';err.textContent='Success! Signing in…';
-    setTimeout(()=>{const s={username:uname,role:'user',loginAt:Date.now()};setSession(s);enterApp(s);},800);
-  },1200);
-}
-function enterApp(s){
+function handleLogin(e){if(e)e.preventDefault();handleGoogleLogin();}
+function enterApp(user){
   document.getElementById('auth-screen').classList.add('hidden');
-  const shell=document.getElementById('app-shell');
-  shell.style.display='';
-  document.getElementById('user-name').textContent=s.username;
-  document.getElementById('user-avatar').textContent=s.username[0].toUpperCase();
-  const r=document.getElementById('user-role');
-  r.textContent=s.role==='admin'?'ADMIN':'USER';
-  r.style.background=s.role==='admin'?'rgba(245,158,11,.15)':'var(--accent-lo)';
-  r.style.color=s.role==='admin'?'#fbbf24':'var(--accent-hi)';
-  document.getElementById('login-form').reset();
-  document.getElementById('login-error').textContent='';
+  document.getElementById('app-shell').style.display='';
+  const display=user.username||user.email||'Google user';
+  document.getElementById('user-name').textContent=display;
+  document.getElementById('user-avatar').textContent=display[0].toUpperCase();
+  const role=document.getElementById('user-role');
+  role.textContent='USER';role.style.background='var(--accent-lo)';role.style.color='var(--accent-hi)';
 }
-function logout(){
-  clearSession();
-  document.getElementById('app-shell').style.display='none';
-  document.getElementById('auth-screen').classList.remove('hidden');
-  document.getElementById('login-form').reset();
+async function logout(){
+  try{if(firebaseAuth)await firebaseAuth.signOut();}
+  catch(e){showAuthError(e);}
 }
 
 /* ═══════════════════════════════════════════
@@ -897,8 +901,8 @@ function switchMode(mode){
   // Panel header
   document.getElementById('panel-title').textContent = isDeob ? 'Lua Deobfuscator' : 'Lua Obfuscator';
   document.getElementById('panel-desc').textContent = isDeob
-    ? 'Automatic detection & multi-layer unpacking — decodes loadstring byte arrays, XOR / hex / string.char literals, number expressions, and strips junk, opaque predicates, anti-debug guards and do/for wrappers. 100% client-side.'
-    : 'Multi-stage pipeline — variable rename · string encryption · number obfuscation · junk injection · opaque predicates · loop wrap · loadstring packing · anti-debug. 100% client-side.';
+    ? 'Multi-pass analysis and recovery for supported wrappers, encoded literals, numeric expressions and generated junk. Results depend on the obfuscator and Lua dialect.'
+    : 'Local multi-stage Lua/Luau transforms with selectable engine-style profiles, nested packing, literal encoding and minification.';
   const icon = document.getElementById('panel-icon');
   icon.style.color = isDeob ? 'var(--teal)' : 'var(--accent-hi)';
   icon.innerHTML = isDeob
@@ -992,6 +996,22 @@ function applyPreset(name){
   if(PRESETS[name])setOpts(PRESETS[name]);
   document.getElementById('strength-slider').value=strengthFromPreset(name);
 }
+function applyEngineProfile(profile){
+  const profiles={
+    'arch-strong':{label:'Arch Hub Strong',preset:'strong'},
+    'luraph-style':{label:'Luraph-inspired layered profile',opts:{stripComments:true,minify:true,renameLocals:true,renameParams:true,encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:true,junkVars:true,junkBlocks:true,opaquePredicates:true,doEndWrap:true,loopWrap:true,tableProxy:true,loadstringWrap:true,doublePack:true,obfWrapper:true,antiDebug:false,nameStyle:'chaos',passes:3,stringMode:'xor'}},
+    'moonsec-style':{label:'MoonSec-inspired packed profile',opts:{stripComments:true,minify:true,renameLocals:true,renameParams:true,encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:true,junkVars:true,junkBlocks:true,opaquePredicates:true,doEndWrap:true,loopWrap:true,tableProxy:true,loadstringWrap:true,doublePack:true,obfWrapper:true,antiDebug:true,nameStyle:'chaos',passes:3,stringMode:'xor'}},
+    'prometheus-style':{label:'Prometheus-inspired source profile',opts:{stripComments:true,minify:true,renameLocals:true,renameParams:true,encodeStrings:true,splitStrings:false,encodeNumbers:true,encodeNumbersExpr:false,junkVars:false,junkBlocks:false,opaquePredicates:false,doEndWrap:false,loopWrap:false,tableProxy:false,loadstringWrap:false,doublePack:false,obfWrapper:false,antiDebug:false,nameStyle:'hex',passes:2,stringMode:'hex'}},
+    'ironbrew-style':{label:'IronBrew-inspired wrapper profile',opts:{stripComments:true,minify:true,renameLocals:true,renameParams:true,encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:true,junkVars:true,junkBlocks:false,opaquePredicates:true,doEndWrap:true,loopWrap:true,tableProxy:true,loadstringWrap:true,doublePack:false,obfWrapper:true,antiDebug:false,nameStyle:'chaos',passes:2,stringMode:'byte'}},
+    'minify-only':{label:'Minify only',opts:{stripComments:true,minify:true,renameLocals:false,renameParams:false,encodeStrings:false,splitStrings:false,encodeNumbers:false,encodeNumbersExpr:false,junkVars:false,junkBlocks:false,opaquePredicates:false,doEndWrap:false,loopWrap:false,tableProxy:false,loadstringWrap:false,doublePack:false,obfWrapper:false,antiDebug:false,nameStyle:'hex',passes:1,stringMode:'byte'}}
+  };
+  const selected=profiles[profile]||profiles['arch-strong'];
+  if(selected.preset)applyPreset(selected.preset);else setOpts(selected.opts);
+  const slider=document.getElementById('strength-slider');
+  if(slider){slider.value=profile==='minify-only'?'15':profile==='prometheus-style'?'65':profile==='ironbrew-style'?'85':'100';paintStrength(parseInt(slider.value,10));}
+  notice('info',selected.label+' selected. These are distinct Arch Hub local option profiles, not the proprietary vendor engines.');
+}
+
 function strengthFromPreset(name){
   if(name==='off')return 0;
   if(name==='light')return 35;
@@ -1510,18 +1530,7 @@ function stageAntiDebug(genName){
 /* ═══════════════════════════════════════════
    MAIN PIPELINE
 ═══════════════════════════════════════════ */
-function applyEngineProfile(opts){
-  const profile=document.getElementById('obfuscator-profile')?.value||'arch';
-  const o={...opts};
-  if(profile==='luraph'){Object.assign(o,{stripComments:true,minify:true,renameLocals:true,renameParams:true,encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:true,junkVars:true,junkBlocks:true,opaquePredicates:true,doEndWrap:true,loopWrap:false,tableProxy:true,loadstringWrap:true,doublePack:true,obfWrapper:true,antiDebug:false,nameStyle:'chaos',passes:3,stringMode:'xor'});}
-  if(profile==='prometheus'){Object.assign(o,{stripComments:true,minify:true,renameLocals:true,renameParams:true,encodeStrings:true,splitStrings:false,encodeNumbers:true,encodeNumbersExpr:true,junkVars:false,junkBlocks:true,opaquePredicates:true,doEndWrap:true,loopWrap:false,tableProxy:false,loadstringWrap:false,doublePack:false,obfWrapper:false,antiDebug:false,nameStyle:'rand',passes:2,stringMode:'hex'});}
-  if(profile==='moonsec'){Object.assign(o,{stripComments:true,minify:true,renameLocals:true,renameParams:true,encodeStrings:true,splitStrings:true,encodeNumbers:true,encodeNumbersExpr:true,junkVars:true,junkBlocks:true,opaquePredicates:true,doEndWrap:true,loopWrap:true,tableProxy:true,loadstringWrap:true,doublePack:true,obfWrapper:true,antiDebug:false,nameStyle:'chaos',passes:3,stringMode:'xor'});}
-  if(profile==='minify'){Object.assign(o,{stripComments:true,minify:true,renameLocals:false,renameParams:false,encodeStrings:false,splitStrings:false,encodeNumbers:false,encodeNumbersExpr:false,junkVars:false,junkBlocks:false,opaquePredicates:false,doEndWrap:false,loopWrap:false,tableProxy:false,loadstringWrap:false,doublePack:false,obfWrapper:false,antiDebug:false});}
-  return o;
-}
-
 function obfuscate(src,opts){
-  opts=applyEngineProfile(opts);
   const genName=makeNameGen(opts.nameStyle||'hex');
   let tokens=tokenizeLua(src);
 
@@ -1785,6 +1794,17 @@ function decodeHexStrings(src) {
   return src;
 }
 
+function decodeLuaEscapes(src){
+  return src.replace(/"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'/g,(whole,doubleBody,singleBody)=>{
+    const body=doubleBody!==undefined?doubleBody:singleBody;
+    const quote=doubleBody!==undefined?'"':"'";
+    let decoded=body.replace(/\\(\\|"|')/g,'$1').replace(/\\n/g,'\n').replace(/\\r/g,'\r').replace(/\\t/g,'\t').replace(/\\a/g,'\x07').replace(/\\b/g,'\b').replace(/\\f/g,'\f').replace(/\\v/g,'\v');
+    decoded=decoded.replace(/\\x([\da-fA-F]{2})/g,(_,h)=>String.fromCharCode(parseInt(h,16)));
+    decoded=decoded.replace(/\\([0-9]{1,3})/g,(_,n)=>String.fromCharCode(Math.min(255,parseInt(n,10))));
+    return luaStringLiteral(Array.from(decoded).map(ch=>ch.charCodeAt(0)));
+  });
+}
+
 function decodeStringCharCalls(src) {
   return src.replace(/string\.char\s*\(\s*(\d+(?:\s*,\s*\d+)*)\s*\)/g, (m, nums) => {
     try {
@@ -1792,28 +1812,6 @@ function decodeStringCharCalls(src) {
       return luaStringLiteral(bytes);
     } catch { return m; }
   });
-}
-
-function decodeLuaEscapedStrings(src) {
-  return src.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, lit => {
-    const q=lit[0], body=lit.slice(1,-1);
-    const decoded=body.replace(/\\(\d{1,3})/g,(m,n)=>String.fromCharCode(Math.min(255,Number(n))))
-      .replace(/\\x([\da-fA-F]{2})/g,(m,h)=>String.fromCharCode(parseInt(h,16)))
-      .replace(/\\([\\"'nrt])/g,(m,c)=>({'n':'\n','r':'\r','t':'\t'}[c]??c));
-    return q+decoded+q;
-  });
-}
-function foldSimpleNumericExpressions(src) {
-  // Only fold literal-only arithmetic; never evaluate source text.
-  const re=/\(\s*(-?\d+(?:\.\d+)?)\s*([+*\-])\s*(-?\d+(?:\.\d+)?)\s*\)/g;
-  return src.replace(re,(m,a,op,b)=>{
-    const x=Number(a),y=Number(b); if(!Number.isFinite(x+y))return m;
-    const v=op==='+'?x+y:op==='-'?x-y:x*y;
-    return Number.isFinite(v)?String(v):m;
-  });
-}
-function decodeLongBracketStrings(src) {
-  return src.replace(/\[(=*)\[([\s\S]*?)\]\1\]/g,(m,eq,body)=>luaStringLiteral(Array.from(new TextEncoder().encode(body))));
 }
 
 function simplifyStringConcat(src) {
@@ -1870,7 +1868,7 @@ function blockDepth(src) {
 function stripOuterWrap(src) {
   let changed = true;
   let guard = 0;
-  while (changed && guard++ < 20) {
+  while (changed && guard++ < 64) {
     changed = false;
     src = src.trim();
 
@@ -2055,7 +2053,7 @@ function deobfuscate(src, opts) {
     if (before !== out) changes.push('移除反调试守卫');
   }
 
-  // 2) Unpack nested loadstring layers, with a bounded safety limit.
+  // 2) Unpack loadstring layers (up to 5)
   if (opts.unpackStrings) {
     for (let i = 0; i < 16; i++) {
       const unpacked = unpackLoadstring(out);
@@ -2065,7 +2063,7 @@ function deobfuscate(src, opts) {
     }
   }
 
-  // 3) Decode XOR / hex string functions
+  // 3) Decode XOR / hex string functions, repeatedly until stable.
   if (opts.decodeStrings) {
     const beforeX = out;
     out = decodeXorStrings(out);
@@ -2074,6 +2072,9 @@ function deobfuscate(src, opts) {
     const beforeH = out;
     out = decodeHexStrings(out);
     if (beforeH !== out) changes.push('解码十六进制字符串');
+    const beforeEsc = out;
+    out = decodeLuaEscapes(out);
+    if (beforeEsc !== out) changes.push('解码 Lua 转义字符串');
   }
 
   // 4) Remove opaque predicates / junk blocks / table proxy
@@ -2091,18 +2092,13 @@ function deobfuscate(src, opts) {
     out = decodeStringCharCalls(out);
     if (before !== out) changes.push('解码 string.char 调用');
     out = simplifyStringConcat(out);
-    const beforeEsc=out; out=decodeLuaEscapedStrings(out);
-    if(beforeEsc!==out) changes.push('解码 Lua 转义字符串');
-    const beforeLong=out; out=decodeLongBracketStrings(out);
-    if(beforeLong!==out) changes.push('解码长括号字符串');
   }
 
   // 6) Decode numbers
   if (opts.decodeNumbers) {
     const before = out;
     out = decodeNumberExpressions(out);
-    out = foldSimpleNumericExpressions(out);
-    if (before !== out) changes.push('解码数字字面量 / 常量算术');
+    if (before !== out) changes.push('解码数字字面量');
   }
 
   // 7) Strip junk variables
@@ -2119,17 +2115,16 @@ function deobfuscate(src, opts) {
     if (before !== out) changes.push('移除 do/for 包裹层');
   }
 
-  // Re-run deterministic decoders: nested wrappers often reveal another layer.
-  for(let pass=0;pass<4;pass++){
+  // 9) Repeat deterministic decoding passes for nested literal wrappers.
+  for(let pass=0;pass<8;pass++){
     const before=out;
-    if(opts.unpackStrings){const u=unpackLoadstring(out);if(u!==null)out=u;}
-    if(opts.decodeStrings){out=decodeStringCharCalls(out);out=decodeXorStrings(out);out=decodeHexStrings(out);out=simplifyStringConcat(out);}
-    if(opts.decodeNumbers)out=foldSimpleNumericExpressions(decodeNumberExpressions(out));
-    if(opts.stripJunk){out=stripOpaquePredicates(out);out=stripJunkBlocks(out);out=stripJunkVars(out);}
-    if(before===out)break;
+    if(opts.decodeStrings){out=decodeStringCharCalls(out);out=decodeXorStrings(out);out=decodeHexStrings(out);out=decodeLuaEscapes(out);out=simplifyStringConcat(out);}
+    if(opts.decodeNumbers)out=decodeNumberExpressions(out);
+    if(opts.unpackStrings){const nested=unpackLoadstring(out);if(nested!==null)out=nested;}
+    if(out===before)break;
   }
 
-  // 9) Format
+  // 10) Format
   if (opts.formatOut) {
     try {
       out = formatLua(out);
@@ -2285,9 +2280,7 @@ function runDeobfuscate() {
    INIT
 ═══════════════════════════════════════════ */
 (function init() {
-  ensureAdmin();
-  const s = getSession();
-  if (s) enterApp(s);
+  initFirebaseAuth();
   updateStrength();
   document.getElementById('strength-slider').value = '30';
   paintStrength(30);
